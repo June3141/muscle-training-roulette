@@ -9,8 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --project engine"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@mtr/data": "workspace:*"

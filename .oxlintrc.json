@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -15,12 +15,13 @@
     "prefer-const": "error",
     "typescript/no-explicit-any": "error",
     "typescript/consistent-type-imports": "error",
-    "import/no-cycle": "error"
+    "import/no-cycle": "error",
+    "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": ["**/dist/**", "**/coverage/**", "data/upstream/**"],
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/test/**/*.ts"],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/test/**/*.ts"],
       "rules": {
         "typescript/no-explicit-any": "off"
       }

@@ -101,7 +101,11 @@ for file in "$ROOT"/.github/bootstrap/issues/*.md; do
     done
   fi
 
-  gh issue create "${args[@]}" >/dev/null
+  if ! gh issue create "${args[@]}" >/dev/null; then
+    rm -f "$body_file"
+    echo "   ! 作成に失敗しました: $title" >&2
+    exit 1
+  fi
   rm -f "$body_file"
   echo "   $title"
 done
@@ -109,8 +113,20 @@ done
 # -------------------------------------------------------------- Projects
 
 echo "== Projects"
-project_number=$(gh project list --owner "$OWNER" --format json \
-  --jq ".projects[] | select(.title == \"$PROJECT_TITLE\") | .number" 2>/dev/null | head -1)
+
+# gh の既定スコープには project が含まれないことがある。
+# set -e + pipefail のもとでは失敗が代入ごと落ちてスクリプトが無言で死ぬので、
+# ここだけ明示的に握りつぶして理由を出す。
+project_list=$(gh project list --owner "$OWNER" --format json 2>&1) || {
+  echo "   ! Projects にアクセスできませんでした。ラベル・マイルストーン・Issue は作成済みです。" >&2
+  echo "   ! project スコープを足してから再実行してください: gh auth refresh -h github.com -s project" >&2
+  echo
+  echo "完了（Projects を除く）: https://github.com/$REPO/issues"
+  exit 0
+}
+
+project_number=$(jq -r --arg title "$PROJECT_TITLE" \
+  '.projects[] | select(.title == $title) | .number' <<<"$project_list" | head -1)
 
 if [[ -z "$project_number" ]]; then
   project_number=$(gh project create --owner "$OWNER" --title "$PROJECT_TITLE" --format json --jq '.number')
@@ -119,11 +135,16 @@ else
   echo "   既存のボードを使います: #$project_number"
 fi
 
+issue_urls=$(gh issue list --repo "$REPO" --state open --limit 200 --json url --jq '.[].url') || {
+  echo "   ! Issue 一覧を取得できませんでした" >&2
+  exit 1
+}
+
 added=0
 while read -r url; do
   [[ -z "$url" ]] && continue
   gh project item-add "$project_number" --owner "$OWNER" --url "$url" >/dev/null 2>&1 && added=$((added + 1))
-done < <(gh issue list --repo "$REPO" --state open --limit 200 --json url --jq '.[].url')
+done <<<"$issue_urls"
 
 echo "   $added 件の Issue をボードに追加しました（既に載っているものは無視）"
 
