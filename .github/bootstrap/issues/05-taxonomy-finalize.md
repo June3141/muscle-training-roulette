@@ -3,7 +3,7 @@ title: "[M1] 筋肉タキソノミーを確定する（元データに存在し�
 labels: taxonomy, decision
 milestone: M1
 ---
-`packages/data/src/taxonomy.ts` は **22 分類**（ADR 0005）。
+`packages/data/src/taxonomy.ts` は **21 分類**（ADR 0005）。
 大枠は確定済みなので、この Issue では残った 2 点を決める。
 
 **ADR 0005 で決定済み（この Issue の対象外）**
@@ -36,6 +36,6 @@ milestone: M1
 
 ## 完了条件
 
-- [ ] 23 分類を確定、または増減させる
+- [ ] 21 分類を確定、または増減させる
 - [ ] 上流 17 分類 → 新タキソノミーの写像表が `docs/` にある（捨てるものも明記）
 - [ ] 写像表に漏れがないことをテストで検証している
