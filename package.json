@@ -7,8 +7,8 @@
   "type": "module",
   "scripts": {
     "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run coverage && pnpm run complexity && pnpm run unused && pnpm run build",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
+    "lint": "oxlint --type-aware --deny-warnings",
+    "lint:fix": "oxlint --type-aware --fix",
     "format": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore .",
     "format:check": "oxfmt --check --ignore-path .gitignore --ignore-path .oxfmtignore .",
     "typecheck": "tsc --noEmit -p tsconfig.root.json && pnpm -r run typecheck",
@@ -27,6 +27,7 @@
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "oxlint-plugin-complexity": "^2.1.7",
+    "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
