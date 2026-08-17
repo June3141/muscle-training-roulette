@@ -1,0 +1,53 @@
+name: 重みの誤り報告
+description: 種目の muscleWeights が実感と合わない箇所を報告する
+title: "[weight] "
+labels: ["data", "weight-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        重み付けには主観が入るため、**全員の合意に収束させることは目的にしていません。**
+        目的は「明らかな誤りの除去」です。好みの差ではなく、誤りだと考える根拠を書いてください。
+  - type: input
+    id: exercise-id
+    attributes:
+      label: 種目 ID
+      description: data/exercises/ 内の id。例 `barbell_bench_press`
+      placeholder: barbell_bench_press
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 現在の重み
+      description: 該当箇所の muscleWeights をそのまま貼ってください
+      render: jsonc
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: 提案する重み
+      description: 合計が 1.0 になるようにしてください
+      render: jsonc
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: 根拠
+      description: |
+        「なぜ現在の値が誤りなのか」を書いてください。
+        EMG（%MVIC）の数値は根拠として採用していません（§4.4 参照）。筋間で比較できず、配分量に変換できないためです。
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 誤りの種類
+      options:
+        - 筋肉が抜けている / 無関係な筋肉が入っている
+        - 主働筋と協働筋が逆転している
+        - 配分の比率がずれている（程度問題）
+    validations:
+      required: true

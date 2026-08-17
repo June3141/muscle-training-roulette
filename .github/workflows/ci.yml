@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # 個別に走らせているのは、どの検査で落ちたかをログの折りたたみ単位で分けるため。
+      # まとめて `pnpm verify` にすると、最初の失敗で以降が実行されず全体像が見えない。
+      - name: フォーマット
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: 型チェック
+        run: pnpm run typecheck
+        if: ${{ !cancelled() }}
+
+      - name: 複雑度
+        run: pnpm run complexity
+        if: ${{ !cancelled() }}
+
+      - name: 未使用コード・依存
+        run: pnpm run unused
+        if: ${{ !cancelled() }}
+
+      - name: テストとカバレッジ
+        run: pnpm run coverage
+        if: ${{ !cancelled() }}
+
+      - name: ビルド
+        run: pnpm run build
+        if: ${{ !cancelled() }}

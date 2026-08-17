@@ -1,0 +1,7 @@
+# Markdown は整形しない。
+# design.md や ADR、Issue テンプレートは人が意図して改行・表組みを置いているので、
+# 機械整形で揺らすと差分が読めなくなる。
+*.md
+**/*.md
+
+pnpm-lock.yaml

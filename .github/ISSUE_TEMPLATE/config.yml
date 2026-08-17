@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 設計ドキュメント
+    url: https://github.com/June3141/muscle-training-roulette/blob/main/design.md
+    about: スコープ・非目的・データ設計はここに書いてあります。報告の前に一読してください。

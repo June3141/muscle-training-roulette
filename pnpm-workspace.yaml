@@ -1,0 +1,14 @@
+packages:
+  - packages/*
+  - apps/*
+
+# 依存バージョンはここで一元管理する。パッケージ側は `"zod": "catalog:"` と書く。
+# monorepo 内でバージョンがずれると CI と手元で挙動が変わるため。
+catalog:
+  zod: ^4.4.3
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  "@types/react": ^19.2.18
+  "@types/react-dom": ^19.2.4
+  vite: ^8.2.1
+  "@vitejs/plugin-react": ^6.0.5
