@@ -5,6 +5,11 @@ milestone: M2
 ---
 design.md §4.4 の手順 1〜2。**品質は問わない。全件に値が入っていることが完了条件。**
 
+> [!IMPORTANT]
+> **前提**: Issue「上流の primaryMuscles を監査してから M2 に渡す」が完了していること。
+> ベースラインは primary/secondary から按分するので、監査前の値を使うと
+> デッドリフトの重みが脊柱起立筋に偏るなど、基幹種目から狂う。
+
 ## ベースライン規則
 
 - `isolation` → primary に 0.75〜0.85、残りを secondary に分配

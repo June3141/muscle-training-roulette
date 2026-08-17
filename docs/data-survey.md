@@ -67,6 +67,58 @@ design.md §4.1 と §5.4 の想定を実データで確認した結果。**M1�
 また §4.3 で中臀筋を独立させる以上、abductors 2 件では実質的にカバー不能。
 **中臀筋への配分は、他部位の種目（スクワット、ランジ等）の secondary から取る必要がある。**
 
+## 上流 primaryMuscles の信頼性
+
+**§4.4 の決定論ベースラインは primary/secondary から按分するので、
+上流の `primaryMuscles` が誤っているとベースライン全体が狂う。** 実態を確認した。
+
+### まず、上流は「主働筋の入れ替わり」を正しく記録している
+
+グリップによって主働筋が変わる場合、上流はそれを `primaryMuscles` に反映している。
+
+| 種目                                   | primaryMuscles |
+| -------------------------------------- | -------------- |
+| Barbell Bench Press - Medium Grip      | `chest`        |
+| **Close-Grip** Barbell Bench Press     | **`triceps`**  |
+| Wide-Grip Barbell Bench Press          | `chest`        |
+| Dumbbell Bench Press with Neutral Grip | `chest`        |
+
+ラットプルダウンは Close-Grip / Wide-Grip / Underhand / V-Bar すべて `lats` のまま。
+**この性質は M1 の種目統合を機械化する足がかりになる**（ADR 0002 を参照）。
+
+### 一方で、基幹種目に不整合がある
+
+動作キーワードでグルーピングし、`primaryMuscles` が割れているものを調べた。
+19 グループ中 12 グループで割れていたが、**大半は問題ない**。
+
+- **正当な差異** — リストカール（`forearms`）とレッグカール（`hamstrings`）が
+  「curl」で同居する類。Dips - Chest Version、Scapular Pull-Up なども本当に別種目
+- **キーワードの誤マッチ** — `Nar`**`row`**` Stance Leg Press` が「row」に引っかかる類
+
+**本当の不整合はデッドリフト系。**
+
+| primaryMuscles | 件数 | 例                                  |
+| -------------- | ---- | ----------------------------------- |
+| `hamstrings`   | 5    | Romanian Deadlift, Clean Deadlift    |
+| `quadriceps`   | 4    | Cable Deadlifts, Leverage Deadlift   |
+| `lower back`   | 1    | **Barbell Deadlift**                 |
+
+同じヒンジ動作が 3 つに分裂しており、しかも**最も代表的な Barbell Deadlift だけが
+`lower back`** になっている。これをそのままベースラインに通すと、
+デッドリフトの重みが脊柱起立筋に偏る。
+
+`Bench Press - Powerlifting` と `Bench Press with Chains` が `triceps` なのも疑わしい
+（通常のベンチと同じく `chest` のはず）。
+
+### 結論
+
+**誤りの総量は未確定だが、当たりどころが悪い。**
+デッドリフトは §7 のゴールデンセット「下半身」ケースに直接効く基幹種目なので、
+ここが狂ったまま M3 に進むと、出力の違和感がエンジンのバグなのかデータの誤りなのか
+切り分けられなくなる。
+
+→ **M2 の前に健全性チェック工程を置く**（Issue「上流 primaryMuscles を監査する」）。
+
 ## 自重制約（§5.4 の確認）
 
 `category=strength` かつ `equipment=body only` は **75 件**。
