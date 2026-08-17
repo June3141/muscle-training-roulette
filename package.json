@@ -18,7 +18,8 @@
     "complexity": "oxlint --config .oxlintrc.complexity.json",
     "unused": "knip",
     "build": "pnpm --filter @mtr/web run build",
-    "data:fetch": "node scripts/fetch-upstream.mjs"
+    "data:fetch": "node scripts/fetch-upstream.mjs",
+    "data:audit": "node packages/data/pipeline/audit-primary.ts"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

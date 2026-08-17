@@ -38,6 +38,10 @@ docs/adr/        設計判断の記録
 ルートの `exclude` はプロジェクトに継承されないため、置き忘れると
 ビルド成果物の中の古いテストが実行される。
 
+データパイプラインは `packages/data/pipeline/`。`pnpm data:fetch` で上流を取得し、
+`pnpm data:audit` で上流 primaryMuscles の不整合を洗い出す。
+**上流の値を直接書き換えず、`pipeline/overrides/` に差分として持つ。**
+
 生成スクリプトの言語は TypeScript に寄せる（[ADR 0004](./docs/adr/0004-pipeline-language.md)）。
 使い捨ての探索は何で書いてもよいが、リポジトリに残すものは TypeScript。
 
