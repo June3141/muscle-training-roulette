@@ -29,7 +29,21 @@ milestone: M1
 「捨てる」も選択肢。部位選択 UI に首がなくても困らない。ただし**捨てるなら明示的に捨てる**こと。
 マッピングが失敗して黙って落ちるのと区別がつかなくなる。
 
-## 論点 3: 中臀筋
+## 論点 3: ローテーターカフ
+
+三角筋の写像作業で判明した。上流の `shoulders` に**ローテーターカフ種目が 7 件**混ざっている。
+
+- External Rotation / External Rotation with Band / External Rotation with Cable
+- Internal Rotation with Band / Cable Internal Rotation
+- Dumbbell Scaption
+- Reverse Flyes With External Rotation
+
+§4.3 のタキソノミーに棘上筋・棘下筋・小円筋・肩甲下筋がないので写せない。
+現在は**判別不能として明示**している（黙って三角筋に寄せない）。
+
+- [ ] `rotator_cuff` を 1 分類として足すか、これらの種目を `selectable: false` にするか決める
+
+## 論点 4: 中臀筋
 
 `abductors` は上流に **2 件**しかない。中臀筋を独立分類として持つ以上、
 スクワット・ランジ等の secondary から配分を拾わないと事実上カバー不能になる。
