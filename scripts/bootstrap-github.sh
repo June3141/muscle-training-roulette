@@ -6,13 +6,19 @@
 # 追加した Issue 定義を反映したいときは、そのまま再実行してよい。
 #
 # 使い方:
-#   scripts/bootstrap-github.sh <owner>/<repo>
+#   scripts/bootstrap-github.sh <owner>/<repo> [--sync-bodies]
+#
+#   --sync-bodies を付けると、既存 Issue の本文もこのリポジトリの定義で上書きする。
+#   GitHub 上で直接編集した本文は失われるので、既定では新規作成のみ行う。
 #
 set -euo pipefail
 
 REPO="${1:-}"
+SYNC_BODIES=false
+[[ "${2:-}" == "--sync-bodies" ]] && SYNC_BODIES=true
+
 if [[ -z "$REPO" ]]; then
-  echo "使い方: $0 <owner>/<repo>" >&2
+  echo "使い方: $0 <owner>/<repo> [--sync-bodies]" >&2
   exit 1
 fi
 
@@ -71,7 +77,8 @@ read_body() {
 }
 
 echo "== Issue"
-existing_issues=$(gh issue list --repo "$REPO" --state all --limit 200 --json title --jq '.[].title')
+issues_json=$(gh issue list --repo "$REPO" --state all --limit 200 --json number,title)
+existing_issues=$(jq -r '.[].title' <<<"$issues_json")
 
 for file in "$ROOT"/.github/bootstrap/issues/*.md; do
   title=$(read_field title "$file")
@@ -83,13 +90,26 @@ for file in "$ROOT"/.github/bootstrap/issues/*.md; do
     continue
   fi
 
-  if grep -qxF "$title" <<<"$existing_issues"; then
-    echo "   $title (既存)"
-    continue
-  fi
-
   body_file=$(mktemp)
   read_body "$file" >"$body_file"
+
+  if grep -qxF "$title" <<<"$existing_issues"; then
+    if [[ "$SYNC_BODIES" == true ]]; then
+      # gh の --jq は --arg を受け付けないので、JSON を取り出して jq に渡す
+      number=$(jq -r --arg t "$title" 'map(select(.title == $t)) | .[0].number // empty' \
+        <<<"$issues_json")
+      if [[ -n "$number" ]]; then
+        gh issue edit "$number" --repo "$REPO" --body-file "$body_file" >/dev/null
+        echo "   $title (本文を更新)"
+      else
+        echo "   ! 番号を特定できませんでした: $title" >&2
+      fi
+    else
+      echo "   $title (既存)"
+    fi
+    rm -f "$body_file"
+    continue
+  fi
 
   args=(--repo "$REPO" --title "$title" --body-file "$body_file")
   [[ -n "$milestone" ]] && args+=(--milestone "$milestone")
