@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["oxlint-plugin-complexity"],
   "plugins": ["typescript"],
   "categories": {
     "correctness": "off",
@@ -9,7 +10,7 @@
     "style": "off"
   },
   "rules": {
-    "complexity": ["error", { "max": 12 }],
+    "complexity/complexity": ["error", { "cyclomatic": 12, "cognitive": 15 }],
     "eslint/max-depth": ["error", { "max": 3 }],
     "eslint/max-params": ["error", { "max": 4 }],
     "eslint/max-lines-per-function": ["error", { "max": 60, "skipComments": true }],
@@ -19,7 +20,7 @@
   "ignorePatterns": ["**/dist/**", "**/coverage/**", "data/upstream/**"],
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/test/**/*.ts"],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/test/**/*.ts"],
       "rules": {
         "eslint/max-lines-per-function": "off",
         "eslint/max-statements": "off",
