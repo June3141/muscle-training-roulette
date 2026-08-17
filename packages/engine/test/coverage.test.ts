@@ -17,6 +17,7 @@ function exercise(id: string, muscleWeights: Exercise["muscleWeights"]): Exercis
     defaultEquipment: "barbell",
     lateralityOptions: ["bilateral"],
     defaultLaterality: "bilateral",
+    selectable: true,
     muscleWeights,
   };
 }
