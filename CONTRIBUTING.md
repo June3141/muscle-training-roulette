@@ -23,8 +23,11 @@
 ```bash
 corepack enable pnpm
 pnpm install
+pnpm data:fetch    # 上流データを取得（テストが読むので必須）
 pnpm verify        # lint + typecheck + test + 複雑度チェックを一括実行
 ```
+
+`data/upstream/` はコミットしていないので、**クローン直後は `pnpm data:fetch` が要る。**
 
 Node.js は `.node-version` のバージョンに合わせてください。
 

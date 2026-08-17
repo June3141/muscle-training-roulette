@@ -17,7 +17,9 @@ export default defineConfig({
       provider: "v8",
       // apps/web は M6 まで UI を書かないので対象外。
       // UI を書き始めたら apps/*/src/**/*.{ts,tsx} を足すこと（Issue: [M6] UI を作る）。
-      include: ["packages/*/src/**/*.ts"],
+      include: ["packages/*/src/**/*.ts", "packages/*/pipeline/**/*.ts"],
+      // audit-primary.ts はトップレベルで実行するスクリプトなので対象外
+      exclude: ["packages/*/pipeline/audit-*.ts"],
       reporter: ["text-summary", "lcov"],
       // 実測（2026-08-17 時点で lines 95%）から安全マージンを取った値。
       // 実装が進むにつれて引き上げる。下げる変更は PR で理由を書くこと。
