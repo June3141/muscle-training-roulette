@@ -138,38 +138,30 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 ラットプルダウンは Close-Grip / Wide-Grip / Underhand / V-Bar すべて `lats` のまま。
 **この性質は M1 の種目統合を機械化する足がかりになる**（ADR 0002 を参照）。
 
-### 一方で、基幹種目に不整合がある
+### 監査の結果、修正したのは 9 件
 
-動作キーワードでグルーピングし、`primaryMuscles` が割れているものを調べた。
-19 グループ中 12 グループで割れていたが、**大半は問題ない**。
+`pnpm data:audit` で動作パターン単位の割れを機械的に列挙し、全件を判定した。
+対象 736 件のうち 14 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
 
-- **正当な差異** — リストカール（`forearms`）とレッグカール（`hamstrings`）が
-  「curl」で同居する類。Dips - Chest Version、Scapular Pull-Up なども本当に別種目
-- **キーワードの誤マッチ** — `Nar`**`row`**` Stance Leg Press` が「row」に引っかかる類
+| 判定 | 例 |
+|---|---|
+| **正当な差異**（直さない） | リストカール（forearms）とレッグカール（hamstrings）が「curl」で同居 / アップライトロウ（traps）とベントオーバーロウ（middle back）/ リアデルトフライ（shoulders）とダンベルフライ（chest）/ Board Press・Floor Press 系（triceps。可動域を制限して三頭を狙う意図の種目） |
+| キーワードの誤マッチ | Kettlebell Turkish Get-Up (Squat style) |
+| **本当の不整合**（修正した） | 下表の 9 件 |
 
-**本当の不整合はデッドリフト系。**
+**修正した 9 件**（`packages/data/pipeline/overrides/primary-muscles.ts`）:
 
-| primaryMuscles | 件数 | 例                                  |
-| -------------- | ---- | ----------------------------------- |
-| `hamstrings`   | 5    | Romanian Deadlift, Clean Deadlift    |
-| `quadriceps`   | 4    | Cable Deadlifts, Leverage Deadlift   |
-| `lower back`   | 1    | **Barbell Deadlift**                 |
+| 種目 | 上流 | 修正後 | 理由 |
+|---|---|---|---|
+| Barbell Deadlift / Axle Deadlift / Deadlift with Bands / Deadlift with Chains / Deficit Deadlift / Reverse Band Deadlift | `lower back` | `hamstrings` + `glutes` | コンベンショナルデッドリフトの主働筋は股関節伸展筋。脊柱起立筋は脊柱を中立に保つ等尺性の働きであって主働筋ではない。同じ動作の Romanian Deadlift や Sumo Deadlift は上流でも `hamstrings` |
+| Bench Press - Powerlifting / Bench Press with Chains / Reverse Band Bench Press | `triceps` | `chest` | 通常のベンチプレス。チェーンやリバースバンドは負荷曲線を変えるだけで主働筋を変えない |
 
-同じヒンジ動作が 3 つに分裂しており、しかも**最も代表的な Barbell Deadlift だけが
-`lower back`** になっている。これをそのままベースラインに通すと、
-デッドリフトの重みが脊柱起立筋に偏る。
+**上流を直接書き換えず、差分として持つ。** 上流が更新されたときに再適用でき、
+「どこを何のために変えたか」が残るため。上書き対象の id が上流から消えた場合は
+テストが落ちる（黙って効かなくなるのを防ぐ）。
 
-`Bench Press - Powerlifting` と `Bench Press with Chains` が `triceps` なのも疑わしい
-（通常のベンチと同じく `chest` のはず）。
-
-### 結論
-
-**誤りの総量は未確定だが、当たりどころが悪い。**
-デッドリフトは §7 のゴールデンセット「下半身」ケースに直接効く基幹種目なので、
-ここが狂ったまま M3 に進むと、出力の違和感がエンジンのバグなのかデータの誤りなのか
-切り分けられなくなる。
-
-→ **M2 の前に健全性チェック工程を置く**（Issue「上流 primaryMuscles を監査する」）。
+`Car Deadlift` / `Rickshaw Deadlift` / `Leverage Deadlift` の `quadriceps` は直していない。
+ハンドル位置やマシンの軌道で動作そのものが変わるため、上流の判定を尊重した。
 
 ## 自重制約（§5.4 の確認）
 

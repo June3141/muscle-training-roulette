@@ -48,6 +48,12 @@ jobs:
         run: pnpm run unused
         if: ${{ !cancelled() }}
 
+      # データパイプラインのテストが上流データを読む。
+      # 取得できないなら検証もできないので、skip せず落とす。
+      - name: 上流データの取得
+        run: pnpm run data:fetch
+        if: ${{ !cancelled() }}
+
       - name: テストとカバレッジ
         run: pnpm run coverage
         if: ${{ !cancelled() }}
