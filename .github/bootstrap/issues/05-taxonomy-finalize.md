@@ -3,7 +3,14 @@ title: "[M1] 筋肉タキソノミーを確定する（元データに存在し�
 labels: taxonomy, decision
 milestone: M1
 ---
-`packages/data/src/taxonomy.ts` に design.md §4.3 を転記済み（23 分類）。確定させる。
+`packages/data/src/taxonomy.ts` は **22 分類**（ADR 0005）。
+大枠は確定済みなので、この Issue では残った 2 点を決める。
+
+**ADR 0005 で決定済み（この Issue の対象外）**
+
+- 菱形筋 → 僧帽筋中下部に統合。判別材料が 73 件中 5 件しかない
+- 首 → 対象外。5 件すべて secondary 参照 0 の孤島
+- 腹横筋 → 維持。アンチ伸展系 10 件で判別できる。ただし人体図には描けない
 
 ## 論点 1: 元データに存在しない分類
 

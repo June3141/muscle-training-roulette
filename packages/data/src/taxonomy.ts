@@ -1,10 +1,14 @@
 /**
- * 筋肉タキソノミー（design.md §4.3）。
+ * 筋肉タキソノミー（design.md §4.3、確定は ADR 0005）。
  *
  * 既存データセットはどれも粒度が粗い（`delts` / `chest` 等の一塊）。
  * 部位可視化を成立させるには最低限この分割が必要。
  *
  * 「Core」のような部位総称は筋肉名として使わない。
+ *
+ * §4.3 からの変更点（ADR 0005）:
+ * - 菱形筋を僧帽筋中下部に統合（判別材料がなく、分類として情報を持たないため）
+ * - 首は対象外。上流に 5 件あるが secondary 参照が 0 で、他のどの種目とも繋がっていない
  */
 
 export const MUSCLES = {
@@ -18,10 +22,12 @@ export const MUSCLES = {
   pectoralis_major_sternal: { ja: "大胸筋中下部", group: "chest" },
 
   // 背中
+  // 菱形筋は僧帽筋中下部に含める（ADR 0005）。
+  // 上流の middle back 関連 73 件のうち肩甲骨内転を主目的と読める種目名は 5 件しかなく、
+  // 分けても常に同じ値になって分類として情報を持たないため。
   latissimus_dorsi: { ja: "広背筋", group: "back" },
   trapezius_upper: { ja: "僧帽筋上部", group: "back" },
-  trapezius_middle_lower: { ja: "僧帽筋中下部", group: "back" },
-  rhomboids: { ja: "菱形筋", group: "back" },
+  trapezius_middle_lower: { ja: "僧帽筋中下部・菱形筋", group: "back" },
   erector_spinae: { ja: "脊柱起立筋", group: "back" },
 
   // 上腕
