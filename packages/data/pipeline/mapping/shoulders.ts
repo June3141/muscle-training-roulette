@@ -76,8 +76,10 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: ShoulderMapp
  */
 const UNMAPPABLE: readonly { readonly pattern: RegExp; readonly reason: string }[] = [
   {
-    pattern: /(external|internal) rotation/i,
-    reason: "ローテーターカフ種目。§4.3 のタキソノミーに該当分類がない",
+    // 先頭から「(器具) External/Internal Rotation」の形だけを拾う。
+    // 「Reverse Flyes With External Rotation」は三角筋後部の種目なので巻き込まない。
+    pattern: /^(cable |dumbbell |band )?(external|internal) rotation/i,
+    reason: "純粋なローテーターカフ種目。§4.3 のタキソノミーに該当分類がない",
   },
   {
     pattern: /turkish get[- ]?up/i,
