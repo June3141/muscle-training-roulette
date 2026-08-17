@@ -26,6 +26,7 @@
     "knip": "^6.32.2",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
+    "oxlint-plugin-complexity": "^2.1.7",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
