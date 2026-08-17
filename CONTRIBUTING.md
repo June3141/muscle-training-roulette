@@ -37,9 +37,13 @@ Node.js は `.node-version` のバージョンに合わせてください。
 理由なしにスナップショットを更新する PR はマージしません。800 件の調整はこれがないと破綻します。
 
 ```bash
-pnpm --filter @mtr/engine test            # 差分を確認
-pnpm --filter @mtr/engine test -u         # 判断した上で更新
+pnpm test --project engine       # 差分を確認
+pnpm test --project engine -u    # 判断した上で更新
 ```
+
+いずれもリポジトリのルートで実行してください。
+パッケージのディレクトリに移動して `vitest` を直接叩くと、
+プロジェクトの root が二重に解決されてテストが 0 件になります。
 
 ## コミット
 

@@ -9,8 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --project data"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "catalog:"

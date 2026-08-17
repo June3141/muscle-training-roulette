@@ -2,12 +2,21 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    projects: [
-      { test: { name: "data", root: "./packages/data", include: ["test/**/*.test.ts"] } },
-      { test: { name: "engine", root: "./packages/engine", include: ["test/**/*.test.ts"] } },
-    ],
+    // ディレクトリをグロブで拾う。プロジェクトを列挙すると、
+    // 新しいパッケージのテストや `src/` にコロケートしたテストが
+    // 「1 件も実行されないまま exit 0」になる。
+    // ディレクトリをグロブで拾う。プロジェクトをここで列挙すると、
+    // 新しいパッケージのテストや src にコロケートしたテストが
+    // 「1 件も実行されないまま exit 0」になる。
+    //
+    // 各パッケージ側の設定ファイルで exclude を指定しているのは、
+    // ここに書いた exclude がプロジェクトに継承されないため。
+    // 新しいパッケージを足すときは vitest.config.ts も一緒に置くこと。
+    projects: ["packages/*", "apps/*"],
     coverage: {
       provider: "v8",
+      // apps/web は M6 まで UI を書かないので対象外。
+      // UI を書き始めたら apps/*/src/**/*.{ts,tsx} を足すこと（Issue: [M6] UI を作る）。
       include: ["packages/*/src/**/*.ts"],
       reporter: ["text-summary", "lcov"],
       // 実測（2026-08-17 時点で lines 95%）から安全マージンを取った値。

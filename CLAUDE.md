@@ -26,8 +26,20 @@ docs/adr/        設計判断の記録
 
 ## コマンド
 
-`pnpm verify` が CI と同じ内容（format / lint / typecheck / test / 複雑度 / 未使用検出 / build）。
+`pnpm verify` が CI と同じ内容
+（format / lint / typecheck / テスト+カバレッジ閾値 / 複雑度 / 未使用検出 / build）。
 ツール選定の理由は [docs/toolchain.md](./docs/toolchain.md)。
+
+**テストは必ずリポジトリのルートから実行する。** パッケージのディレクトリに移動して
+`vitest` を叩くと、プロジェクトの root が二重に解決されてテストが 0 件になる。
+特定のパッケージだけ走らせたいときは `pnpm test --project engine`。
+
+新しいパッケージを足すときは `vitest.config.ts` も一緒に置くこと。
+ルートの `exclude` はプロジェクトに継承されないため、置き忘れると
+ビルド成果物の中の古いテストが実行される。
+
+生成スクリプトの言語は TypeScript に寄せる（[ADR 0004](./docs/adr/0004-pipeline-language.md)）。
+使い捨ての探索は何で書いてもよいが、リポジトリに残すものは TypeScript。
 
 ## 越えてはいけない線
 
