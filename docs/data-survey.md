@@ -46,26 +46,44 @@ design.md §4.1 と §5.4 の想定を実データで確認した結果。**M1�
 
 ## 候補プールの偏り（§5.4 の確認）
 
-`category=strength` における primaryMuscles の分布:
+**カバレッジは secondary からも積み上がるので、primary だけを数えても偏りは分からない。**
+`category=strength` における primary / secondary 両方の出現数:
 
-| 部位        | 件数    |     | 部位       | 件数   |
-| ----------- | ------- | --- | ---------- | ------ |
-| shoulders   | **104** |     | forearms   | 21     |
-| abdominals  | 81      |     | calves     | 15     |
-| chest       | 67      |     | traps      | 13     |
-| quadriceps  | 60      |     | glutes     | **11** |
-| triceps     | 58      |     | lower back | 5      |
-| biceps      | 50      |     | neck       | 5      |
-| middle back | 30      |     | adductors  | **2**  |
-| lats        | 29      |     | abductors  | **2**  |
-| hamstrings  | 28      |     |            |        |
+| 部位        | primary | secondary | 合計    |
+| ----------- | ------- | --------- | ------- |
+| hamstrings  | 28      | 91        | **119** |
+| glutes      | 11      | 99        | **110** |
+| abdominals  | 81      | 24        | 105     |
+| quadriceps  | 60      | 30        | 90      |
+| calves      | 15      | 74        | 89      |
+| middle back | 30      | 43        | 73      |
+| forearms    | 21      | 48        | 69      |
+| lats        | 29      | 39        | 68      |
+| lower back  | 5       | 48        | 53      |
+| traps       | 13      | 35        | 48      |
+| **adductors** | 2     | 4         | **6**   |
+| **abductors** | 2     | 3         | **5**   |
+| **neck**    | 5       | **0**     | **5**   |
 
-**偏りは想定より大きい。** shoulders 104 に対し glutes 11、内転筋・外転筋は 2 件しかない。
+（shoulders / chest / triceps / biceps は primary だけで 50〜104 件あり十分）
 
-これは貪欲法にそのまま漏れる。§7 のゴールデンセット「下半身: 四頭・ハム・臀 / 5種目」で
-臀筋の候補が 11 件しかない点は、出力の妥当性を判断するときに考慮する必要がある。
-また §4.3 で中臀筋を独立させる以上、abductors 2 件では実質的にカバー不能。
-**中臀筋への配分は、他部位の種目（スクワット、ランジ等）の secondary から取る必要がある。**
+**本当に薄いのは外転筋・内転筋・首の 3 つだけ。**
+primary が 11 件しかない glutes も、secondary を含めれば 110 件あるので問題にならない。
+§7 のゴールデンセット「下半身: 四頭・ハム・臀 / 5種目」は成立する。
+
+### 中臀筋（abductors 5 件）の扱い
+
+`abductors` を primary に持つのは `Monster Walk` と `Thigh Abductor` の 2 件だけで、
+secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワット系）。
+
+**上流はスクワットやランジで中臀筋が働くことをほとんど記録していない。**
+解剖学的には確実に働くので、これは上流の欠落。
+分類を維持したうえで、M1 で片脚種目とスクワット系に自前で振る（ADR 0005）。
+
+### 首（neck 5 件）の扱い
+
+5 件すべてがアイソメトリック首トレで、**secondary 参照は 0**。
+他のどの種目とも繋がっていない孤島なので、**タキソノミーの対象外とする**（ADR 0005）。
 
 ## 上流 primaryMuscles の信頼性
 
@@ -149,14 +167,26 @@ design.md §4.1 と §5.4 の想定を実データで確認した結果。**M1�
 | 三角筋 前部 / 中部 / 後部 | `shoulders` 一塊        | **104 件を種目名と instructions から推定する必要がある** |
 | 大胸筋 上部 / 中下部      | `chest` 一塊            | 67 件。incline/decline はほぼ名前で判別できる            |
 | 僧帽筋 上部 / 中下部      | `traps` + `middle back` | 対応が 1:1 でない                                        |
-| 菱形筋                    | なし                    | `middle back` から分離する                               |
+| ~~菱形筋~~                | なし                    | **僧帽筋中下部に統合した**（ADR 0005）。下記参照         |
 | 脊柱起立筋                | `lower back`            | ほぼ対応する                                             |
 | 腕橈骨筋                  | `forearms`              | `forearms` は手関節屈伸も含むので一致しない              |
-| 腹斜筋 / 腹横筋           | `abdominals` 一塊       | 81 件。回旋系は名前で判別できる                          |
-| 中臀筋                    | `abductors`（2 件）     | 実質存在しない。上記参照                                 |
+| 腹斜筋                    | `abdominals` 一塊       | 回旋・側屈系 14 件で判別できる                           |
+| 腹横筋                    | `abdominals` 一塊       | アンチ伸展系 10 件で判別できる（Plank / Rollout / Pallof / Dead Bug） |
+| 中臀筋                    | `abductors`（5 件）     | 実質存在しない。上記参照                                 |
 
 **推定が必要な件数の合計は概ね 250 件強**（shoulders 104 + abdominals 81 + chest 67）。
 これが M1 の実作業量で、§4.4 手順 2「粒度の展開」の本体。
+
+### 菱形筋を分離しない理由
+
+`middle back` 関連は 73 件あるので**データ量は足りている**。問題は判別材料。
+
+肩甲骨内転を主目的と読める種目名は **5 件しかない**
+（Barbell Rear Delt Row / Barbell Shrug Behind The Back / Face Pull /
+Middle Back Shrug / Scapular Pull-Up）。
+
+残り 68 件は僧帽筋中下部と菱形筋のどちらに寄せるか判別できず、
+分けても常に同じ値が入る。**分類として情報を持たない**ため統合した（ADR 0005）。
 
 ## ライセンス
 
