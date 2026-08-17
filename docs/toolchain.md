@@ -17,7 +17,7 @@ design.md §8 は「Vite + React（または Astro）。好みで可。ビルド
 | Format | oxfmt |
 | 未使用検出 | knip 6 |
 | 循環依存検出 | oxlint `import/no-cycle` |
-| 複雑度 | oxlint の restriction ルール（別設定ファイル） |
+| 複雑度 | oxlint の restriction ルール + `oxlint-plugin-complexity`（別設定ファイル） |
 | CI | GitHub Actions |
 
 ## Vite+ を採らなかった理由（v0.2.9 時点）
@@ -70,23 +70,63 @@ TypeScript を 6 系に落とせば dependency-cruiser は使えるが、
 
 `.oxlintrc.complexity.json` を分け、`pnpm complexity` から呼んでいる。
 
-| ルール | 閾値 |
-|---|---|
-| `complexity`（循環的複雑度） | 12 |
-| `max-depth` | 3 |
-| `max-params` | 4 |
-| `max-lines-per-function` | 60 |
-| `max-statements` | 25 |
-| `max-nested-callbacks` | 3（テストは 5） |
+| ルール | 閾値 | 提供元 |
+|---|---|---|
+| `complexity/complexity`（循環的複雑度） | 12 | `oxlint-plugin-complexity` |
+| `complexity/complexity`（**認知的複雑度**） | 15 | 同上（同一ルールで両方測る） |
+| `max-depth` | 3 | oxlint ネイティブ |
+| `max-params` | 4 | 同上 |
+| `max-lines-per-function` | 60 | 同上 |
+| `max-statements` | 25 | 同上 |
+| `max-nested-callbacks` | 3（テストは 5） | 同上 |
 
 分けている理由:
 
-1. これらは oxlint の **restriction カテゴリ**にあり、`-D all` にも含まれない。
+1. ネイティブ側は oxlint の **restriction カテゴリ**にあり、`-D all` にも含まれない。
    明示的に有効化する必要があり、通常の lint 設定に混ぜると意図が読み取りにくい
 2. 閾値の調整が lint 全体の設定を揺らさないようにするため
 
 選択エンジンの貪欲法（§5.1）と目的関数（§5.2）は複雑になりやすい箇所なので、
 ここが閾値に触れたら「係数の調整」ではなく「項ごとの関数分割」で対処すること。
+
+### 認知的複雑度をどう測っているか（oxlint 1.78 / plugin 2.1.7 時点）
+
+`oxlint-plugin-complexity` を `jsPlugins` 経由で読み込み、
+**循環的複雑度と認知的複雑度を `complexity/complexity` 1 ルールで**測っている。
+
+診断は行単位の内訳を出す。どの分岐が何点寄与し、どこが最大の原因かまで分かる。
+
+```
+Function 'messy' has Cognitive Complexity of 20. Maximum allowed is 15.
+Breakdown: Line 3: +1 for 'for'  Line 4: +2 for 'if' (incl. +1 nesting)
+  >>> Line 5: +3 for 'if' (incl. +2 nesting) [top offender] ...
+```
+
+**JS プラグイン API は alpha だが、失敗時に黙らないことを実機で確認している。**
+
+| 失敗のさせ方 | 挙動 |
+|---|---|
+| プラグインが見つからない | `Cannot find module` で exit 1 |
+| プラグイン指定を消してルールだけ残す | `Plugin 'complexity' not found` で exit 1 |
+
+これが確認できたので採用した。dependency-cruiser を外したのは
+「0 モジュール走査で exit 0」だったためで、判断基準は同じ。
+
+### Biome を採らなかった理由（Biome 2.5.8 時点）
+
+Biome にも `noExcessiveCognitiveComplexity` はあるが、**McCabe 循環的複雑度・
+max-depth・max-statements が存在しない**（設定スキーマと公式の ESLint 対応表で確認）。
+つまり Biome を選んでも別ツールとの併用が必要になる。
+
+加えて Biome の複雑度系ルールは**既定 severity が `information` / `warning`** で、
+Biome は `error` のみを非ゼロ終了とする。`"level": "error"` を明示し忘れると、
+**違反しても CI が緑のまま通る。**
+
+ESLint + `eslint-plugin-sonarjs` の併用も試したが、
+**typescript-eslint 8.67 が TypeScript 7 に非対応**
+（[typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)）。
+回避には TS 6 を隔離ワークスペースに閉じ込める必要があり、
+1 ルールのために TypeScript を 2 バージョン同居させるのは割に合わない。
 
 ## TypeScript の構成
 
