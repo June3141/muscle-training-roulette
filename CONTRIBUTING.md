@@ -45,6 +45,23 @@ pnpm test --project engine -u    # 判断した上で更新
 パッケージのディレクトリに移動して `vitest` を直接叩くと、
 プロジェクトの root が二重に解決されてテストが 0 件になります。
 
+## ブランチ
+
+| ブランチ | 役割 |
+|---|---|
+| `main` | リリース可能な状態。`develop` からのみマージする |
+| `develop` | 開発の集約先。**feature ブランチはここに squash merge する** |
+| `feature/*` | 作業ブランチ。`develop` から切って `develop` に戻す |
+
+feature ブランチの名前は `feature/<Issue番号>-<短い説明>` にします（例: `feature/12-greedy-selection`）。
+
+**squash merge を使うのは、feature ブランチ内の試行錯誤を `develop` の履歴に残さないためです。**
+特に重みデータの調整は「生成 → ゴールデンセットの差分を見る → 係数を戻す」を繰り返すので、
+そのまま merge commit で入れると履歴から意味を読み取れなくなります。
+
+squash 後のコミットメッセージが実質的な変更単位になるので、
+PR のタイトルと本文をそのまま使えるように書いてください。
+
 ## コミット
 
 Conventional Commits に従います。
