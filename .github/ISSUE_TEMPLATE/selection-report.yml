@@ -1,0 +1,37 @@
+name: 選択結果への違和感の報告
+description: 生成された種目セットが不自然だった場合に報告する
+title: "[selection] "
+labels: ["engine", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        出力の違和感は「重みのデータが悪い」か「選択エンジンの目的関数が悪い」かのどちらかです。
+        切り分けはこちらで行うので、入力と出力をそのまま貼ってください。
+  - type: textarea
+    id: input
+    attributes:
+      label: 入力条件
+      description: 選択した部位・種目数・器具フィルタ
+      placeholder: |
+        部位: 大胸筋(胸肋部), 三角筋前部, 上腕三頭筋
+        種目数: 6
+        器具: 制限なし
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 出力された種目セット
+      description: 順序も含めて貼ってください
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: どう不自然か
+      description: |
+        「代わりに何が出るべきだったか」まで書けると助かります。
+        例: 水平プレスが3種目入っていて多様性がない / 三頭を先に潰す順序になっている
+    validations:
+      required: true

@@ -1,0 +1,19 @@
+[
+  { "name": "data", "color": "0E8A16", "description": "種目データ・重みの変更" },
+  { "name": "weight-review", "color": "1D76DB", "description": "重み付けの妥当性レビュー" },
+  {
+    "name": "engine",
+    "color": "5319E7",
+    "description": "選択エンジン（貪欲法・目的関数・順序付け）"
+  },
+  { "name": "taxonomy", "color": "006B75", "description": "筋肉タキソノミーとマッピング" },
+  { "name": "viz", "color": "FBCA04", "description": "カバレッジ可視化・人体図 SVG" },
+  { "name": "web", "color": "C2E0C6", "description": "フロントエンド UI" },
+  { "name": "infra", "color": "BFDADC", "description": "CI/CD・ビルド・デプロイ" },
+  { "name": "docs", "color": "D4C5F9", "description": "ドキュメント・ADR" },
+  { "name": "bug", "color": "D73A4A", "description": "動作しない・落ちる・表示が壊れている" },
+  { "name": "needs-triage", "color": "E4E669", "description": "切り分け待ち" },
+  { "name": "golden-set", "color": "F9D0C4", "description": "回帰テスト用ゴールデンセット" },
+  { "name": "decision", "color": "B60205", "description": "実装前に決める必要がある未決定事項" },
+  { "name": "out-of-scope", "color": "FFFFFF", "description": "design.md §3「作らない」に該当する" }
+]

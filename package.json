@@ -1,0 +1,36 @@
+{
+  "name": "muscle-training-roulette",
+  "version": "0.0.0",
+  "private": true,
+  "description": "部位からトレーニング種目セットを提案する静的サイトと、その土台になる重み付き種目データセット",
+  "license": "Unlicense",
+  "type": "module",
+  "scripts": {
+    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run complexity && pnpm run unused && pnpm run build",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore .",
+    "format:check": "oxfmt --check --ignore-path .gitignore --ignore-path .oxfmtignore .",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "complexity": "oxlint --config .oxlintrc.complexity.json",
+    "unused": "knip",
+    "build": "pnpm --filter @mtr/web run build",
+    "data:fetch": "node scripts/fetch-upstream.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "knip": "^6.32.2",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=22.11.0"
+  },
+  "packageManager": "pnpm@11.22.0"
+}
