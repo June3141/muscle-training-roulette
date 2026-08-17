@@ -14,6 +14,30 @@ describe("筋肉タキソノミー（§4.3）", () => {
     expect(musclesInGroup("chest")).toHaveLength(2);
   });
 
+  it("菱形筋を独立分類として持たない（ADR 0005 で僧帽筋中下部に統合）", () => {
+    expect(isMuscleId("rhomboids")).toBe(false);
+    expect(musclesInGroup("back")).toEqual([
+      "latissimus_dorsi",
+      "trapezius_upper",
+      "trapezius_middle_lower",
+      "erector_spinae",
+    ]);
+  });
+
+  it("首を分類として持たない（ADR 0005 で対象外）", () => {
+    // 上流に 5 件あるが secondary 参照が 0 で他種目と繋がらない。
+    // マッピング漏れで黙って落ちるのと区別できるよう、意図的に持たないことをテストで固定する。
+    expect(isMuscleId("neck")).toBe(false);
+    expect(isMuscleId("sternocleidomastoid")).toBe(false);
+  });
+
+  it("中臀筋と内転筋は上流が薄くても分類として維持する（ADR 0005）", () => {
+    // abductors 5 件 / adductors 6 件しかないが、解剖学的にはスクワット・ランジで確実に働く。
+    // 上流が記録していないだけなので、M1 で自前で振る。
+    expect(isMuscleId("gluteus_medius")).toBe(true);
+    expect(isMuscleId("adductors")).toBe(true);
+  });
+
   it("部位総称を筋肉 ID として持たない", () => {
     // 「Core」のような総称は筋肉名として使わない（§4.3）
     for (const generic of ["core", "chest", "back", "shoulders", "arms", "legs", "delts"]) {

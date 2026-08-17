@@ -49,8 +49,8 @@ export const GOLDEN_CASES: readonly GoldenCase[] = [
     targets: [
       "latissimus_dorsi",
       "trapezius_upper",
+      // 菱形筋はこの分類に含まれる（ADR 0005）
       "trapezius_middle_lower",
-      "rhomboids",
       "biceps_brachii",
     ],
     count: 6,
