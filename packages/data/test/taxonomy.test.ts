@@ -14,6 +14,20 @@ describe("筋肉タキソノミー（§4.3）", () => {
     expect(musclesInGroup("chest")).toHaveLength(2);
   });
 
+  it("分類数は 21（ADR 0005）", () => {
+    // ドキュメントに書いた数字とずれると気づけないので、ここで固定する。
+    // 変更するときは ADR 0005 と docs/data-survey.md の数字も直すこと。
+    expect(MUSCLE_IDS).toHaveLength(21);
+    expect(Object.entries(MUSCLE_GROUPS).map(([g]) => musclesInGroup(g as never).length)).toEqual([
+      2, // chest
+      4, // back
+      3, // shoulders
+      3, // arms
+      6, // legs
+      3, // trunk
+    ]);
+  });
+
   it("菱形筋を独立分類として持たない（ADR 0005 で僧帽筋中下部に統合）", () => {
     expect(isMuscleId("rhomboids")).toBe(false);
     expect(musclesInGroup("back")).toEqual([
