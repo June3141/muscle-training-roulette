@@ -66,50 +66,6 @@ CI に置くと「検査していないのに緑」という最悪の形にな�
 TypeScript を 6 系に落とせば dependency-cruiser は使えるが、
 そのために言語のバージョンを下げるほどの機能ではないと判断した。
 
-## Biome を使わない理由（Biome 2.5.8 / oxlint 1.78 時点）
-
-lint と format を 1 つにまとめられるので候補になるが、**この構成では正味の後退になる。**
-
-**Biome に存在しないルール**（現在 oxlint で CI をブロックできているもの）:
-
-- `complexity`（McCabe 循環的複雑度）— complexity グループ 43 ルールに相当物なし
-- `max-depth`（ネスト深さ）
-- `max-statements`（文数）
-
-**得られるのは認知的複雑度 1 項目だけ**（`noExcessiveCognitiveComplexity`。oxlint にはない）。
-
-さらに致命的なのは既定の severity。**Biome の複雑度系ルールは既定が
-`information` / `warning` で、Biome は `error` のみを非ゼロ終了とする。**
-`"level": "error"` を明示しない限り、**違反が出ても CI は緑のまま通る。**
-これは本プロジェクトが最も避けたい状態（`dependency-cruiser` を外したのと同じ理由）。
-
-フォーマッタも oxfmt が Prettier conformance テスト 100% 通過なのに対し Biome は 97%。
-
-### 認知的複雑度は既知のギャップとして残す
-
-**現状、認知的複雑度（cognitive complexity）だけは測れていない。** これは意図的な妥協。
-
-埋める方法を 3 つ検討して、いずれも却下した。
-
-| 案 | 却下理由 |
-|---|---|
-| oxlint のネイティブ `sonarjs` プラグイン | **存在しない。** 移植要望（oxc#4863）は LGPL ライセンスが障壁で 2024-08 から停止 |
-| JS プラグイン API + `oxlint-plugin-complexity` | **API が alpha。** CI の信頼性を alpha 基盤に賭けることになる |
-| ESLint + `eslint-plugin-sonarjs` を併用 | 下記 |
-
-**ESLint 併用を実際に試して却下した記録**（2026-08-17）:
-
-1. lint ツールが 2 つになり設定が二重化する。どちらが何を検査しているか追えなくなるのは、
-   このプロジェクトが最も避けたい状態
-2. **typescript-eslint 8.67 は TypeScript 7 に非対応**
-   （[typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)）。
-   実行すると明示的にエラーで停止する（dependency-cruiser のようなサイレント成功ではない）
-3. 回避するには TS 6 を隔離ワークスペースに閉じ込める必要がある。
-   **1 ルールのために TypeScript を 2 バージョン同居させるのは割に合わない**
-
-再検討の条件は「oxlint の JS プラグイン API が stable になる」か
-「typescript-eslint が TS 7 に対応する」のどちらか。
-
 ## 複雑度チェックを別設定にした理由
 
 `.oxlintrc.complexity.json` を分け、`pnpm complexity` から呼んでいる。
@@ -128,10 +84,6 @@ lint と format を 1 つにまとめられるので候補になるが、**こ�
 1. これらは oxlint の **restriction カテゴリ**にあり、`-D all` にも含まれない。
    明示的に有効化する必要があり、通常の lint 設定に混ぜると意図が読み取りにくい
 2. 閾値の調整が lint 全体の設定を揺らさないようにするため
-
-**認知的複雑度（cognitive complexity）は入れていない。** oxlint はネイティブの `sonarjs` プラグインを
-まだ提供しておらず（`Plugin 'sonarjs' not found`）、JS プラグイン API 経由で
-`eslint-plugin-sonarjs` を使う経路は alpha 段階のため。安定したら追加を検討する。
 
 選択エンジンの貪欲法（§5.1）と目的関数（§5.2）は複雑になりやすい箇所なので、
 ここが閾値に触れたら「係数の調整」ではなく「項ごとの関数分割」で対処すること。
