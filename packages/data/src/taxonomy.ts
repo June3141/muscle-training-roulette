@@ -9,6 +9,7 @@
  * §4.3 からの変更点（ADR 0005）:
  * - 菱形筋を僧帽筋中下部に統合（判別材料がなく、分類として情報を持たないため）
  * - 首は対象外。上流に 5 件あるが secondary 参照が 0 で、他のどの種目とも繋がっていない
+ * - 前腕屈筋群を追加。§4.3 は腕橈骨筋しか持たないが、それでは握力補助の 76 件を写せない
  */
 
 export const MUSCLES = {
@@ -34,6 +35,9 @@ export const MUSCLES = {
   biceps_brachii: { ja: "上腕二頭筋", group: "arms" },
   triceps_brachii: { ja: "上腕三頭筋", group: "arms" },
   brachioradialis: { ja: "腕橈骨筋", group: "arms" },
+  // 前腕屈筋群。§4.3 にはないが、握力補助として 97 件が写る先を必要とする（ADR 0005）。
+  // 腕橈骨筋は肘屈曲筋なので、デッドリフトやプルアップの「握力」を表現できない。
+  wrist_flexors: { ja: "前腕屈筋群", group: "arms" },
 
   // 下半身
   quadriceps: { ja: "大腿四頭筋", group: "legs" },
