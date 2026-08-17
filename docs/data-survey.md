@@ -28,9 +28,43 @@ design.md §4.1 と §5.4 の想定を実データで確認した結果。**M1�
 | strongman             | 21      |
 | cardio                | 14      |
 
-`stretching` と `cardio`（計 137 件）は muscleWeights の意味が変わる（負荷配分ではない）。
-**M1 で対象を `strength` + `powerlifting` + `olympic weightlifting` あたりに絞るか要判断。**
-絞れば重み付け対象は 873 → 654 件程度になり、M5 の人力レビュー量が 25% 減る。
+### 対象範囲は 736 件（ストレッチと有酸素だけ除外）
+
+**カテゴリ単位で切ると中身の例外を落とす。** 全件を精査した結果、
+`stretching`（123）と `cardio`（14）だけを除外し、**残り 736 件を対象にする**。
+
+#### 除外してよいと確認できたもの
+
+| カテゴリ | 精査結果 |
+|---|---|
+| `cardio` 14 件 | 全部本物の有酸素（バイク、トレッドミル、エリプティカル、ステアマスター）。muscleWeights の概念が当てはまらない |
+| `stretching` 123 件 | 56 件に `mechanic` が付いているが、中身は「Arm Circles」「Calf Stretch」。**上流のデータ品質の問題であって、筋力種目の紛れ込みではない** |
+
+#### カテゴリで除外してはいけないもの
+
+当初は `plyometrics` / `strongman` / `olympic weightlifting` の 117 件も
+除外する案だったが、**精査したら具体的な損失が 3 つ出た**ので撤回した。
+
+| カテゴリ | 一律除外すると失うもの |
+|---|---|
+| `olympic weightlifting` 35 件 | **一般的な筋力種目が 10 件以上混ざっている。** Romanian Deadlift from Deficit / Push Press / Overhead Squat / Olympic Squat / Clean Deadlift / Snatch Deadlift / Wide Stance Stiff Legs など。さらに **Clean Shrug / Snatch Shrug は僧帽筋 primary 15 件のうちの 2 件** |
+| `strongman` 21 件 | **`carry`（運搬）の movementPattern が候補ゼロになる。** Farmer's Walk / Rickshaw Carry / Yoke Walk はこのカテゴリにしか存在しない |
+| `plyometrics` 61 件 | **内転筋 primary の 6 件中 4 件を失う**（Lateral Bound / Lateral Box Jump / Lateral Cone Hops / Carioca Quick Step）。`strength` には Band Hip Adductions と Thigh Adductor の 2 件しか残らない |
+
+#### 代わりに二軸で管理する
+
+| 軸 | 内容 | 件数 |
+|---|---|---|
+| データセットに含める（重みを付ける） | ストレッチ・有酸素だけ除外 | **736** |
+| 選択エンジンの候補に出す | `selectable` フラグ。**種目単位**で判断する | 736 − 数十件 |
+
+アトラスストーンのような特殊器具種目や、Snatch Balance のような純粋な技術種目は
+`selectable: false` にする。データとしては残るので、後から出す判断もできる。
+
+**M5 のレビュー量は「対象を削る」ではなく「優先順位を付ける」で管理する。**
+筋トレ + パワーリフティングの 619 件を先にレビューし、残り 117 件は後回しにしてよい。
+ゴールデンセットの検証には 619 件で足りる。
+M2 のベースライン生成は機械的なので、736 件に増えても追加コストはほぼない。
 
 ## 欠損フィールド
 

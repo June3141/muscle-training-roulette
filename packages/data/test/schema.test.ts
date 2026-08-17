@@ -91,6 +91,19 @@ describe("exerciseSchema", () => {
     expect(exerciseSchema.safeParse(validExercise({ mechanic: null })).success).toBe(true);
   });
 
+  it("selectable は省略すると true になる", () => {
+    const result = exerciseSchema.safeParse(validExercise());
+    expect(result.success).toBe(true);
+    expect(result.data?.selectable).toBe(true);
+  });
+
+  it("selectable: false でもスキーマは受理する（データには残す）", () => {
+    // アトラスストーンのような特殊器具種目は候補から外すが、重みは持つ
+    const result = exerciseSchema.safeParse(validExercise({ selectable: false }));
+    expect(result.success).toBe(true);
+    expect(result.data?.selectable).toBe(false);
+  });
+
   it("id が snake_case でないものを弾く", () => {
     const result = exerciseSchema.safeParse(validExercise({ id: "Barbell_Bench_Press" }));
     expect(result.success).toBe(false);

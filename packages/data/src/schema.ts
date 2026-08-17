@@ -118,6 +118,18 @@ export const exerciseSchema = z
     lateralityOptions: z.array(z.enum(LATERALITY)).nonempty(),
     defaultLaterality: z.enum(LATERALITY),
 
+    /**
+     * 選択エンジンの候補プールに出すか。
+     *
+     * false でもデータセットには含まれ、muscleWeights も持つ。
+     * アトラスストーンのような特殊器具種目や、Snatch Balance のような
+     * 純粋な技術種目を候補から外すために使う。
+     *
+     * **カテゴリ単位ではなく種目単位で判断する。** カテゴリで切ると
+     * 一般的な筋力種目まで落ちる（docs/data-survey.md の「対象範囲」を参照）。
+     */
+    selectable: z.boolean().default(true),
+
     muscleWeights: muscleWeightsSchema,
   })
   .refine((ex) => ex.equipmentOptions.includes(ex.defaultEquipment), {
