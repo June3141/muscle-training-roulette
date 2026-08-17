@@ -13,12 +13,14 @@ design.md §8 は「Vite + React（または Astro）。好みで可。ビルド
 | 言語 | TypeScript 7 |
 | フレームワーク | React 19 + Vite 8（Rolldown 既定） |
 | テスト | Vitest 4 + v8 カバレッジ（閾値あり） |
-| Lint | oxlint 1.x |
+| Lint | oxlint 1.x（**型認識 lint 有効**） |
 | Format | oxfmt |
 | 未使用検出 | knip 6 |
 | 循環依存検出 | oxlint `import/no-cycle` |
 | 複雑度 | oxlint の restriction ルール + `oxlint-plugin-complexity`（別設定ファイル） |
 | CI | GitHub Actions |
+
+個々のルールを無効化した理由は [lint-rules.md](./lint-rules.md) に分けている。
 
 ## Vite+ を採らなかった理由（v0.2.9 時点）
 
