@@ -87,11 +87,28 @@ lint と format を 1 つにまとめられるので候補になるが、**こ�
 
 ### 認知的複雑度は既知のギャップとして残す
 
-oxlint にネイティブの `sonarjs` プラグインはなく、
-移植要望（oxc#4863）は LGPL ライセンスが障壁として止まっている。
-JS プラグイン API 経由で `oxlint-plugin-complexity` を使えるが、**API が alpha のため採用しない。**
+**現状、認知的複雑度（cognitive complexity）だけは測れていない。** これは意図的な妥協。
 
-alpha を抜けた時点で、ブロッキングステップとして追加を検討する。
+埋める方法を 3 つ検討して、いずれも却下した。
+
+| 案 | 却下理由 |
+|---|---|
+| oxlint のネイティブ `sonarjs` プラグイン | **存在しない。** 移植要望（oxc#4863）は LGPL ライセンスが障壁で 2024-08 から停止 |
+| JS プラグイン API + `oxlint-plugin-complexity` | **API が alpha。** CI の信頼性を alpha 基盤に賭けることになる |
+| ESLint + `eslint-plugin-sonarjs` を併用 | 下記 |
+
+**ESLint 併用を実際に試して却下した記録**（2026-08-17）:
+
+1. lint ツールが 2 つになり設定が二重化する。どちらが何を検査しているか追えなくなるのは、
+   このプロジェクトが最も避けたい状態
+2. **typescript-eslint 8.67 は TypeScript 7 に非対応**
+   （[typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)）。
+   実行すると明示的にエラーで停止する（dependency-cruiser のようなサイレント成功ではない）
+3. 回避するには TS 6 を隔離ワークスペースに閉じ込める必要がある。
+   **1 ルールのために TypeScript を 2 バージョン同居させるのは割に合わない**
+
+再検討の条件は「oxlint の JS プラグイン API が stable になる」か
+「typescript-eslint が TS 7 に対応する」のどちらか。
 
 ## 複雑度チェックを別設定にした理由
 
