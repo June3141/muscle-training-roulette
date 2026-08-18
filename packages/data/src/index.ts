@@ -29,6 +29,17 @@ export {
   type Combination,
 } from "./combinations.ts";
 
+export {
+  BODY_REGIONS,
+  BODY_REGION_IDS,
+  UNDISPLAYABLE_MUSCLES,
+  musclesInRegion,
+  needsSplit,
+  regionOf,
+  type BodyRegion,
+  type BodyRegionId,
+} from "./body-map.ts";
+
 export { LOAD_UNIT, type LoadUnit } from "./load.ts";
 
 export {
