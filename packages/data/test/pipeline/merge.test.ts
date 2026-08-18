@@ -49,6 +49,14 @@ describe("ベース名の正規化", () => {
     expect(normalizeBaseName("Barbell Shrug")).toBe("shrug");
   });
 
+  it("単数形が s で終わる語を削らない", () => {
+    // 素朴に末尾の s を落とすと press が pres、Atlas が Atla になる。
+    expect(normalizeBaseName("Pin Presses")).toBe("pin press");
+    expect(normalizeBaseName("Atlas Stones")).toBe("atlas stone");
+    expect(normalizeBaseName("Circus Bell")).toBe("circus bell");
+    expect(normalizeBaseName("Moving Claw Series")).toBe("moving claw series");
+  });
+
   it("筋肉名の修飾を落とす", () => {
     // 「Bicep Curl」と「Curl」は同じ種目。
     expect(normalizeBaseName("Machine Bicep Curl")).toBe("curl");
