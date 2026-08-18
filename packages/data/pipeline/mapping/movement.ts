@@ -71,6 +71,11 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "vertical_pull", rule: "頭上から引く" },
   },
   {
+    // アップライトロウは肩甲帯の挙上で、水平に引く動作ではない。row より先に採る。
+    pattern: /upright row/,
+    mapping: { pattern: "shoulder_raise", rule: "肩関節の単関節挙上（アップライトロウ）" },
+  },
+  {
     pattern:
       /\brows?\b|face pull|rear[- ]?delt|pull[- ]?apart|shotgun|incline bench pull|^pull$|moving claw/,
     mapping: { pattern: "horizontal_pull", rule: "水平に引く" },

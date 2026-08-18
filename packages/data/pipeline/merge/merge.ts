@@ -14,8 +14,10 @@
  * M2 以降で埋める。
  */
 import { EQUIPMENT, LATERALITY, type Equipment, type Laterality } from "../../src/axes.ts";
+import { MUSCLE_IDS, type MuscleId } from "../../src/taxonomy.ts";
 import { validCombinations, type AxisInput } from "../../src/combinations.ts";
 import { applyPrimaryOverride } from "../apply-overrides.ts";
+import { expandMuscles } from "../mapping/expand.ts";
 import type { UpstreamExercise } from "../upstream.ts";
 import { resolveEquipment, resolveLaterality } from "./axes.ts";
 import { normalizeBaseName } from "./base-name.ts";
@@ -26,7 +28,11 @@ export interface MergedExercise extends AxisInput {
   /** 代表名。既定の組み合わせに対応する上流種目の名前。 */
   readonly nameEn: string;
   readonly sourceIds: readonly string[];
+  /** 上流の語彙のままの主働筋。グルーピングの鍵。 */
   readonly primaryMuscles: readonly string[];
+  /** タキソノミーに展開した主働筋。空ならデータセットに載せられない（expand.ts）。 */
+  readonly primary: readonly MuscleId[];
+  readonly secondary: readonly MuscleId[];
   readonly defaultEquipment: Equipment;
   readonly defaultLaterality: Laterality;
 }
@@ -65,11 +71,19 @@ function toMerged(members: readonly UpstreamExercise[], first: UpstreamExercise)
         resolveLaterality(member) === preferred?.laterality,
     ) ?? first;
 
+  // 展開は上流レコードごとに違いうる（force が欠けている等）ので、和を採る。
+  const expanded = members.map((member) => expandMuscles(member));
+  const primary = new Set(expanded.flatMap((result) => result.primary));
+  const secondary = new Set(expanded.flatMap((result) => result.secondary));
+  for (const muscle of primary) secondary.delete(muscle);
+
   return {
     baseName: normalizeBaseName(first.name),
     nameEn: representative.name,
     sourceIds: members.map((member) => member.id),
     primaryMuscles: first.primaryMuscles,
+    primary: sortedBy(MUSCLE_IDS, primary),
+    secondary: sortedBy(MUSCLE_IDS, secondary),
     lowerBody,
     equipmentOptions,
     lateralityOptions,
