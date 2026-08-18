@@ -5,73 +5,20 @@
  * 独立軸としての器具/片手両手を足したもの。
  */
 import { z } from "zod";
+import {
+  CATEGORY,
+  EQUIPMENT,
+  FORCE,
+  LATERALITY,
+  LEVEL,
+  MECHANIC,
+  MOVEMENT_PATTERNS,
+} from "./axes.ts";
+import { isExclusiveEquipment, isValidCombination, validCombinations } from "./combinations.ts";
 import { MUSCLE_IDS } from "./taxonomy.ts";
 
 /** muscleWeights の合計が 1.0 とみなせる許容誤差。 */
 export const WEIGHT_SUM_TOLERANCE = 1e-6;
-
-/**
- * 器具。free-exercise-db の値を正規化し、`smith` を独自に足している。
- * 器具は重みに影響しない独立軸として扱う（ADR 0002）。
- */
-export const EQUIPMENT = [
-  "barbell",
-  "dumbbell",
-  "kettlebell",
-  "ez_curl_bar",
-  "smith",
-  "machine",
-  "cable",
-  "bands",
-  "body_only",
-  "exercise_ball",
-  "medicine_ball",
-  "foam_roll",
-  "other",
-] as const;
-
-/**
- * 動作パターン。多様性制約（§5.2）で重複を減点するために使う。
- *
- * 暫定リスト。確定は M1（#taxonomy）で行う。
- * ここが粗いと「胸 5 種目が全部水平プレス」を検出できない。
- */
-export const MOVEMENT_PATTERNS = [
-  "horizontal_press",
-  "incline_press",
-  "vertical_press",
-  "horizontal_pull",
-  "vertical_pull",
-  /** フライ・ペックデック等の水平内転。プレスと区別しないと §7「胸のみ」ケースを判定できない。 */
-  "horizontal_adduction",
-  "shoulder_raise",
-  "elbow_flexion",
-  "elbow_extension",
-  "squat",
-  "hinge",
-  "lunge",
-  "leg_isolation",
-  "calf_raise",
-  "trunk_flexion",
-  "trunk_rotation",
-  "trunk_antiextension",
-  "carry",
-  "other",
-] as const;
-
-export const LATERALITY = ["bilateral", "unilateral"] as const;
-export const FORCE = ["push", "pull", "static"] as const;
-export const MECHANIC = ["compound", "isolation"] as const;
-export const LEVEL = ["beginner", "intermediate", "expert"] as const;
-export const CATEGORY = [
-  "strength",
-  "powerlifting",
-  "olympic_weightlifting",
-  "strongman",
-  "plyometrics",
-  "stretching",
-  "cardio",
-] as const;
 
 /**
  * すべての筋肉を列挙する必要はないので partialRecord。
@@ -139,12 +86,24 @@ export const exerciseSchema = z
   .refine((ex) => ex.lateralityOptions.includes(ex.defaultLaterality), {
     message: "defaultLaterality が lateralityOptions に含まれていません",
     path: ["defaultLaterality"],
+  })
+  .refine(
+    (ex) => ex.equipmentOptions.length === 1 || !ex.equipmentOptions.some(isExclusiveEquipment),
+    {
+      message: "body_only は他の器具と併記できません（自重種目に器具の付け替えはない）",
+      path: ["equipmentOptions"],
+    },
+  )
+  .refine((ex) => validCombinations(ex).length > 0, {
+    message: "有効な器具 × 片手/両手の組み合わせが 1 つもありません",
+    path: ["lateralityOptions"],
+  })
+  .refine((ex) => isValidCombination(ex, ex.defaultEquipment, ex.defaultLaterality), {
+    message: "既定の器具と既定の片手/両手が有効な組み合わせになっていません",
+    path: ["defaultLaterality"],
   });
 
 export type Exercise = z.infer<typeof exerciseSchema>;
-export type Equipment = (typeof EQUIPMENT)[number];
-export type MovementPattern = (typeof MOVEMENT_PATTERNS)[number];
-export type Laterality = (typeof LATERALITY)[number];
 
 export const datasetSchema = z.array(exerciseSchema).superRefine((list, ctx) => {
   const seen = new Set<string>();
