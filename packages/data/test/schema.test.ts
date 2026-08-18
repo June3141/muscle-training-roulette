@@ -161,21 +161,16 @@ describe("器具と片手/両手の組み合わせ検証（Q2）", () => {
   // 器具ごとに何が選べるかは test/combinations.test.ts で見る。
   // ここで確認するのは「スキーマがそれを強制するか」だけ。
 
-  it("自重種目に他の器具を混ぜたものを弾く", () => {
-    // 腕立て伏せに「バーベル版」はない。器具軸を持てるのは器具を使う種目だけ。
+  it("自重を他の器具と並べたものを受理する", () => {
+    // スクワットは自重・バーベル・ダンベルのどれでも同じ動作。上流にもこの 3 つがある。
+    // 逆に腕立て伏せに「バーベル版」がないことは、上流にレコードが無いことで表現される。
+    // 器具軸の中身は統合で決まるので、スキーマ側に器具の排他規則は置かない。
     const result = exerciseSchema.safeParse(
       validExercise({
-        equipmentOptions: ["body_only", "dumbbell"],
-        defaultEquipment: "body_only",
+        movementPattern: "squat",
+        equipmentOptions: ["barbell", "dumbbell", "body_only"],
+        defaultEquipment: "barbell",
       }),
-    );
-    expect(result.success).toBe(false);
-    expect(JSON.stringify(result.error?.issues)).toContain("body_only");
-  });
-
-  it("自重のみなら受理する", () => {
-    const result = exerciseSchema.safeParse(
-      validExercise({ equipmentOptions: ["body_only"], defaultEquipment: "body_only" }),
     );
     expect(result.success).toBe(true);
   });

@@ -3,13 +3,13 @@ import type { AxisInput } from "../src/combinations.ts";
 import { isValidCombination, validCombinations } from "../src/combinations.ts";
 
 const benchPress: AxisInput = {
-  movementPattern: "horizontal_press",
+  lowerBody: false,
   equipmentOptions: ["barbell", "dumbbell", "smith", "machine", "cable"],
   lateralityOptions: ["bilateral", "unilateral"],
 };
 
 const splitSquat: AxisInput = {
-  movementPattern: "lunge",
+  lowerBody: true,
   equipmentOptions: ["barbell", "dumbbell", "smith"],
   lateralityOptions: ["bilateral", "unilateral"],
 };
@@ -81,7 +81,7 @@ describe("validCombinations", () => {
   it("有効な組み合わせが必ず 1 つ以上ある", () => {
     // 両手はどの器具でも選べるので、空になることはない。
     const barbellOnly: AxisInput = {
-      movementPattern: "horizontal_press",
+      lowerBody: false,
       equipmentOptions: ["barbell"],
       lateralityOptions: ["bilateral"],
     };
