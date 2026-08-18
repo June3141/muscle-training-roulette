@@ -59,7 +59,9 @@ describe("上流データ全件", () => {
     // other が増えると §5.2 の多様性制約が効かなくなる。
     const all = (await loadUpstream()).filter(isTargetCategory);
     // 主働筋が空のレコードはデータセットに載らない（expand.ts の 12 件）。
-    const kept = new Set(all.filter((ex) => expandMuscles(ex).primary.length > 0).map((ex) => ex.id));
+    const kept = new Set(
+      all.filter((ex) => expandMuscles(ex).primary.length > 0).map((ex) => ex.id),
+    );
     const others = mergeUpstream(all)
       .filter((record) => record.sourceIds.some((id) => kept.has(id)))
       .filter((record) => mapMovementPattern(record.baseName).pattern === "other");

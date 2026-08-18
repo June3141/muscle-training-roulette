@@ -401,6 +401,36 @@ Middle Back Shrug / Scapular Pull-Up）。
 - ランドマイン系 6 件（Long Bar Row、Jammer、T-Bar Row）は `barbell`。
   片端が固定された梃子なので `landmine` として独立させる（ADR 0002）
 
+## 動作パターンの分布（§5.2 の多様性制約）
+
+616 レコードに `movementPattern` を振った結果。
+
+| パターン | 件数 | | パターン | 件数 |
+|---|---|---|---|---|
+| hinge | 76 | | trunk_antiextension | 23 |
+| horizontal_press | 50 | | trunk_rotation | 22 |
+| trunk_flexion | 46 | | carry | 19 |
+| vertical_press | 39 | | leg_isolation | 18 |
+| horizontal_pull | 39 | | horizontal_adduction | 16 |
+| squat | 39 | | **throw** | 15 |
+| **jump** | 36 | | incline_press | 12 |
+| elbow_flexion | 29 | | lunge | 12 |
+| shoulder_raise | 28 | | calf_raise | 10 |
+| vertical_pull | 28 | | other | 5 |
+| **wrist_flexion** | 28 | | | |
+| elbow_extension | 26 | | | |
+
+### §4.2 の暫定リストに 3 つ足した
+
+太字の 3 つ。無いと **79 レコードが `other` に落ちて**多様性制約が効かなくなる。
+
+- `wrist_flexion` — リストカールは肘を曲げない。`elbow_flexion` に入れるとカールと同一視される
+- `jump` — プライオメトリクスとスプリントドリル
+- `throw` — メディシンボール系。跳躍と同じ枠にすると上半身と下半身が同一視される
+
+`other` の 5 件はローテーターカフと首で、**どれも主働筋が空でデータセットに載らない**
+（`expandMuscles` の 12 件）。載るレコードに `other` は 1 件も無い。
+
 ## ライセンス
 
 Unlicense。派生物を Unlicense / CC0 で公開できる（§11 の前提は成立）。

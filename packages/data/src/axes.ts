@@ -30,8 +30,10 @@ export const EQUIPMENT = [
 /**
  * 動作パターン。多様性制約（§5.2）で重複を減点するために使う。
  *
- * 暫定リスト。確定は M1（#taxonomy）で行う。
  * ここが粗いと「胸 5 種目が全部水平プレス」を検出できない。
+ *
+ * §4.2 の暫定リストに `wrist_flexion` / `jump` / `throw` を足した。
+ * 全 616 レコードに振ってみると、この 3 つが無いと 72 レコードが `other` に落ちる。
  */
 export const MOVEMENT_PATTERNS = [
   "horizontal_press",
@@ -52,7 +54,13 @@ export const MOVEMENT_PATTERNS = [
   "trunk_flexion",
   "trunk_rotation",
   "trunk_antiextension",
+  /** 手首の屈伸と握力。リストカールは肘を曲げないので elbow_flexion と分ける（26 レコード）。 */
+  "wrist_flexion",
   "carry",
+  /** 跳躍・走。プライオメトリクスとスプリントドリル（36 レコード）。 */
+  "jump",
+  /** 投擲。メディシンボール系（10 レコード）。跳躍と同じ枠にすると多様性制約が誤作動する。 */
+  "throw",
   "other",
 ] as const;
 
