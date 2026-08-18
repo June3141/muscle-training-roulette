@@ -29,6 +29,8 @@ export {
   type Combination,
 } from "./combinations.ts";
 
+export { LOAD_UNIT, type LoadUnit } from "./load.ts";
+
 export {
   WEIGHT_SUM_TOLERANCE,
   datasetSchema,
