@@ -23,7 +23,9 @@ describe("mechanic の補完", () => {
 
 describe("決定論ベースライン（§4.4 手順 1）", () => {
   it("補助筋がなければ主働筋だけで 1.0", () => {
-    expect(baselineWeights({ mechanic: "isolation", primary: ["biceps_brachii"], secondary: [] })).toEqual({
+    expect(
+      baselineWeights({ mechanic: "isolation", primary: ["biceps_brachii"], secondary: [] }),
+    ).toEqual({
       biceps_brachii: 1,
     });
   });
@@ -69,16 +71,16 @@ describe("決定論ベースライン（§4.4 手順 1）", () => {
       primary: ["hamstrings"],
       secondary: ["gluteus_maximus", "erector_spinae", "trapezius_upper", "wrist_flexors"],
     });
-    const primary = weights.hamstrings ?? 0;
-    for (const [id, value] of Object.entries(weights)) {
-      if (id !== "hamstrings") expect(value, id).toBeLessThan(primary);
-    }
+    const secondary = Object.entries(weights ?? {})
+      .filter(([id]) => id !== "hamstrings")
+      .map(([, value]) => value ?? 0);
+    expect(Math.max(...secondary)).toBeLessThan(weights?.hamstrings ?? 0);
   });
 
   it("主働筋が空なら重みを作らない", () => {
-    expect(baselineWeights({ mechanic: "compound", primary: [], secondary: ["biceps_brachii"] })).toBe(
-      null,
-    );
+    expect(
+      baselineWeights({ mechanic: "compound", primary: [], secondary: ["biceps_brachii"] }),
+    ).toBe(null);
   });
 
   it("同じ入力から同じ出力が出る", () => {
@@ -105,10 +107,13 @@ describe("上流データ全件", () => {
 
   it("手で書いた値が 1 件も混ざらない（生成が全件を覆う）", async () => {
     const all = (await loadUpstream()).filter(isTargetCategory);
-    const covered = all.filter((ex) => baselineWeights({
-      mechanic: ex.mechanic,
-      ...expandMuscles(ex),
-    }) !== null);
+    const covered = all.filter(
+      (ex) =>
+        baselineWeights({
+          mechanic: ex.mechanic,
+          ...expandMuscles(ex),
+        }) !== null,
+    );
     expect(covered).toHaveLength(all.length - 12);
   });
 });
