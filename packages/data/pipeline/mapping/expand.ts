@@ -16,7 +16,7 @@ import { mapForearms } from "./forearms.ts";
 import { addHipStabilizers } from "./hip-stabilizers.ts";
 import { isUnmappable, mapShoulders } from "./shoulders.ts";
 
-export interface UnmappedMuscle {
+interface UnmappedMuscle {
   readonly muscle: string;
   readonly reason: string;
 }
