@@ -4,6 +4,7 @@ import {
   BODY_REGION_IDS,
   UNDISPLAYABLE_MUSCLES,
   musclesInRegion,
+  needsSplit,
   regionOf,
 } from "../src/body-map.ts";
 import { MUSCLE_IDS } from "../src/taxonomy.ts";
@@ -41,9 +42,7 @@ describe("筋肉と人体図の領域の対応（ADR 0003）", () => {
 
   it("分割が必要な領域には印が付いている", () => {
     // 流用元の SVG は front-deltoids を 1 つのパスで持っている。
-    expect(BODY_REGIONS.shoulder_front.split).toBe(true);
-    expect(BODY_REGIONS.shoulder_lateral.split).toBe(true);
-    expect(BODY_REGIONS.chest.split).toBeUndefined();
+    expect(BODY_REGION_IDS.filter(needsSplit)).toEqual(["shoulder_front", "shoulder_lateral"]);
   });
 
   it("すべての領域に流用元のパス名が記録されている", () => {
