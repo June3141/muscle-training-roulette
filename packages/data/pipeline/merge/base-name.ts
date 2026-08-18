@@ -50,8 +50,16 @@ const MUSCLE_WORDS = [/\bbiceps?\b/g, /\btriceps?\b/g];
 /** 器具名を落とした結果、末尾に残ってしまう語。「Squats - With Bands」→「squat with」を防ぐ。 */
 const DANGLING_TAIL = /\s+(with|and|a|an|the|of|to|in|on)$/;
 
+/** 単数形が s で終わる語。末尾の s を落とすと press が pres、Atlas が Atla になる。 */
+const ALREADY_SINGULAR = /(?:ss|us|as|is|ies)$/;
+
+/** 語尾に es が付く複数形。presses / benches / boxes。 */
+const PLURAL_ES = /(?:sses|shes|ches|xes)$/;
+
 function singularize(word: string): string {
-  return word.length > 3 && word.endsWith("s") && !word.endsWith("ss") ? word.slice(0, -1) : word;
+  if (PLURAL_ES.test(word)) return word.slice(0, -2);
+  if (word.length <= 3 || !word.endsWith("s") || ALREADY_SINGULAR.test(word)) return word;
+  return word.slice(0, -1);
 }
 
 export function normalizeBaseName(name: string): string {
