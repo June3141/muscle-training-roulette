@@ -5,7 +5,7 @@ import { computeCoverage, coverageOf, diffCoverage, uncoveredTargets } from "../
 function exercise(id: string, muscleWeights: Exercise["muscleWeights"]): Exercise {
   return {
     id,
-    sourceId: null,
+    sourceIds: [],
     nameEn: id,
     nameJa: id,
     force: "push",

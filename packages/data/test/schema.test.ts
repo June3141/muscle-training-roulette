@@ -4,7 +4,7 @@ import { datasetSchema, exerciseSchema, type Exercise } from "../src/schema.ts";
 function validExercise(overrides: Partial<Exercise> = {}): unknown {
   return {
     id: "barbell_bench_press",
-    sourceId: "Barbell_Bench_Press_-_Medium_Grip",
+    sourceIds: ["Barbell_Bench_Press_-_Medium_Grip"],
     nameEn: "Barbell Bench Press",
     nameJa: "バーベルベンチプレス",
     force: "push",
@@ -104,6 +104,27 @@ describe("exerciseSchema", () => {
     expect(result.data?.selectable).toBe(false);
   });
 
+  it("統合した種目は上流 id を複数持てる", () => {
+    // バーベルベンチとダンベルベンチは 1 レコードに畳まれる（ADR 0002）。
+    const result = exerciseSchema.safeParse(
+      validExercise({ sourceIds: ["Barbell_Bench_Press_-_Medium_Grip", "Dumbbell_Bench_Press"] }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("独自種目は sourceIds が空配列", () => {
+    // 上流に存在しない種目。null ではなく空配列で表す。
+    expect(exerciseSchema.safeParse(validExercise({ sourceIds: [] })).success).toBe(true);
+  });
+
+  it("sourceIds の中の重複を弾く", () => {
+    const result = exerciseSchema.safeParse(
+      validExercise({ sourceIds: ["Dumbbell_Bench_Press", "Dumbbell_Bench_Press"] }),
+    );
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("sourceIds");
+  });
+
   it("id が snake_case でないものを弾く", () => {
     const result = exerciseSchema.safeParse(validExercise({ id: "Barbell_Bench_Press" }));
     expect(result.success).toBe(false);
@@ -117,10 +138,20 @@ describe("datasetSchema", () => {
     expect(JSON.stringify(result.error?.issues)).toContain("重複");
   });
 
-  it("id が一意なら受理する", () => {
+  it("同じ上流 id を 2 つのレコードが持つのを検出する", () => {
+    // 統合の取りこぼしで 1 件の上流種目が 2 レコードに出るのを防ぐ。
     const result = datasetSchema.safeParse([
       validExercise(),
       validExercise({ id: "dumbbell_bench_press" }),
+    ]);
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("Barbell_Bench_Press_-_Medium_Grip");
+  });
+
+  it("id が一意なら受理する", () => {
+    const result = datasetSchema.safeParse([
+      validExercise(),
+      validExercise({ id: "dumbbell_bench_press", sourceIds: ["Dumbbell_Bench_Press"] }),
     ]);
     expect(result.success).toBe(true);
   });
