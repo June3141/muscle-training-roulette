@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { buildDataset } from "../../pipeline/dataset/build.ts";
 import { datasetSchema } from "../../src/schema.ts";
@@ -74,5 +75,15 @@ describe("データセットの組み立て", () => {
   it("同じ入力から同じ出力が出る", async () => {
     const upstream = (await loadUpstream()).filter(isTargetCategory);
     expect(buildDataset(upstream).exercises).toEqual(dataset.exercises);
+  });
+});
+
+describe("書き出したデータセット", () => {
+  it("コミットされている data/dataset.json が最新の生成結果と一致する", async () => {
+    // 上流が変わったり生成規則を触ったりすると差分が出る。**これは意図した仕組み。**
+    // 差分が出たら `pnpm data:build` で更新し、改善か劣化かを PR に書くこと。
+    const path = new URL("../../../../data/dataset.json", import.meta.url);
+    const committed: unknown = JSON.parse(await readFile(path, "utf8"));
+    expect(committed).toEqual(JSON.parse(JSON.stringify(dataset.exercises)));
   });
 });
