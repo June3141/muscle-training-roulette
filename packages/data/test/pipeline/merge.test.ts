@@ -35,7 +35,11 @@ describe("ベース名の正規化", () => {
   });
 
   it("片手/両手の語を落とす", () => {
-    for (const name of ["One-Arm Dumbbell Row", "Two-Arm Kettlebell Row", "Alternating Kettlebell Row"]) {
+    for (const name of [
+      "One-Arm Dumbbell Row",
+      "Two-Arm Kettlebell Row",
+      "Alternating Kettlebell Row",
+    ]) {
       expect(normalizeBaseName(name), name).toBe("row");
     }
   });
@@ -71,11 +75,17 @@ describe("ベース名の正規化", () => {
 
 describe("器具の判定", () => {
   it("名前にスミスとあれば smith（上流は machine と書いている）", () => {
-    expect(resolveEquipment(upstream("Smith Machine Bench Press", { equipment: "machine" }))).toBe("smith");
+    expect(resolveEquipment(upstream("Smith Machine Bench Press", { equipment: "machine" }))).toBe(
+      "smith",
+    );
   });
 
   it("ランドマイン系は landmine（上流は barbell と書いている）", () => {
-    for (const name of ["One-Arm Long Bar Row", "Landmine Linear Jammer", "T-Bar Row with Handle"]) {
+    for (const name of [
+      "One-Arm Long Bar Row",
+      "Landmine Linear Jammer",
+      "T-Bar Row with Handle",
+    ]) {
       expect(resolveEquipment(upstream(name, { equipment: "barbell" })), name).toBe("landmine");
     }
   });
@@ -97,7 +107,11 @@ describe("器具の判定", () => {
 
 describe("片手/両手の判定", () => {
   it("名前が片手を示していれば unilateral", () => {
-    for (const name of ["One-Arm Dumbbell Row", "Single-Leg Leg Extension", "Alternating Hang Clean"]) {
+    for (const name of [
+      "One-Arm Dumbbell Row",
+      "Single-Leg Leg Extension",
+      "Alternating Hang Clean",
+    ]) {
       expect(resolveLaterality(upstream(name)), name).toBe("unilateral");
     }
   });
@@ -151,7 +165,10 @@ describe("種目の統合", () => {
   it("片手しかない上半身種目でも有効な器具を既定に選ぶ", () => {
     const merged = mergeUpstream([
       upstream("One Arm Floor Press", { primaryMuscles: ["triceps"] }),
-      upstream("One-Arm Dumbbell Floor Press", { equipment: "dumbbell", primaryMuscles: ["triceps"] }),
+      upstream("One-Arm Dumbbell Floor Press", {
+        equipment: "dumbbell",
+        primaryMuscles: ["triceps"],
+      }),
     ]);
     expect(merged[0]?.defaultEquipment).toBe("dumbbell");
     expect(merged[0]?.defaultLaterality).toBe("unilateral");

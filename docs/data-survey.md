@@ -358,6 +358,31 @@ Middle Back Shrug / Scapular Pull-Up）。
 残り 68 件は僧帽筋中下部と菱形筋のどちらに寄せるか判別できず、
 分けても常に同じ値が入る。**分類として情報を持たない**ため統合した（ADR 0005）。
 
+## 種目の統合（器具・片手両手を軸にした結果）
+
+**736 件 → 617 レコード。** 83 レコードが 202 件の上流種目を吸収した。
+
+ベース名（器具名と片手/両手の語を落とした名前）でグルーピングし、
+`primaryMuscles` が一致するものだけを畳んでいる（ADR 0002）。
+主働筋が違うため畳まなかったベース名が **15 件**ある。
+
+| 例 | 結果 |
+|---|---|
+| Barbell / Dumbbell / Machine / Smith / Bands Bench Press + One Arm Dumbbell Bench Press | 1 レコード（器具 5 種） |
+| Upright Row | **2 レコード**（上流が shoulders と traps に割れている） |
+| Barbell Bench Press / **Close-Grip** Barbell Bench Press | 2 レコード（主働筋が三頭に入れ替わる） |
+
+畳んだ結果、**60 レコードが 2 種類以上の器具**を持ち、
+**76 レコードが片手を選べる**（上流は片手/両手のフィールドを持たないので名前から読む）。
+
+`pnpm data:merge` で内訳と、規則で落とした組み合わせの一覧が出る。
+
+### 上流の equipment は名前と食い違う
+
+- `Smith Machine Bench Press` の equipment は `machine`。名前を優先して `smith` にする
+- ランドマイン系 6 件（Long Bar Row、Jammer、T-Bar Row）は `barbell`。
+  片端が固定された梃子なので `landmine` として独立させる（ADR 0002）
+
 ## ライセンス
 
 Unlicense。派生物を Unlicense / CC0 で公開できる（§11 の前提は成立）。

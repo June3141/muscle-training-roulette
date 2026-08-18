@@ -15,6 +15,8 @@ export const EQUIPMENT = [
   "kettlebell",
   "ez_curl_bar",
   "smith",
+  /** 片端をランドマイン（コーナー）に固定したバー。T バーロウ、ジャマーもこれ。 */
+  "landmine",
   "machine",
   "cable",
   "bands",

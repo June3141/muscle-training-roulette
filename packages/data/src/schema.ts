@@ -13,8 +13,12 @@ import {
   LEVEL,
   MECHANIC,
   MOVEMENT_PATTERNS,
+  type Equipment,
+  type Laterality,
+  type MovementPattern,
 } from "./axes.ts";
-import { isExclusiveEquipment, isValidCombination, validCombinations } from "./combinations.ts";
+import type { AxisInput } from "./combinations.ts";
+import { isLowerBodyPattern, isValidCombination, validCombinations } from "./combinations.ts";
 import { MUSCLE_IDS } from "./taxonomy.ts";
 
 /** muscleWeights の合計が 1.0 とみなせる許容誤差。 */
@@ -42,6 +46,19 @@ export const muscleWeightsSchema = z
 
 function sumOf(weights: Partial<Record<string, number>>): number {
   return Object.values(weights).reduce<number>((a, b) => a + (b ?? 0), 0);
+}
+
+/** 組み合わせ判定は movementPattern ではなく「下半身か」を見る（combinations.ts）。 */
+function axisInputOf(ex: {
+  movementPattern: MovementPattern;
+  equipmentOptions: readonly Equipment[];
+  lateralityOptions: readonly Laterality[];
+}): AxisInput {
+  return {
+    lowerBody: isLowerBodyPattern(ex.movementPattern),
+    equipmentOptions: ex.equipmentOptions,
+    lateralityOptions: ex.lateralityOptions,
+  };
 }
 
 export const exerciseSchema = z
@@ -95,18 +112,11 @@ export const exerciseSchema = z
     message: "defaultLaterality が lateralityOptions に含まれていません",
     path: ["defaultLaterality"],
   })
-  .refine(
-    (ex) => ex.equipmentOptions.length === 1 || !ex.equipmentOptions.some(isExclusiveEquipment),
-    {
-      message: "body_only は他の器具と併記できません（自重種目に器具の付け替えはない）",
-      path: ["equipmentOptions"],
-    },
-  )
-  .refine((ex) => validCombinations(ex).length > 0, {
+  .refine((ex) => validCombinations(axisInputOf(ex)).length > 0, {
     message: "有効な器具 × 片手/両手の組み合わせが 1 つもありません",
     path: ["lateralityOptions"],
   })
-  .refine((ex) => isValidCombination(ex, ex.defaultEquipment, ex.defaultLaterality), {
+  .refine((ex) => isValidCombination(axisInputOf(ex), ex.defaultEquipment, ex.defaultLaterality), {
     message: "既定の器具と既定の片手/両手が有効な組み合わせになっていません",
     path: ["defaultLaterality"],
   });
