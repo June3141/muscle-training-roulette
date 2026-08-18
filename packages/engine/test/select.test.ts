@@ -22,7 +22,7 @@ function exercise(over: {
   readonly selectable?: boolean;
 }): Exercise {
   counter += 1;
-  const equipmentOptions = over.equipmentOptions ?? ["barbell"];
+  const equipmentOptions = [...(over.equipmentOptions ?? ["barbell"])];
   return {
     id: over.id ?? `ex_${counter}`,
     sourceIds: [`Src_${counter}`],
@@ -51,7 +51,10 @@ describe("selectExercises: 被覆最大化", () => {
   });
 
   it("指定していない部位の重みは選択に影響しない", () => {
-    const focused = exercise({ id: "focused", muscleWeights: { quadriceps: 0.5, hamstrings: 0.5 } });
+    const focused = exercise({
+      id: "focused",
+      muscleWeights: { quadriceps: 0.5, hamstrings: 0.5 },
+    });
     const diluted = exercise({
       id: "diluted",
       muscleWeights: { quadriceps: 0.4, triceps_brachii: 0.6 },
@@ -78,7 +81,11 @@ describe("selectExercises: 被覆最大化", () => {
   });
 
   it("selectable: false の種目は候補に出さない", () => {
-    const excluded = exercise({ id: "excluded", muscleWeights: { quadriceps: 1 }, selectable: false });
+    const excluded = exercise({
+      id: "excluded",
+      muscleWeights: { quadriceps: 1 },
+      selectable: false,
+    });
     const allowed = exercise({ id: "allowed", muscleWeights: { quadriceps: 0.3 } });
     const result = selectExercises({ targets: ["quadriceps"], count: 2 }, [excluded, allowed]);
     expect(result.exercises.map((s) => s.exercise.id)).toEqual(["allowed"]);
