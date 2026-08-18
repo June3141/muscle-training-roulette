@@ -51,19 +51,27 @@ describe("上流の部位をタキソノミーに展開する", () => {
     const shrug = expandMuscles(upstream({ name: "Barbell Shrug", primaryMuscles: ["traps"] }));
     expect(shrug.primary).toEqual(["trapezius_upper"]);
 
-    const row = expandMuscles(upstream({ name: "Bent Over Barbell Row", primaryMuscles: ["traps"] }));
+    const row = expandMuscles(
+      upstream({ name: "Bent Over Barbell Row", primaryMuscles: ["traps"] }),
+    );
     expect(row.primary).toEqual(["trapezius_middle_lower"]);
   });
 
   it("前腕は握力か肘屈曲かで割れる", () => {
-    const grip = expandMuscles(upstream({ name: "Barbell Deadlift", primaryMuscles: ["forearms"] }));
+    const grip = expandMuscles(
+      upstream({ name: "Barbell Deadlift", primaryMuscles: ["forearms"] }),
+    );
     expect(grip.primary).toEqual(["wrist_flexors"]);
   });
 
   it("股関節の安定筋を補助筋として補完する", () => {
     // 上流は片脚種目に中臀筋を書いていない（ADR 0005、docs/data-survey.md）。
     const lunge = expandMuscles(
-      upstream({ name: "Barbell Lunge", primaryMuscles: ["quadriceps"], secondaryMuscles: ["glutes"] }),
+      upstream({
+        name: "Barbell Lunge",
+        primaryMuscles: ["quadriceps"],
+        secondaryMuscles: ["glutes"],
+      }),
     );
     expect(lunge.secondary).toContain("gluteus_medius");
   });
@@ -95,12 +103,24 @@ describe("上流の部位をタキソノミーに展開する", () => {
 });
 
 describe("上流データ全件", () => {
-  it("主働筋が空になるのは首の 5 件だけ", async () => {
+  it("主働筋が空になるのは 12 件で、内訳が分かっている", async () => {
+    // 空になる = muscleWeights を作れない = データセットに載せられない。
+    // 黙って減るのが最悪なので、どれが落ちるかをここで固定する。
     const all = (await loadUpstream()).filter(isTargetCategory);
     const empty = all.filter((ex) => expandMuscles(ex).primary.length === 0);
     expect(empty.map((ex) => ex.name).toSorted()).toEqual([
+      // 純粋なローテーターカフ種目。該当分類がない（ADR 0005）
+      "Cable Internal Rotation",
+      "External Rotation",
+      "External Rotation with Band",
+      "External Rotation with Cable",
+      "Internal Rotation with Band",
+      // 首はタキソノミーの対象外（ADR 0005）
       "Isometric Neck Exercise - Front And Back",
       "Isometric Neck Exercise - Sides",
+      // 全身種目。特定の三角筋部位に寄せられない
+      "Kettlebell Turkish Get-Up (Lunge style)",
+      "Kettlebell Turkish Get-Up (Squat style)",
       "Lying Face Down Plate Neck Resistance",
       "Lying Face Up Plate Neck Resistance",
       "Seated Head Harness Neck Resistance",
