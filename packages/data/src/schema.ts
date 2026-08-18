@@ -48,8 +48,16 @@ export const exerciseSchema = z
   .object({
     /** 独自 id。命名規則は M0（#4）で確定する。 */
     id: z.string().regex(/^[a-z0-9_]+$/, "id は snake_case の英数字のみ"),
-    /** free-exercise-db 側の id。上流の更新に追随するために保持する。 */
-    sourceId: z.string().nullable(),
+    /**
+     * free-exercise-db 側の id。上流の更新に追随するために保持する。
+     *
+     * **配列なのは統合するため。** バーベルベンチとダンベルベンチは
+     * 器具軸で 1 レコードに畳まれる（ADR 0002、ADR 0006）。
+     * 空配列は上流に存在しない独自種目を意味する。
+     */
+    sourceIds: z.array(z.string()).refine((ids) => new Set(ids).size === ids.length, {
+      message: "sourceIds が重複しています",
+    }),
 
     nameEn: z.string().min(1),
     nameJa: z.string().min(1),
@@ -106,15 +114,28 @@ export const exerciseSchema = z
 export type Exercise = z.infer<typeof exerciseSchema>;
 
 export const datasetSchema = z.array(exerciseSchema).superRefine((list, ctx) => {
-  const seen = new Set<string>();
+  const seenIds = new Set<string>();
+  // 上流 id は全レコードを通して一意。同じ上流種目が 2 レコードに出るのは統合の取りこぼし。
+  const seenSourceIds = new Set<string>();
   for (const [index, ex] of list.entries()) {
-    if (seen.has(ex.id)) {
+    if (seenIds.has(ex.id)) {
       ctx.addIssue({
         code: "custom",
         message: `id が重複しています: ${ex.id}`,
         path: [index, "id"],
       });
     }
-    seen.add(ex.id);
+    seenIds.add(ex.id);
+
+    for (const sourceId of ex.sourceIds) {
+      if (seenSourceIds.has(sourceId)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `上流 id が複数のレコードに現れています: ${sourceId}`,
+          path: [index, "sourceIds"],
+        });
+      }
+      seenSourceIds.add(sourceId);
+    }
   }
 });
