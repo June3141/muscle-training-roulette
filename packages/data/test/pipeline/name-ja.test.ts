@@ -25,6 +25,11 @@ describe("日本語名の合成", () => {
     expect(ja("t bar row with handle")).toBe("ハンドル付きTバーロウ");
   });
 
+  it("語単位では組めない綴りを句として持つ", () => {
+    // ベース名は記号を落とすので 3/4 Sit-Up が 3 4 sit up になる。
+    expect(ja("3 4 sit up")).toBe("3/4シットアップ");
+  });
+
   it("辞書に無い語は未訳として返す", () => {
     const result = toNameJa("bench press with zzz");
     expect(result.missing).toEqual(["zzz"]);
