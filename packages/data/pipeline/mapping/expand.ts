@@ -8,6 +8,7 @@
  */
 import type { MuscleId } from "../../src/taxonomy.ts";
 import { MUSCLE_IDS } from "../../src/taxonomy.ts";
+import { applyPrimaryOverride } from "../apply-overrides.ts";
 import type { UpstreamExercise } from "../upstream.ts";
 import { mapAbdominals } from "./abdominals.ts";
 import { mapBack } from "./back.ts";
@@ -86,7 +87,16 @@ function expandList(
   return { ids, unmapped };
 }
 
-export function expandMuscles(exercise: UpstreamExercise): ExpandedMuscles {
+/**
+ * 上流の部位をタキソノミーに展開する。
+ *
+ * **上書きは内側で当てる。** 上流の primaryMuscles には誤りがあり
+ * （`pipeline/overrides/`）、生の値で展開するとデッドリフトの主働筋が
+ * 脊柱起立筋になる。呼ぶ側が上書きを忘れられないようにする。
+ * `applyPrimaryOverride` は冪等なので、適用済みを渡しても結果は変わらない。
+ */
+export function expandMuscles(raw: UpstreamExercise): ExpandedMuscles {
+  const exercise = applyPrimaryOverride(raw);
   const primaryResult = expandList(exercise.primaryMuscles, exercise);
   const secondaryResult = expandList(exercise.secondaryMuscles, exercise);
 

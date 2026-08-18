@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { applyPrimaryOverride } from "../../pipeline/apply-overrides.ts";
 import { expandMuscles } from "../../pipeline/mapping/expand.ts";
 import { isTargetCategory, loadUpstream, type UpstreamExercise } from "../../pipeline/upstream.ts";
 
@@ -81,6 +82,23 @@ describe("上流の部位をタキソノミーに展開する", () => {
       upstream({ name: "Barbell Shrug", primaryMuscles: ["traps"], secondaryMuscles: ["traps"] }),
     );
     expect(result.secondary).not.toContain("trapezius_upper");
+  });
+
+  it("上流の主働筋の誤りは上書きを当ててから展開する", async () => {
+    // 生の値ではデッドリフトの主働筋が lower back になっていて、
+    // そのまま展開すると脊柱起立筋に 0.65 が乗る（Issue #11 の警告そのもの）。
+    const deadlift = (await loadUpstream()).find((ex) => ex.id === "Barbell_Deadlift");
+    const result = expandMuscles(deadlift as UpstreamExercise);
+    expect(result.primary).toEqual(["hamstrings", "gluteus_maximus"]);
+    expect(result.secondary).toContain("erector_spinae");
+  });
+
+  it("上書きの適用は冪等（適用済みを渡しても変わらない）", async () => {
+    // 統合パイプラインは先に上書きを当てている。二重に当たっても壊れないこと。
+    const deadlift = (await loadUpstream()).find(
+      (ex) => ex.id === "Barbell_Deadlift",
+    ) as UpstreamExercise;
+    expect(expandMuscles(applyPrimaryOverride(deadlift))).toEqual(expandMuscles(deadlift));
   });
 
   it("首は写せない理由が残る", () => {
