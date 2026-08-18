@@ -5,6 +5,7 @@
  * どのベース名が何を吸収したかと、規則で落とした組み合わせを並べて目視できるようにする。
  */
 import { validCombinations } from "../../src/combinations.ts";
+import { mapMovementPattern } from "../mapping/movement.ts";
 import { isTargetCategory, loadUpstream } from "../upstream.ts";
 import { mergeUpstream, type MergedExercise } from "./merge.ts";
 
@@ -50,4 +51,14 @@ console.log("\n=== 規則で落とした組み合わせ ===");
 for (const record of merged) {
   const dropped = droppedCombinations(record);
   if (dropped.length > 0) console.log(`  ${record.nameEn}: ${dropped.join(", ")}`);
+}
+
+console.log("\n=== 動作パターンの分布 ===");
+const patterns = new Map<string, number>();
+for (const record of merged) {
+  const { pattern } = mapMovementPattern(record.baseName);
+  patterns.set(pattern, (patterns.get(pattern) ?? 0) + 1);
+}
+for (const [pattern, count] of [...patterns].toSorted((a, b) => b[1] - a[1])) {
+  console.log(`  ${pattern.padEnd(22)} ${String(count).padStart(3)}`);
 }
