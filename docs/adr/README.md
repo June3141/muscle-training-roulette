@@ -91,7 +91,7 @@ Draft ──→ Proposed ──→ Accepted ──→ Superseded
 | # | 決定 | ステータス |
 |---|---|---|
 | [0001](./0001-load-normalization.md) | 片手/両手の重量正規化ルール | Proposed |
-| [0002](./0002-equipment-weight-invariance.md) | 何を独立軸にしてよいかの基準 | Proposed |
+| [0002](./0002-equipment-weight-invariance.md) | 何を独立軸にしてよいかの基準 | Accepted |
 | [0003](./0003-muscle-taxonomy-vs-svg-granularity.md) | タキソノミーと人体図 SVG の粒度衝突 | Draft |
 | [0004](./0004-pipeline-language.md) | データ生成パイプラインの言語 | Accepted |
 | [0005](./0005-muscle-taxonomy.md) | 筋肉タキソノミーを 22 分類で確定する | Proposed |

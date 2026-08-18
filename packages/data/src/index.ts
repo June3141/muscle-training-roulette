@@ -16,12 +16,23 @@ export {
   LEVEL,
   MECHANIC,
   MOVEMENT_PATTERNS,
+  type Equipment,
+  type Laterality,
+  type MovementPattern,
+} from "./axes.ts";
+
+export {
+  isExclusiveEquipment,
+  isValidCombination,
+  validCombinations,
+  type AxisInput,
+  type Combination,
+} from "./combinations.ts";
+
+export {
   WEIGHT_SUM_TOLERANCE,
   datasetSchema,
   exerciseSchema,
   muscleWeightsSchema,
-  type Equipment,
   type Exercise,
-  type Laterality,
-  type MovementPattern,
 } from "./schema.ts";
