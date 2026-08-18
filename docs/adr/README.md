@@ -97,3 +97,4 @@ Draft ──→ Proposed ──→ Accepted ──→ Superseded
 | [0005](./0005-muscle-taxonomy.md) | 筋肉タキソノミーを 22 分類で確定する | Accepted |
 | [0006](./0006-exercise-id.md) | 種目 id は独自に振り、器具名を含めない | Accepted |
 | [0007](./0007-duplicate-base-name-ids.md) | 同じベース名の種目をどう区別するか | Accepted |
+| [0008](./0008-selection-objective-and-algorithm.md) | 選択エンジンの目的関数の形とアルゴリズムの止めどころ | Proposed |
