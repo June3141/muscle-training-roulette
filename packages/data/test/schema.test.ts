@@ -126,10 +126,63 @@ describe("datasetSchema", () => {
   });
 });
 
-describe("器具とグリップの組み合わせ検証（Q2）", () => {
-  // design.md §2 Q2「器具・グリップを独立軸として扱えるか」の検証項目。
-  // 無効な組み合わせが検出でき、有効なものだけが生成されることを担保する。
-  it.todo("スミスマシンは unilateral を選べない");
-  it.todo("ケーブルは bilateral / unilateral の両方を選べる");
-  it.todo("自重種目は器具の付け替えができない");
+describe("器具と片手/両手の組み合わせ検証（Q2）", () => {
+  // 器具ごとに何が選べるかは test/combinations.test.ts で見る。
+  // ここで確認するのは「スキーマがそれを強制するか」だけ。
+
+  it("自重種目に他の器具を混ぜたものを弾く", () => {
+    // 腕立て伏せに「バーベル版」はない。器具軸を持てるのは器具を使う種目だけ。
+    const result = exerciseSchema.safeParse(
+      validExercise({
+        equipmentOptions: ["body_only", "dumbbell"],
+        defaultEquipment: "body_only",
+      }),
+    );
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("body_only");
+  });
+
+  it("自重のみなら受理する", () => {
+    const result = exerciseSchema.safeParse(
+      validExercise({ equipmentOptions: ["body_only"], defaultEquipment: "body_only" }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("既定の組み合わせが無効なものを弾く", () => {
+    // 上半身のバーベル種目に片手の既定値は立たない。
+    const result = exerciseSchema.safeParse(
+      validExercise({
+        lateralityOptions: ["bilateral", "unilateral"],
+        defaultLaterality: "unilateral",
+      }),
+    );
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("組み合わせ");
+  });
+
+  it("有効な組み合わせが 1 つもないものを弾く", () => {
+    const result = exerciseSchema.safeParse(
+      validExercise({
+        equipmentOptions: ["barbell"],
+        defaultEquipment: "barbell",
+        lateralityOptions: ["unilateral"],
+        defaultLaterality: "unilateral",
+      }),
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it("下半身種目ならバーベル × 片脚の既定を受理する", () => {
+    const result = exerciseSchema.safeParse(
+      validExercise({
+        movementPattern: "lunge",
+        equipmentOptions: ["barbell"],
+        defaultEquipment: "barbell",
+        lateralityOptions: ["unilateral"],
+        defaultLaterality: "unilateral",
+      }),
+    );
+    expect(result.success).toBe(true);
+  });
 });
