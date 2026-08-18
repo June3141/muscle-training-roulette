@@ -17,6 +17,7 @@ import { LATERALITY } from "./axes.ts";
  * 左右を独立に動かせないので、**上半身では片手を選べない。**
  * マシンを含めないのは、左右のアームが独立したイソラテラル機が一般的なため。
  * ケーブルも 2 基のプーリーがあり片手・両手のどちらも成立する。
+ * ランドマインは片端が固定された梃子なので、ここには入らない。
  */
 const SINGLE_BAR: ReadonlySet<Equipment> = new Set<Equipment>(["barbell", "ez_curl_bar", "smith"]);
 
@@ -35,14 +36,21 @@ const LOWER_BODY: ReadonlySet<MovementPattern> = new Set<MovementPattern>([
   "calf_raise",
 ]);
 
-/** 他の器具と併記できない器具。自重種目に「バーベル版」はない。 */
-export function isExclusiveEquipment(equipment: Equipment): boolean {
-  return equipment === "body_only";
+/** 片手/両手が片脚/両脚の意味になる動作か。 */
+export function isLowerBodyPattern(pattern: MovementPattern): boolean {
+  return LOWER_BODY.has(pattern);
 }
 
-/** 判定に必要な最小の入力。`Exercise` をそのまま渡せる。 */
+/**
+ * 判定に必要な最小の入力。
+ *
+ * `movementPattern` ではなく `lowerBody` を受けるのは、
+ * **movementPattern を振る前の中間データからも判定できるようにするため**
+ * （統合パイプラインは主働筋から下半身かどうかを決める）。
+ * `Exercise` からは `isLowerBodyPattern` で作る。
+ */
 export interface AxisInput {
-  readonly movementPattern: MovementPattern;
+  readonly lowerBody: boolean;
   readonly equipmentOptions: readonly Equipment[];
   readonly lateralityOptions: readonly Laterality[];
 }
@@ -55,10 +63,11 @@ export interface Combination {
 /**
  * その種目でこの組み合わせが成立するか。
  *
- * **既知の反例**: 上流の Smith Machine One-Arm Upright Row は上半身のスミス片手種目で、
- * ここでは無効と判定される。ガイドレールがバーを支えるので実際には可能だが、
+ * **既知の反例が 2 件ある**（上流 736 件中）。Smith Machine One-Arm Upright Row と
+ * One Arm Floor Press はどちらも上半身の単一バー片手種目で、ここでは無効と判定される。
+ * 前者はガイドレールがバーを支え、後者は補助者にバーを渡してもらう。実際には可能だが、
  * これを許すとスミスの片手ベンチプレスまで有効になる。
- * 1 件を落とす代わりに、明らかに存在しない組み合わせを出さない側を採る。
+ * どちらも統合後は他の器具の組み合わせが残るので、種目そのものは失われない。
  */
 export function isValidCombination(
   input: AxisInput,
@@ -68,7 +77,7 @@ export function isValidCombination(
   if (!input.equipmentOptions.includes(equipment)) return false;
   if (!input.lateralityOptions.includes(laterality)) return false;
   if (laterality === "bilateral") return true;
-  if (LOWER_BODY.has(input.movementPattern)) return true;
+  if (input.lowerBody) return true;
   return !SINGLE_BAR.has(equipment);
 }
 

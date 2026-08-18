@@ -22,7 +22,7 @@ export {
 } from "./axes.ts";
 
 export {
-  isExclusiveEquipment,
+  isLowerBodyPattern,
   isValidCombination,
   validCombinations,
   type AxisInput,
