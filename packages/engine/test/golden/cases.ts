@@ -70,7 +70,7 @@ export const GOLDEN_CASES: readonly GoldenCase[] = [
     targets: ["pectoralis_major_sternal", "pectoralis_major_clavicular"],
     count: 5,
     mustContain: [["horizontal_press", "incline_press"], ["horizontal_adduction"]],
-    note: "プレス系とフライ系が両方含まれること。全部プレスになるなら多様性項が効いていない。",
+    note: "プレス系とフライ系が両方含まれること。胸の候補はフライ系に重みが寄っているため、壊れ方は「全部プレス」ではなく「全部フライで大胸筋上部が空く」（ADR 0008）。",
   },
   {
     id: "bodyweight_full",
