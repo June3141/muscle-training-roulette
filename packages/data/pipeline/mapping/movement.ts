@@ -67,7 +67,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!tricep )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
+      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!triceps? )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
     mapping: { pattern: "leg_isolation", rule: "下肢の単関節" },
   },
   {
