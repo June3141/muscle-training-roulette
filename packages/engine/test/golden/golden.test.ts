@@ -1,6 +1,7 @@
 import { isMuscleId } from "@mtr/data";
 import { describe, expect, it } from "vitest";
 import { loadDataset } from "../../src/dataset.ts";
+import { formatSelection } from "../../src/format.ts";
 import { selectExercises } from "../../src/select.ts";
 import { GOLDEN_CASES } from "./cases.ts";
 
@@ -67,6 +68,14 @@ describe("ゴールデンセットの実行（M3）", () => {
         expect(result.uncovered.toSorted()).toEqual(
           [...(testCase.knownUncovered ?? [])].toSorted(),
         );
+      });
+
+      /**
+       * **差分が出ること自体は失敗ではない。** 重みを触れば出る。
+       * 改善か劣化かを人間が判断し、理由を PR に書いてから更新する（CLAUDE.md）。
+       */
+      it("スナップショットと一致する", () => {
+        expect(formatSelection(result)).toMatchSnapshot();
       });
     });
   }
