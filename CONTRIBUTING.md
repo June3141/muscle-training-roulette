@@ -27,7 +27,13 @@ pnpm data:fetch    # 上流データを取得（テストが読むので必須�
 pnpm verify        # lint + typecheck + test + 複雑度チェックを一括実行
 ```
 
-`data/upstream/` はコミットしていないので、**クローン直後は `pnpm data:fetch` が要る。**
+`data/upstream/` はコミットしていないので、**クローン直後と `git worktree add` の直後は
+`pnpm data:fetch` が要る。** 忘れるとデータパイプラインのテストが 30 件落ち、
+後述の pre-push hook で push が止まります。
+
+`pnpm install` が `core.hooksPath` を `.githooks/` に向けるので、**push の前に `pnpm verify` が
+自動で走ります。**赤ければ push は中断されます。急ぐときは `git push --no-verify` で飛ばせますが、
+CI は同じ検査を回すので結果は変わりません。
 
 Node.js は `.node-version` のバージョンに合わせてください。
 
