@@ -19,17 +19,26 @@ import {
   type MuscleGroup,
   type MuscleId,
 } from "@mtr/data";
-import { formatSelection } from "./format.ts";
-import { selectExercises } from "./select.ts";
-import type { SelectionRequest } from "./types.ts";
+import { renderCoverageChart } from "./chart.ts";
+import { diffCoverage } from "./coverage.ts";
+import { formatCoverageDiff, formatSelection } from "./format.ts";
+import { allowsEquipment, resultOf, selectExercises } from "./select.ts";
+import type { SelectionRequest, SelectionResult } from "./types.ts";
 
 /** §3 の範囲。 */
 const COUNT_RANGE = { min: 1, max: 10 } as const;
 const DEFAULT_COUNT = 6;
 
-const USAGE =
-  "使い方: pnpm mtr --targets <部位> [--count <1-10>] [--equipment <器具>]\n" +
-  "  部位・器具はカンマ区切り。部位は筋肉 ID か部位グループ名。";
+const USAGE = [
+  "使い方: pnpm mtr --targets <部位> [--count <1-10>] [--equipment <器具>]",
+  "                 [--replace <番号>=<種目 id>] [--format text|svg]",
+  "",
+  "  --targets    カンマ区切り。筋肉 ID か部位グループ名。",
+  "  --equipment  カンマ区切り。省略すると制限なし。",
+  "  --replace    結果の N 番目を別の種目に差し替え、カバレッジの変化を出す。",
+  "  --format     svg はバーチャートを標準出力へ書く。",
+  "               pnpm --silent mtr ... --format svg > chart.svg",
+].join("\n");
 
 function fail(message: string): never {
   throw new Error(`${message}\n\n${USAGE}`);
@@ -94,18 +103,34 @@ function resolveCount(raw: string | undefined): number {
   return count;
 }
 
-export function parseRequest(argv: readonly string[]): SelectionRequest {
-  const { values } = parseArgs({
+interface CliOptions {
+  readonly targets?: string | undefined;
+  readonly count?: string | undefined;
+  readonly equipment?: string | undefined;
+  /**
+   * **複数指定を受け取ってから弾く。**`multiple` を付けないと 2 回目が
+   * 前の値を黙って上書きし、打ち間違えた条件が無視されたまま結果が返る。
+   */
+  readonly replace?: readonly string[] | undefined;
+  readonly format?: string | undefined;
+}
+
+/** 知らないオプションを許すと、打ち間違えた条件が無視されたまま結果が返る。 */
+function optionsOf(argv: readonly string[]): CliOptions {
+  return parseArgs({
     args: [...argv],
     options: {
       targets: { type: "string" },
       count: { type: "string" },
       equipment: { type: "string" },
+      replace: { type: "string", multiple: true },
+      format: { type: "string" },
     },
-    // 知らないオプションを許すと、打ち間違えた条件が無視されたまま結果が返る。
     strict: true,
-  });
+  }).values;
+}
 
+function requestOf(values: CliOptions): SelectionRequest {
   if (values.targets === undefined) fail("--targets が要ります。");
   const equipment =
     values.equipment === undefined ? undefined : resolveEquipment(splitList(values.equipment));
@@ -117,14 +142,101 @@ export function parseRequest(argv: readonly string[]): SelectionRequest {
   };
 }
 
+export function parseRequest(argv: readonly string[]): SelectionRequest {
+  return requestOf(optionsOf(argv));
+}
+
+const REPLACE_SPEC = /^(\d+)=([a-z0-9_]+)$/;
+
+/**
+ * 差し替えの指定を解く。
+ *
+ * **番号も id も、当たらなければ黙って無視せずエラーにする。**
+ * 無視すると差し替えたつもりの結果が元のまま返り、差分が「変化なし」に見える。
+ *
+ * 差し替え先には候補と同じ条件のうち、`selectable` と器具フィルタを課す。
+ * 迂回できると**指定した条件では実行できないメニューが黙って返る。**
+ *
+ * 対象部位への寄与は問わない。**指定部位に効かない種目へ差し替えて
+ * カバレッジがどれだけ落ちるかを見るのは、計測器としての正当な使い方。**
+ */
+function resolveReplacement(
+  spec: string,
+  before: SelectionResult,
+  request: SelectionRequest,
+  dataset: readonly Exercise[],
+): { readonly index: number; readonly exercise: Exercise } {
+  const matched = REPLACE_SPEC.exec(spec);
+  if (matched === null) fail(`--replace は <番号>=<種目 id> の形で指定します: ${spec}`);
+
+  const [, rawIndex = "", id = ""] = matched;
+  const index = Number(rawIndex) - 1;
+  if (index < 0 || index >= before.exercises.length) {
+    fail(
+      `種目の番号が範囲外です: ${rawIndex}\n  1〜${before.exercises.length} を指定してください。`,
+    );
+  }
+
+  const exercise = dataset.find((candidate) => candidate.id === id);
+  if (exercise === undefined) fail(`知らない種目 id です: ${id}`);
+  if (!exercise.selectable) fail(`候補に出せない種目です: ${id}`);
+  if (!allowsEquipment(exercise, request.allowedEquipment)) {
+    fail(
+      `指定した器具では行えない種目です: ${id}\n` +
+        `  この種目の器具: ${exercise.equipmentOptions.join(", ")}`,
+    );
+  }
+  // 同じ種目が 2 行並ぶとカバレッジが二重に計上され、図が良い出力に見える。
+  if (before.exercises.some((selected, at) => at !== index && selected.exercise.id === id)) {
+    fail(`すでに選ばれている種目です: ${id}`);
+  }
+
+  return { index, exercise };
+}
+
 export function runCli(argv: readonly string[], dataset: readonly Exercise[]): string {
-  const request = parseRequest(argv);
+  const values = optionsOf(argv);
+  const request = requestOf(values);
+  const before = selectExercises(request, dataset);
+  if (values.replace !== undefined && values.replace.length > 1) {
+    fail("--replace は 1 件だけ指定できます。");
+  }
+  const spec = values.replace?.[0];
+  const replacement =
+    spec === undefined ? undefined : resolveReplacement(spec, before, request, dataset);
+  const after =
+    replacement === undefined
+      ? before
+      : resultOf(
+          before.exercises.map((selected, at) =>
+            at === replacement.index ? replacement.exercise : selected.exercise,
+          ),
+          request,
+        );
+
+  if (values.format === "svg") return renderCoverageChart(after.coverage, request.targets);
+  if (values.format !== undefined && values.format !== "text") {
+    fail(`--format は text か svg です: ${values.format}`);
+  }
+
   const targets = request.targets.map((muscle) => MUSCLES[muscle].ja).join("・");
   const equipment = request.allowedEquipment?.join("・") ?? "制限なし";
-
-  return [
+  const head = [
     `${targets} / ${request.count} 種目 / 器具: ${equipment}`,
     "",
-    formatSelection(selectExercises(request, dataset)),
+    formatSelection(after),
+  ];
+  if (replacement === undefined) return head.join("\n");
+
+  const swapped = before.exercises[replacement.index]?.exercise.nameJa ?? "";
+  return [
+    ...head,
+    "",
+    // 番号を書かない。上のリストは差し替え後の実行順で採番されるので、
+    // 差し替え前の番号を書くと画面のどの行も指さない。
+    `差し替え: ${swapped} → ${replacement.exercise.nameJa}`,
+    "",
+    "カバレッジの変化",
+    formatCoverageDiff(diffCoverage(before.coverage, after.coverage)),
   ].join("\n");
 }

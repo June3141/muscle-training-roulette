@@ -69,6 +69,14 @@ describe("coverageOf", () => {
 });
 
 describe("diffCoverage", () => {
+  /**
+   * 足す順が変わるだけで 1e-16 台の残差が出る。
+   * **残すと「0.01 未満の変化」として表示され、変化があったように読める。**
+   */
+  it("浮動小数の残差を変化として扱わない", () => {
+    expect(diffCoverage({ quadriceps: 0.1 + 0.2 }, { quadriceps: 0.3 })).toEqual({});
+  });
+
   it("§6 の例のような差し替え差分を出す", () => {
     // フライ相当 → ディップスに変更したときの差分
     const fly = exercise("fly", {

@@ -41,6 +41,10 @@ docs/adr/        設計判断の記録
 選択結果を目視するには `pnpm mtr --targets chest,triceps_brachii --count 6 --equipment barbell`。
 部位は筋肉 ID か部位グループ名（`chest` `back` `shoulders` `arms` `legs` `trunk`）。
 
+`--replace 1=incline_flye` で 1 件差し替えてカバレッジの変化を見る。
+`pnpm --silent mtr ... --format svg > chart.svg` でバーチャートを書き出す
+（`--silent` を付けないと pnpm の出力が SVG に混ざる）。
+
 データパイプラインは `packages/data/pipeline/`。`pnpm data:fetch` で上流を取得し、
 `pnpm data:audit` で上流 primaryMuscles の不整合を洗い出す。
 **上流の値を直接書き換えず、`pipeline/overrides/` に差分として持つ。**

@@ -18,6 +18,9 @@ const dataset = [
     mechanic: "isolation",
   }),
   exercise({ id: "squat", muscleWeights: { quadriceps: 1 }, movementPattern: "squat" }),
+  exercise({ id: "curl", muscleWeights: { biceps_brachii: 1 }, mechanic: "isolation" }),
+  exercise({ id: "wristcurl", muscleWeights: { wrist_flexors: 1 }, mechanic: "isolation" }),
+  exercise({ id: "excluded", muscleWeights: { quadriceps: 1 }, selectable: false }),
 ];
 
 describe("parseRequest: 部位の解釈", () => {
@@ -111,5 +114,138 @@ describe("runCli", () => {
       dataset,
     );
     expect(output).toContain("カバーできない部位: 上腕三頭筋");
+  });
+});
+
+describe("差し替えとカバレッジ差分（#16）", () => {
+  const swap = (spec: string): string =>
+    runCli(["--targets", "quadriceps", "--count", "1", "--replace", spec], dataset);
+
+  it("指定した番号の種目を入れ替える", () => {
+    // 素の選択はスクワット（種目 3）。プッシュダウン（種目 2）へ差し替える。
+    expect(swap("1=pushdown")).toContain("種目 2");
+  });
+
+  it("差し替えの前後でカバレッジの差分を出す", () => {
+    const output = swap("1=pushdown");
+    expect(output).toContain("カバレッジの変化");
+    expect(output).toContain("大腿四頭筋 \u22121.00");
+    expect(output).toContain("上腕三頭筋 +1.00");
+  });
+
+  it("変化がなければ変化がないと書く", () => {
+    // 同じ種目への差し替え。黙って何も出さないと差分が無いのか壊れたのか分からない。
+    expect(swap("1=squat")).toContain("変化なし");
+  });
+
+  it("範囲外の番号はエラーにする", () => {
+    expect(() => swap("9=squat")).toThrow(/9/);
+  });
+
+  it("知らない種目 id はエラーにする", () => {
+    expect(() => swap("1=nope")).toThrow(/nope/);
+  });
+
+  it("--replace の書式が違えばエラーにする", () => {
+    expect(() => swap("squat")).toThrow(/replace/);
+  });
+
+  /**
+   * **差し替えは選択と同じ制約の中で行う。**
+   * 器具フィルタを迂回できると、指定した器具では実行できないメニューが黙って返る。
+   */
+  it("許可されていない器具しか持たない種目への差し替えはエラーにする", () => {
+    expect(() =>
+      runCli(
+        [
+          "--targets",
+          "quadriceps",
+          "--count",
+          "1",
+          "--equipment",
+          "barbell",
+          "--replace",
+          "1=pushdown",
+        ],
+        dataset,
+      ),
+    ).toThrow(/pushdown/);
+  });
+
+  it("selectable が false の種目への差し替えはエラーにする", () => {
+    expect(() => swap("1=excluded")).toThrow(/excluded/);
+  });
+
+  /** 同じ種目が 2 行並ぶとカバレッジが二重に計上され、図が良い出力に見える。 */
+  it("すでに選ばれている種目への差し替えはエラーにする", () => {
+    expect(() =>
+      runCli(
+        ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=curl"],
+        dataset,
+      ),
+    ).toThrow(/curl/);
+  });
+
+  /**
+   * 差し替え行に番号を書くと、上に印字されるリストは差し替え *後* の実行順で採番されるのに
+   * 番号は差し替え *前* のものになり、**画面のどの行を指すのか読めなくなる。**
+   */
+  it("差し替え行は番号ではなく種目名で示す", () => {
+    const output = runCli(
+      ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=wristcurl"],
+      dataset,
+    );
+    expect(output).toContain("差し替え: 種目 3 → 種目 5");
+    expect(output).not.toMatch(/差し替え: \d+\./);
+  });
+
+  it("--replace を 2 回渡したら黙って捨てずエラーにする", () => {
+    expect(() =>
+      runCli(
+        ["--targets", "quadriceps", "--count", "1", "--replace", "1=curl", "--replace", "1=bench"],
+        dataset,
+      ),
+    ).toThrow(/replace/);
+  });
+
+  /** SelectionResult.exercises は実行順という契約（types.ts）。差し替えでも守る。 */
+  it("差し替えた後も実行順に並べ直す", () => {
+    const output = runCli(
+      ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=wristcurl"],
+      dataset,
+    );
+    const lines = output.split("\n").filter((line) => /^\d\. /.test(line));
+    // 上腕二頭筋（種目 4）は前腕屈筋群（種目 5）より対象部位への寄与が大きいので先に来る。
+    expect(lines[0]).toContain("種目 4");
+    expect(lines[1]).toContain("種目 5");
+  });
+});
+
+describe("出力形式（#16）", () => {
+  it("--format svg で SVG を返す", () => {
+    const svg = runCli(["--targets", "quadriceps", "--count", "1", "--format", "svg"], dataset);
+    expect(svg.startsWith("<svg")).toBe(true);
+    expect(svg).toContain("大腿四頭筋");
+  });
+
+  it("--format text は既定と同じ", () => {
+    const args = ["--targets", "quadriceps", "--count", "1"];
+    expect(runCli([...args, "--format", "text"], dataset)).toBe(runCli(args, dataset));
+  });
+
+  it("知らない形式はエラーにする", () => {
+    expect(() =>
+      runCli(["--targets", "quadriceps", "--count", "1", "--format", "png"], dataset),
+    ).toThrow(/png/);
+  });
+
+  it("差し替えた後のカバレッジを描く", () => {
+    const svg = runCli(
+      ["--targets", "quadriceps", "--count", "1", "--replace", "1=pushdown", "--format", "svg"],
+      dataset,
+    );
+    // 差し替え前は大腿四頭筋 1.00。差し替え後は 0 になり、三頭に 1.00 が乗る。
+    expect(svg).toContain("上腕三頭筋");
+    expect(svg).toContain("0.00");
   });
 });
