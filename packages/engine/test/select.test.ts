@@ -1,46 +1,15 @@
 /**
- * 選択エンジンの貪欲法（design.md §5.1、Issue #12）。
+ * 選択エンジンの貪欲法（design.md §5.1、Issue #12・#13）。
  *
- * ここで検査するのは **単純な被覆最大化** だけ。多様性・重複ペナルティ・複合種目優先は #13。
+ * 「被覆最大化」以下の各 describe は候補の絞り込みと縮退を見る。
+ * ここでは種目の動作パターンと mechanic を既定値のままにしてあるので、
+ * **多様性項と複合種目項が種目数だけで決まる定数になり、カバレッジ項だけが順序を決める。**
  *
- * 目的関数がモジュラ（各種目の対象筋重み和の単純合計）なので、
- * **この段階の貪欲法は近似ではなく厳密解になる**（最適解 = 上位 k 件）。
- * 近似の話が出てくるのは #13 で凹関数を入れてから。
+ * 目的関数の 3 項がどう順序に効くかは「目的関数の項」の describe（#13）で見る。
  */
-import type { Exercise, MuscleId } from "@mtr/data";
 import { describe, expect, it } from "vitest";
 import { selectExercises } from "../src/select.ts";
-
-let counter = 0;
-
-/** 検査に効く軸だけ指定する種目ファクトリ。それ以外はスキーマを満たす固定値。 */
-function exercise(over: {
-  readonly id?: string;
-  readonly muscleWeights: Partial<Record<MuscleId, number>>;
-  readonly equipmentOptions?: readonly Exercise["defaultEquipment"][];
-  readonly movementPattern?: Exercise["movementPattern"];
-  readonly selectable?: boolean;
-}): Exercise {
-  counter += 1;
-  const equipmentOptions = [...(over.equipmentOptions ?? ["barbell"])];
-  return {
-    id: over.id ?? `ex_${counter}`,
-    sourceIds: [`Src_${counter}`],
-    nameEn: `Exercise ${counter}`,
-    nameJa: `種目 ${counter}`,
-    force: "push",
-    mechanic: "compound",
-    level: "beginner",
-    category: "strength",
-    movementPattern: over.movementPattern ?? "horizontal_press",
-    equipmentOptions,
-    defaultEquipment: equipmentOptions[0] ?? "barbell",
-    lateralityOptions: ["bilateral"],
-    defaultLaterality: "bilateral",
-    selectable: over.selectable ?? true,
-    muscleWeights: over.muscleWeights,
-  };
-}
+import { exercise } from "./fixtures.ts";
 
 describe("selectExercises: 被覆最大化", () => {
   it("指定部位の重みが大きい種目から選ぶ", () => {
@@ -91,7 +60,7 @@ describe("selectExercises: 被覆最大化", () => {
     expect(result.exercises.map((s) => s.exercise.id)).toEqual(["allowed"]);
   });
 
-  it("モジュラなので上位 k 件と一致する（この段階では貪欲法が厳密解）", () => {
+  it("対象が 1 部位なら重みの大きい順に並ぶ", () => {
     const pool = [0.9, 0.1, 0.7, 0.3, 0.5].map((w, index) =>
       exercise({ id: `w${index}`, muscleWeights: { quadriceps: w } }),
     );
@@ -218,6 +187,75 @@ describe("selectExercises: 枯渇と縮退", () => {
     );
     expect(result.exercises).toEqual([]);
     expect(result.uncovered).toEqual(["quadriceps"]);
+  });
+});
+
+describe("selectExercises: 目的関数の項（#13）", () => {
+  it("同一筋に重ねるより、対象部位に散らす組を選ぶ", () => {
+    const quadA = exercise({ id: "quadA", muscleWeights: { quadriceps: 1 } });
+    const quadB = exercise({ id: "quadB", muscleWeights: { quadriceps: 1 } });
+    const ham = exercise({ id: "ham", muscleWeights: { hamstrings: 1 } });
+    const result = selectExercises({ targets: ["quadriceps", "hamstrings"], count: 2 }, [
+      quadA,
+      quadB,
+      ham,
+    ]);
+    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["quadA", "ham"]);
+  });
+
+  it("重みが少し劣っても、動作パターンの違う種目を混ぜる", () => {
+    const heavy = exercise({
+      id: "heavy",
+      muscleWeights: { quadriceps: 0.9 },
+      movementPattern: "squat",
+    });
+    const samePattern = exercise({
+      id: "samePattern",
+      muscleWeights: { quadriceps: 0.88 },
+      movementPattern: "squat",
+    });
+    const otherPattern = exercise({
+      id: "otherPattern",
+      muscleWeights: { quadriceps: 0.8 },
+      movementPattern: "hinge",
+    });
+    const result = selectExercises({ targets: ["quadriceps"], count: 2 }, [
+      heavy,
+      samePattern,
+      otherPattern,
+    ]);
+    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["heavy", "otherPattern"]);
+  });
+
+  it("重みが同じなら複合種目を優先する", () => {
+    const isolation = exercise({
+      id: "isolation",
+      muscleWeights: { quadriceps: 1 },
+      mechanic: "isolation",
+    });
+    const compound = exercise({
+      id: "compound",
+      muscleWeights: { quadriceps: 1 },
+      mechanic: "compound",
+    });
+    const result = selectExercises({ targets: ["quadriceps"], count: 1 }, [isolation, compound]);
+    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["compound"]);
+  });
+
+  /**
+   * 貪欲法は 1 手目に `both` を採る（単独では最大）が、そこから 2 手目をどう選んでも
+   * `quadOnly` + `hamOnly` の組には届かない。1-swap が 1 手目を差し替えて回収する。
+   */
+  it("貪欲法が 1 手目で外した組を 1-swap が拾う", () => {
+    const both = exercise({ id: "both", muscleWeights: { quadriceps: 0.6, hamstrings: 0.4 } });
+    const quadOnly = exercise({ id: "quadOnly", muscleWeights: { quadriceps: 1 } });
+    const hamOnly = exercise({ id: "hamOnly", muscleWeights: { hamstrings: 1 } });
+    const result = selectExercises({ targets: ["quadriceps", "hamstrings"], count: 2 }, [
+      both,
+      quadOnly,
+      hamOnly,
+    ]);
+    expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["hamOnly", "quadOnly"]);
   });
 });
 
