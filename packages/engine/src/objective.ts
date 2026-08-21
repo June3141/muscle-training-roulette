@@ -1,11 +1,16 @@
 /**
  * 選択エンジンの目的関数（design.md §5.2、ADR 0008）。
  *
- * §5.2 は 4 項を挙げているが、ここは 3 項で書く。
+ * §5.2 は 4 項を挙げているが、ここは 2 項で書く。
+ *
  * **重複ペナルティを独立項にせず、カバレッジ項の凹関数に吸わせている。**
  * 同一筋に重ねるほど限界利得が落ちるので、減点を別に足すと同じ効果が二重に掛かる。
  *
- * 多様性と複合種目は減点ではなく加点で書く。種目数が固定なら両者は定数差で等価だが、
+ * **複合種目優先は目的関数に持たない。** §5.2 の文言は「序盤に配置しやすくする」で、
+ * これは §5.3 の順序付けが担う（ADR 0009）。選択時に効かせると単関節種目が候補から
+ * 押し出され、胸を指定してもフライが選ばれなくなる。
+ *
+ * 多様性は減点ではなく加点で書く。種目数が固定なら両者は定数差で等価だが、
  * **加点の形でだけ単調劣モジュラ性が保たれる。** 崩すと貪欲法の近似保証の前提が消える。
  */
 import type { Exercise, MuscleId } from "@mtr/data";
@@ -22,15 +27,6 @@ export const OBJECTIVE_WEIGHTS = {
    * 実データの chest_only では 0.05〜0.3 の範囲で出力が変わらない。細かく振る意味がない。
    */
   diversity: 0.15,
-
-  /**
-   * compound 1 件あたりの加点。
-   *
-   * **単関節種目を候補から押し出す向きに働く。** design.md §5.2 が求めているのは
-   * 「序盤に compound を配置しやすくする」ことなので、本来は §5.3 の順序付けの仕事。
-   * 選択時に効かせるかどうかは #14 で決め直す。
-   */
-  compound: 0.1,
 };
 
 /**
@@ -54,15 +50,9 @@ export function diversityTerm(set: readonly Exercise[]): number {
   return new Set(set.map((exercise) => exercise.movementPattern)).size;
 }
 
-/** 複合種目項。`mechanic` が未設定の種目は数えない（上流に欠損がある）。 */
-export function compoundTerm(set: readonly Exercise[]): number {
-  return set.filter((exercise) => exercise.mechanic === "compound").length;
-}
-
 export function objective(set: readonly Exercise[], targets: readonly MuscleId[]): number {
   return (
     OBJECTIVE_WEIGHTS.coverage * coverageTerm(set, targets) +
-    OBJECTIVE_WEIGHTS.diversity * diversityTerm(set) +
-    OBJECTIVE_WEIGHTS.compound * compoundTerm(set)
+    OBJECTIVE_WEIGHTS.diversity * diversityTerm(set)
   );
 }

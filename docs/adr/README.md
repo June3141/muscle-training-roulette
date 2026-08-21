@@ -98,3 +98,4 @@ Draft ──→ Proposed ──→ Accepted ──→ Superseded
 | [0006](./0006-exercise-id.md) | 種目 id は独自に振り、器具名を含めない | Accepted |
 | [0007](./0007-duplicate-base-name-ids.md) | 同じベース名の種目をどう区別するか | Accepted |
 | [0008](./0008-selection-objective-and-algorithm.md) | 選択エンジンの目的関数の形とアルゴリズムの止めどころ | Accepted |
+| [0009](./0009-exercise-ordering.md) | 種目の順序付けルールと、複合種目優先をどこに置くか | Accepted |

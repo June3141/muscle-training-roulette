@@ -7,8 +7,9 @@
  * ゴールデンセット 5 件の実行とスナップショットは #15。ここは #13 の完了条件だけを見る。
  */
 import { readFileSync } from "node:fs";
-import { datasetSchema, type MovementPattern } from "@mtr/data";
+import { datasetSchema, type Exercise, type MovementPattern } from "@mtr/data";
 import { describe, expect, it } from "vitest";
+import { primaryMuscleOf } from "../src/order.ts";
 import { selectExercises } from "../src/select.ts";
 
 const dataset = datasetSchema.parse(
@@ -46,5 +47,45 @@ describe("chest_only を実データで解く", () => {
     const result = selectExercises(CHEST_ONLY, dataset);
     expect(result.exercises).toHaveLength(5);
     expect(result.uncovered).toEqual([]);
+  });
+});
+
+/** ゴールデンセットの `ppl_push`（packages/engine/test/golden/cases.ts）と同じ要求。 */
+const PPL_PUSH = {
+  targets: [
+    "pectoralis_major_sternal",
+    "pectoralis_major_clavicular",
+    "deltoid_anterior",
+    "triceps_brachii",
+  ],
+  count: 6,
+} as const;
+
+const isPress = (exercise: Exercise): boolean =>
+  exercise.movementPattern === "horizontal_press" ||
+  exercise.movementPattern === "incline_press" ||
+  exercise.movementPattern === "vertical_press";
+
+describe("ppl_push を実データで解く", () => {
+  const ordered = (): readonly Exercise[] =>
+    selectExercises(PPL_PUSH, dataset).exercises.map((s) => s.exercise);
+
+  it("プレス系が含まれる", () => {
+    expect(ordered().some(isPress)).toBe(true);
+  });
+
+  /**
+   * §5.3 ルール 3。三頭を先に潰すとプレスが挙がらない。
+   * **単関節種目が 1 件も選ばれていないと、この検査は素通りする。**
+   * だから「存在すること」を先に確かめる。
+   */
+  it("三頭の単関節種目が選ばれ、かつプレス系より後に来る", () => {
+    const set = ordered();
+    const tricepsIsolation = set.findIndex(
+      (exercise) =>
+        exercise.mechanic === "isolation" && primaryMuscleOf(exercise) === "triceps_brachii",
+    );
+    expect(tricepsIsolation).toBeGreaterThanOrEqual(0);
+    expect(tricepsIsolation).toBeGreaterThan(set.findLastIndex(isPress));
   });
 });

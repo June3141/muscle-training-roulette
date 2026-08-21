@@ -7,13 +7,7 @@
  * 貪欲法の近似保証の前提（単調劣モジュラ）が消える（ADR 0008 決定 3）。
  */
 import { describe, expect, it } from "vitest";
-import {
-  OBJECTIVE_WEIGHTS,
-  compoundTerm,
-  coverageTerm,
-  diversityTerm,
-  objective,
-} from "../src/objective.ts";
+import { OBJECTIVE_WEIGHTS, coverageTerm, diversityTerm, objective } from "../src/objective.ts";
 import { exercise } from "./fixtures.ts";
 
 describe("coverageTerm", () => {
@@ -93,28 +87,8 @@ describe("diversityTerm", () => {
   });
 });
 
-describe("compoundTerm", () => {
-  it("何も選ばなければ 0", () => {
-    expect(compoundTerm([])).toBe(0);
-  });
-
-  it("compound の件数を数える", () => {
-    const set = [
-      exercise({ muscleWeights: { quadriceps: 1 }, mechanic: "compound" }),
-      exercise({ muscleWeights: { quadriceps: 1 }, mechanic: "compound" }),
-      exercise({ muscleWeights: { quadriceps: 1 }, mechanic: "isolation" }),
-    ];
-    expect(compoundTerm(set)).toBe(2);
-  });
-
-  it("mechanic が未設定の種目は数えない", () => {
-    const unknown = exercise({ muscleWeights: { quadriceps: 1 }, mechanic: null });
-    expect(compoundTerm([unknown])).toBe(0);
-  });
-});
-
 describe("objective", () => {
-  it("3 項の係数付き和になる", () => {
+  it("2 項の係数付き和になる", () => {
     const set = [
       exercise({
         muscleWeights: { quadriceps: 1 },
@@ -131,8 +105,7 @@ describe("objective", () => {
 
     expect(objective(set, targets)).toBeCloseTo(
       OBJECTIVE_WEIGHTS.coverage * coverageTerm(set, targets) +
-        OBJECTIVE_WEIGHTS.diversity * diversityTerm(set) +
-        OBJECTIVE_WEIGHTS.compound * compoundTerm(set),
+        OBJECTIVE_WEIGHTS.diversity * diversityTerm(set),
       10,
     );
   });
@@ -141,8 +114,17 @@ describe("objective", () => {
     expect(OBJECTIVE_WEIGHTS.coverage).toBe(1);
   });
 
-  it("多様性と複合種目は加点なので係数が正", () => {
+  it("多様性は加点なので係数が正", () => {
     expect(OBJECTIVE_WEIGHTS.diversity).toBeGreaterThan(0);
-    expect(OBJECTIVE_WEIGHTS.compound).toBeGreaterThan(0);
+  });
+
+  /**
+   * 複合種目優先は §5.3 の順序付けが担う（ADR 0009）。
+   * **目的関数に戻すと単関節種目が候補から押し出される。**
+   */
+  it("mechanic は目的関数に影響しない", () => {
+    const compound = [exercise({ muscleWeights: { quadriceps: 1 }, mechanic: "compound" })];
+    const isolation = [exercise({ muscleWeights: { quadriceps: 1 }, mechanic: "isolation" })];
+    expect(objective(compound, ["quadriceps"])).toBe(objective(isolation, ["quadriceps"]));
   });
 });
