@@ -1,11 +1,12 @@
 /**
- * 選択エンジンの貪欲法（design.md §5.1、Issue #12・#13）。
+ * 選択エンジン（design.md §5.1、Issue #12・#13・#14）。
  *
  * 「被覆最大化」以下の各 describe は候補の絞り込みと縮退を見る。
- * ここでは種目の動作パターンと mechanic を既定値のままにしてあるので、
- * **多様性項と複合種目項が種目数だけで決まる定数になり、カバレッジ項だけが順序を決める。**
+ * ここでは種目の動作パターンを既定値のままにしてあるので、
+ * **多様性項が種目数だけで決まる定数になり、カバレッジ項だけが選択を決める。**
  *
- * 目的関数の 3 項がどう順序に効くかは「目的関数の項」の describe（#13）で見る。
+ * 並び順は §5.3 の順序付けが決めるので、選択の検査で順序に依存させない。
+ * 順序付けそのものは order.test.ts。
  */
 import { describe, expect, it } from "vitest";
 import { selectExercises } from "../src/select.ts";
@@ -200,7 +201,8 @@ describe("selectExercises: 目的関数の項（#13）", () => {
       quadB,
       ham,
     ]);
-    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["quadA", "ham"]);
+    // 何が選ばれたかだけを見る。並び順は §5.3 の順序付けが決める。
+    expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["ham", "quadA"]);
   });
 
   it("重みが少し劣っても、動作パターンの違う種目を混ぜる", () => {
@@ -227,21 +229,6 @@ describe("selectExercises: 目的関数の項（#13）", () => {
     expect(result.exercises.map((s) => s.exercise.id)).toEqual(["heavy", "otherPattern"]);
   });
 
-  it("重みが同じなら複合種目を優先する", () => {
-    const isolation = exercise({
-      id: "isolation",
-      muscleWeights: { quadriceps: 1 },
-      mechanic: "isolation",
-    });
-    const compound = exercise({
-      id: "compound",
-      muscleWeights: { quadriceps: 1 },
-      mechanic: "compound",
-    });
-    const result = selectExercises({ targets: ["quadriceps"], count: 1 }, [isolation, compound]);
-    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["compound"]);
-  });
-
   /**
    * 貪欲法は 1 手目に `both` を採る（単独では最大）が、そこから 2 手目をどう選んでも
    * `quadOnly` + `hamOnly` の組には届かない。1-swap が 1 手目を差し替えて回収する。
@@ -256,6 +243,18 @@ describe("selectExercises: 目的関数の項（#13）", () => {
       hamOnly,
     ]);
     expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["hamOnly", "quadOnly"]);
+  });
+});
+
+describe("selectExercises: 順序付け（#14）", () => {
+  it("結果は選んだ順ではなく実行順で返る", () => {
+    const curl = exercise({ id: "curl", muscleWeights: { biceps_brachii: 1 } });
+    const row = exercise({ id: "row", muscleWeights: { latissimus_dorsi: 1 } });
+    const result = selectExercises({ targets: ["biceps_brachii", "latissimus_dorsi"], count: 2 }, [
+      curl,
+      row,
+    ]);
+    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["row", "curl"]);
   });
 });
 

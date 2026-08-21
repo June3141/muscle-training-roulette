@@ -8,11 +8,13 @@
  * 貪欲法の後に 1-swap を回す。**1 手目の取りこぼしは後続の手では回収できない。**
  * 厳密解は入れない。目的関数が最適解の近傍で平坦で、詰めても出力の質が変わらない（ADR 0008）。
  *
- * 順序付け（§5.3）は #14。ここでは選んだ順で返す。
+ * 選んだ集合は最後に実行順へ並べ替える（§5.3、order.ts）。
+ * **貪欲法が採った順は「目的関数をどう伸ばしたか」であって、実行に適した順ではない。**
  */
 import type { Equipment, Exercise, MuscleId } from "@mtr/data";
-import { computeCoverage, uncoveredTargets } from "./coverage.ts";
+import { computeCoverage, targetWeightOf, uncoveredTargets } from "./coverage.ts";
 import { objective } from "./objective.ts";
+import { orderExercises } from "./order.ts";
 import type { SelectedExercise, SelectionRequest, SelectionResult } from "./types.ts";
 
 /**
@@ -22,11 +24,6 @@ import type { SelectedExercise, SelectionRequest, SelectionResult } from "./type
  * 厳密な不等号だけでは浮動小数の丸めで同点が同点にならない。
  */
 const IMPROVEMENT_EPSILON = 1e-12;
-
-/** 対象筋に乗っている重みの合計。候補を絞るためだけに使う（順位付けは目的関数）。 */
-function targetWeightOf(exercise: Exercise, targets: readonly MuscleId[]): number {
-  return targets.reduce((sum, muscle) => sum + (exercise.muscleWeights[muscle] ?? 0), 0);
-}
 
 /**
  * 実際に使う器具を決める。
@@ -133,7 +130,10 @@ export function selectExercises(
 ): SelectionResult {
   const pool = candidatesOf(request, dataset);
   const greedyChoice = greedy(pool, request.targets, Math.max(0, request.count));
-  const chosen = improveBySwap(greedyChoice, pool, request.targets);
+  const chosen = orderExercises(
+    improveBySwap(greedyChoice, pool, request.targets),
+    request.targets,
+  );
 
   const exercises: readonly SelectedExercise[] = chosen.map((exercise) => ({
     exercise,

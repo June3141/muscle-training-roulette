@@ -37,6 +37,11 @@ export function computeCoverage(exercises: readonly Exercise[]): Coverage {
   return coverage;
 }
 
+/** 1 種目が指定部位に乗せている重みの合計。候補の絞り込みと順序付けの同点解消に使う。 */
+export function targetWeightOf(exercise: Exercise, targets: readonly MuscleId[]): number {
+  return targets.reduce((sum, muscle) => sum + (exercise.muscleWeights[muscle] ?? 0), 0);
+}
+
 /** 指定部位に乗ったカバレッジの合計。目的関数のカバレッジ項（§5.2）。 */
 export function coverageOf(coverage: Coverage, targets: readonly MuscleId[]): number {
   return targets.reduce((sum, muscle) => sum + (coverage[muscle] ?? 0), 0);
