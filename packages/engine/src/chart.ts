@@ -7,6 +7,8 @@
  * - 指定したのにカバレッジ 0 の部位も行を残す。消すと要求が満たされたように見える
  * - 指定していないのに乗った部位も出す。波及が見えないと違和感を言語化できない
  * - 行はタキソノミー順で固定する。値の降順にすると重みを 1 件触るだけで行が動く
+ * - 目盛りの最大値を図に書く。**バーは最大値に対する比なので、別々の要求で描いた
+ *   2 枚は比較できない。**書いておかないと、並べたときに比較できるように見える
  *
  * 依存も外部参照も持たない SVG 文字列を返す。画像素材を使わない方針（§8）に加えて、
  * **CLI からファイルに落としてそのまま開ける**必要があるため。
@@ -97,7 +99,7 @@ export function renderCoverageChart(coverage: Coverage, targets: readonly Muscle
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${height}" width="${WIDTH}" height="${height}" font-family="sans-serif" role="img" aria-label="部位カバレッジ">
   <rect width="${WIDTH}" height="${height}" fill="${COLORS.background}"/>
-  <text x="${LAYOUT.padding}" y="${LAYOUT.padding + 14}" font-size="13" fill="${COLORS.label}">部位カバレッジ（種目数換算）</text>
+  <text x="${LAYOUT.padding}" y="${LAYOUT.padding + 14}" font-size="13" fill="${COLORS.label}">部位カバレッジ（種目数換算 / 最大 ${escapeXml(max.toFixed(2))}）</text>
   ${rows.map((row, index) => rowSvg(row, index, max)).join("\n  ")}
 </svg>
 `;

@@ -92,6 +92,20 @@ describe("renderCoverageChart: 目盛り", () => {
   });
 });
 
+describe("renderCoverageChart: 目盛りを図に書く", () => {
+  /**
+   * バーの長さは最大値に対する比なので、**別々の要求で描いた 2 枚は比較できない。**
+   * 目盛りを書いておかないと、並べたときに比較できるように見えてしまう。
+   */
+  it("最大値を図に書く", () => {
+    expect(renderCoverageChart({ quadriceps: 2.5 }, [])).toContain("最大 2.50");
+  });
+
+  it("すべて 0 でも最大値を書く", () => {
+    expect(renderCoverageChart({}, ["quadriceps"])).toContain("最大 0.00");
+  });
+});
+
 describe("renderCoverageChart: 並び順", () => {
   /**
    * **タキソノミーの並び順で固定する。** 値の降順にすると、重みを 1 件触るだけで
