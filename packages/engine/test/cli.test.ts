@@ -147,3 +147,32 @@ describe("差し替えとカバレッジ差分（#16）", () => {
     expect(() => swap("squat")).toThrow(/replace/);
   });
 });
+
+describe("出力形式（#16）", () => {
+  it("--format svg で SVG を返す", () => {
+    const svg = runCli(["--targets", "quadriceps", "--count", "1", "--format", "svg"], dataset);
+    expect(svg.startsWith("<svg")).toBe(true);
+    expect(svg).toContain("大腿四頭筋");
+  });
+
+  it("--format text は既定と同じ", () => {
+    const args = ["--targets", "quadriceps", "--count", "1"];
+    expect(runCli([...args, "--format", "text"], dataset)).toBe(runCli(args, dataset));
+  });
+
+  it("知らない形式はエラーにする", () => {
+    expect(() =>
+      runCli(["--targets", "quadriceps", "--count", "1", "--format", "png"], dataset),
+    ).toThrow(/png/);
+  });
+
+  it("差し替えた後のカバレッジを描く", () => {
+    const svg = runCli(
+      ["--targets", "quadriceps", "--count", "1", "--replace", "1=pushdown", "--format", "svg"],
+      dataset,
+    );
+    // 差し替え前は大腿四頭筋 1.00。差し替え後は 0 になり、三頭に 1.00 が乗る。
+    expect(svg).toContain("上腕三頭筋");
+    expect(svg).toContain("0.00");
+  });
+});

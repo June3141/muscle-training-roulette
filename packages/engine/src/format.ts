@@ -7,7 +7,7 @@
  * 「なぜこの種目が選ばれたか」を読めない。
  */
 import { MUSCLES, MUSCLE_IDS, type MuscleId } from "@mtr/data";
-import type { SelectionResult } from "./types.ts";
+import type { Coverage, SelectionResult } from "./types.ts";
 
 /**
  * カバレッジはタキソノミーの並び順で出す。
@@ -43,4 +43,23 @@ export function formatSelection(result: SelectionResult): string {
     "",
     `カバーできない部位: ${result.uncovered.length === 0 ? "なし" : jaNamesOf(result.uncovered)}`,
   ].join("\n");
+}
+
+/**
+ * カバレッジの差分（design.md §6 の [5]）。
+ *
+ * 「フライ → ディップスに変更 / 上腕三頭筋 +0.18、大胸筋上部 −0.05」を出すための整形。
+ *
+ * **変化がなかったときに黙って何も出さない形にしない。** 差分が無いのか壊れたのかを
+ * 読み手が区別できなくなる。器具を切り替えてもカバレッジは動かないので（ADR 0002）、
+ * この区別は実際に必要になる。
+ */
+export function formatCoverageDiff(diff: Coverage): string {
+  const lines = MUSCLE_IDS.filter((muscle) => (diff[muscle] ?? 0) !== 0).map((muscle) => {
+    const delta = diff[muscle] ?? 0;
+    // 負号は U+2212。ASCII のハイフンだと箇条書きの記号と紛れる。
+    const sign = delta > 0 ? "+" : "−";
+    return `  ${MUSCLES[muscle].ja} ${sign}${Math.abs(delta).toFixed(2)}`;
+  });
+  return lines.length === 0 ? "  変化なし" : lines.join("\n");
 }
