@@ -47,11 +47,24 @@ const EQUIPMENT_WORDS = [
 /** 動作に何も足さない筋肉名の修飾。「Bicep Curl」と「Curl」は同じ種目。 */
 const MUSCLE_WORDS = [/\bbiceps?\b/g, /\btriceps?\b/g];
 
+/**
+ * 筋肉名を落とさない動作。**プレスでは筋肉名が動作そのものを決める。**
+ *
+ * 「Triceps Press」は肘の伸展で、「Press」は肩や胸で押す。落とすと
+ * `Lying Triceps Press` が `Seated Dumbbell Press` と同じベース名になり、
+ * 名前からは動作パターンを分けられなくなる。
+ */
+const MUSCLE_WORD_KEPT = /\bpress(es)?\b/;
+
 /** 器具名を落とした結果、末尾に残ってしまう語。「Squats - With Bands」→「squat with」を防ぐ。 */
 const DANGLING_TAIL = /\s+(with|and|a|an|the|of|to|in|on)$/;
 
-/** 単数形が s で終わる語。末尾の s を落とすと press が pres、Atlas が Atla になる。 */
-const ALREADY_SINGULAR = /(?:ss|us|as|is|ies)$/;
+/**
+ * 単数形が s で終わる語。末尾の s を落とすと press が pres、Atlas が Atla になる。
+ *
+ * `ceps` はラテン語由来で triceps / biceps がそのまま単数形。
+ */
+const ALREADY_SINGULAR = /(?:ss|us|as|is|ies|ceps)$/;
 
 /** 語尾に es が付く複数形。presses / benches / boxes。 */
 const PLURAL_ES = /(?:sses|shes|ches|xes)$/;
@@ -64,7 +77,8 @@ function singularize(word: string): string {
 
 export function normalizeBaseName(name: string): string {
   let result = name.toLowerCase().replace(DEFAULT_GRIP, " ");
-  for (const pattern of [...LATERALITY_WORDS, ...EQUIPMENT_WORDS, ...MUSCLE_WORDS]) {
+  const dropped = MUSCLE_WORD_KEPT.test(result) ? [] : MUSCLE_WORDS;
+  for (const pattern of [...LATERALITY_WORDS, ...EQUIPMENT_WORDS, ...dropped]) {
     result = result.replace(pattern, " ");
   }
   result = result

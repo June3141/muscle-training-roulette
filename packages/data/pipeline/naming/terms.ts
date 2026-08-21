@@ -121,6 +121,9 @@ const BODY_PARTS: Readonly<Record<string, string>> = {
   sternum: "スターナム",
   thigh: "サイ",
   trap: "トラップ",
+  /** プレスでのみベース名に残る（base-name.ts の MUSCLE_WORD_KEPT）。上流に両方の綴りがある。 */
+  tricep: "トライセプス",
+  triceps: "トライセプス",
   wrist: "リスト",
 };
 

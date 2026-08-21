@@ -25,11 +25,12 @@ export interface MovementMapping {
 const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapping }[] = [
   {
     pattern:
-      /\bcarry\b|farmer|yoke|suitcase|sandbag|keg carry|atlas stone|tire flip|power stair|log lift|circus bell|sled (drag|push|pull)|backward drag|forward drag|conan|\bdrag\b|\bwalk\b|\bhold\b/,
+      /\bcarry\b|farmer|yoke|suitcase|sandbag|keg carry|atlas stone|tire flip|power stair|log lift|circus bell|sled (drag|push|pull)|backward drag|forward drag|conan|\bdrag\b(?! curl)|\bwalk\b|\bhold\b/,
     mapping: { pattern: "carry", rule: "保持・運搬" },
   },
   {
-    pattern: /calf/,
+    // カーフマシンは荷重に使っているだけで、動作はシュラッグ。
+    pattern: /calf(?!.*shrug)/,
     mapping: { pattern: "calf_raise", rule: "下腿三頭筋の単関節" },
   },
   {
@@ -66,7 +67,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b|\bsnatch\b|romanian|back extension|hyperextension|pull[- ]?through|rack pull|high pull|jefferson|physioball hip bridge|judo flip|heavy bag thrust|keg load|stiff leg/,
+      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b(?! grip)|\bsnatch\b|romanian|back extension|hyperextension|pull[- ]?through|rack pull|high pull\b|jefferson|physioball hip bridge|judo flip|heavy bag thrust|keg load|stiff leg/,
     mapping: { pattern: "hinge", rule: "股関節優位の屈伸" },
   },
   {
@@ -74,8 +75,16 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "squat", rule: "膝関節優位の屈伸" },
   },
   {
+    /**
+     * 三頭のプレスは肘の伸展。
+     * **`press to chin` を下の垂直プルが `\bchin\b` で拾うので、その前に採る。**
+     */
+    pattern: /\btriceps? press\b|\bclose grip press\b/,
+    mapping: { pattern: "elbow_extension", rule: "肘の伸展（三頭のプレス）" },
+  },
+  {
     pattern:
-      /pulldown|pull[- ]?up|chin[- ]?up|muscle[- ]?up|pull[- ]?over|lat pull|gironda sternum|rope climb|side to side chin/,
+      /pulldown|pull[- ]?up|chin[- ]?up|muscle[- ]?up|pull[- ]?over|lat pull|gironda sternum|rope climb|\bchin\b/,
     mapping: { pattern: "vertical_pull", rule: "頭上から引く" },
   },
   {
@@ -99,7 +108,8 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "vertical_press", rule: "頭上へ押す" },
   },
   {
-    pattern: /incline.*(press|push)|incline bench with palm/,
+    // プッシュダウンは押す動作ではない。`push\b` で pushdown を外す。
+    pattern: /incline.*(press|push\b)|incline bench with palm/,
     mapping: { pattern: "incline_press", rule: "斜め上へ押す" },
   },
   {
@@ -110,12 +120,12 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|lying press|body press|drop push|push off|return push|\bdip\b|power partial|^press$/,
+      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drop push|push off|return push|\bdip\b|power partial|^press$/,
     mapping: { pattern: "horizontal_press", rule: "水平に押す" },
   },
   {
     pattern:
-      /wrist curl|wrist rotation|reverse curl|finger curl|wrist roller|plate pinch|\bgrip\b|pronation|supination|bottom up|hand squeeze/,
+      /wrist curl|wrist rotation|reverse curl|finger curl|wrist roller|plate pinch|pronation|supination|bottom up|hand squeeze/,
     mapping: { pattern: "wrist_flexion", rule: "手関節・握力" },
   },
   {

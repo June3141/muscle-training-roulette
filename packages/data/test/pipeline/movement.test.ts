@@ -21,6 +21,52 @@ describe("動作パターンの判定（§5.2）", () => {
     expect(patternOf("crossover")).toBe("horizontal_adduction");
   });
 
+  it("股関節を伸展するブリッジは体幹種目ではない", () => {
+    expect(patternOf("barbell glute bridge")).toBe("hinge");
+    expect(patternOf("physioball hip bridge")).toBe("hinge");
+    expect(patternOf("butt lift (bridge)")).toBe("hinge");
+    // サイドブリッジは体幹の抗側屈なので、こちらは体幹に残す。
+    expect(patternOf("side bridge")).toBe("trunk_antiextension");
+  });
+
+  it("引く動作を面で分ける", () => {
+    expect(patternOf("bent over row")).toBe("horizontal_pull");
+    expect(patternOf("wide grip lat pulldown")).toBe("vertical_pull");
+  });
+
+  it("下半身を股関節優位と膝関節優位で分ける", () => {
+    expect(patternOf("deadlift")).toBe("hinge");
+    expect(patternOf("squat")).toBe("squat");
+    expect(patternOf("walking lunge")).toBe("lunge");
+  });
+
+  it("手首と肘を分ける", () => {
+    // リストカールは肘を曲げない。elbow_flexion に入れると多様性制約が誤作動する。
+    expect(patternOf("seated palm up wrist curl")).toBe("wrist_flexion");
+    expect(patternOf("preacher curl")).toBe("elbow_flexion");
+  });
+
+  it("跳ぶ動作と投げる動作を分ける", () => {
+    expect(patternOf("box jump")).toBe("jump");
+    expect(patternOf("medicine ball slam")).toBe("throw");
+  });
+
+  it("判別できないものは理由が残る", () => {
+    const result = mapMovementPattern("seated head harness neck resistance");
+    expect(result.pattern).toBe("other");
+    expect(result.rule).toContain("当たらない");
+  });
+
+  it("当たったルールが分かる", () => {
+    expect(mapMovementPattern("bench press").rule.length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * ルールは上から順に当たる。広い語のルールが上位にあると、下位の具体的なルールへ到達しない。
+ * **多様性項は「他と違うパターン」を無条件に加点するので、誤判定された種目を積極的に選ぶ。**
+ */
+describe("広いキーワードによる覆い隠し", () => {
   /**
    * 上のルールが広いキーワードで先に拾ってしまう組。
    * **多様性項は「他と違うパターン」を無条件に加点するので、誤判定された種目を積極的に選ぶ。**
@@ -65,6 +111,12 @@ describe("動作パターンの判定（§5.2）", () => {
     expect(patternOf("sumo high pull")).toBe("hinge");
   });
 
+  /** ゴールデンセットの差分で見つかった。プッシュダウンは押す動作ではない。 */
+  it("インクラインが下位のプッシュダウンを覆わない", () => {
+    expect(patternOf("incline pushdown")).toBe("elbow_extension");
+    expect(patternOf("incline push up")).toBe("incline_press");
+  });
+
   it("クリーングリップはクリーンではない", () => {
     expect(patternOf("front squat clean grip")).toBe("squat");
     expect(patternOf("hang clean")).toBe("hinge");
@@ -82,46 +134,6 @@ describe("動作パターンの判定（§5.2）", () => {
     expect(patternOf("body tricep press")).toBe("elbow_extension");
     expect(patternOf("seated press")).toBe("vertical_press");
     expect(patternOf("reverse triceps bench press")).toBe("horizontal_press");
-  });
-
-  it("股関節を伸展するブリッジは体幹種目ではない", () => {
-    expect(patternOf("barbell glute bridge")).toBe("hinge");
-    expect(patternOf("physioball hip bridge")).toBe("hinge");
-    expect(patternOf("butt lift (bridge)")).toBe("hinge");
-    // サイドブリッジは体幹の抗側屈なので、こちらは体幹に残す。
-    expect(patternOf("side bridge")).toBe("trunk_antiextension");
-  });
-
-  it("引く動作を面で分ける", () => {
-    expect(patternOf("bent over row")).toBe("horizontal_pull");
-    expect(patternOf("wide grip lat pulldown")).toBe("vertical_pull");
-  });
-
-  it("下半身を股関節優位と膝関節優位で分ける", () => {
-    expect(patternOf("deadlift")).toBe("hinge");
-    expect(patternOf("squat")).toBe("squat");
-    expect(patternOf("walking lunge")).toBe("lunge");
-  });
-
-  it("手首と肘を分ける", () => {
-    // リストカールは肘を曲げない。elbow_flexion に入れると多様性制約が誤作動する。
-    expect(patternOf("seated palm up wrist curl")).toBe("wrist_flexion");
-    expect(patternOf("preacher curl")).toBe("elbow_flexion");
-  });
-
-  it("跳ぶ動作と投げる動作を分ける", () => {
-    expect(patternOf("box jump")).toBe("jump");
-    expect(patternOf("medicine ball slam")).toBe("throw");
-  });
-
-  it("判別できないものは理由が残る", () => {
-    const result = mapMovementPattern("seated head harness neck resistance");
-    expect(result.pattern).toBe("other");
-    expect(result.rule).toContain("当たらない");
-  });
-
-  it("当たったルールが分かる", () => {
-    expect(mapMovementPattern("bench press").rule.length).toBeGreaterThan(0);
   });
 });
 
