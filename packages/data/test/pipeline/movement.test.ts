@@ -21,6 +21,27 @@ describe("動作パターンの判定（§5.2）", () => {
     expect(patternOf("crossover")).toBe("horizontal_adduction");
   });
 
+  /**
+   * 上のルールが広いキーワードで先に拾ってしまう組。
+   * **多様性項は「他と違うパターン」を無条件に加点するので、誤判定された種目を積極的に選ぶ。**
+   */
+  it("先に当たる広いルールに胸の種目を奪われない", () => {
+    // butterfly は \bfly\b に当たらない。r と fly の間に語境界がないため。
+    expect(patternOf("butterfly")).toBe("horizontal_adduction");
+    expect(patternOf("incline dumbbell flyes - with a twist")).toBe("horizontal_adduction");
+    // ひねりを持つ体幹種目まで胸に寄せない。
+    expect(patternOf("cable russian twists")).toBe("trunk_rotation");
+    expect(patternOf("plate twist")).toBe("trunk_rotation");
+  });
+
+  it("股関節を伸展するブリッジは体幹種目ではない", () => {
+    expect(patternOf("barbell glute bridge")).toBe("hinge");
+    expect(patternOf("physioball hip bridge")).toBe("hinge");
+    expect(patternOf("butt lift (bridge)")).toBe("hinge");
+    // サイドブリッジは体幹の抗側屈なので、こちらは体幹に残す。
+    expect(patternOf("side bridge")).toBe("trunk_antiextension");
+  });
+
   it("引く動作を面で分ける", () => {
     expect(patternOf("bent over row")).toBe("horizontal_pull");
     expect(patternOf("wide grip lat pulldown")).toBe("vertical_pull");

@@ -34,8 +34,16 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|isometric|pallof|cocoon|\bbridge\b|balance board|downward facing balance|spider crawl|suspended fallout/,
+      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|isometric|pallof|cocoon|side bridge|balance board|downward facing balance|spider crawl|suspended fallout/,
     mapping: { pattern: "trunk_antiextension", rule: "体幹の抗伸展・抗回旋" },
+  },
+  {
+    /**
+     * ひねりを加えたフライは胸の種目。
+     * **下の体幹回旋ルールが `twist` で先に拾うと、多様性項が「珍しいパターン」として加点する。**
+     */
+    pattern: /\bflyes?\b.*twist|twist.*\bflyes?\b/,
+    mapping: { pattern: "horizontal_adduction", rule: "肘を伸ばしたまま水平内転（ひねり付き）" },
   },
   {
     pattern:
@@ -44,7 +52,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /crunch|sit[- ]?up|leg raise|knee raise|leg lift|knee lift|v[- ]?up|jackknife|toe touch|hip raise|hip lift|hip flexion|scissor kick|flutter|frog|heel touch|reverse hyper|leg pull|mountain climber|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up|london bridge|butt lift/,
+      /crunch|sit[- ]?up|leg raise|knee raise|leg lift|knee lift|v[- ]?up|jackknife|toe touch|hip raise|hip lift|hip flexion|scissor kick|flutter|frog|heel touch|reverse hyper|leg pull|mountain climber|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up|london bridge/,
     mapping: { pattern: "trunk_flexion", rule: "体幹の屈曲" },
   },
   {
@@ -58,7 +66,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /deadlift|good morning|hip thrust|glute bridge|swing|\bclean\b|\bsnatch\b|romanian|back extension|hyperextension|pull[- ]?through|rack pull|high pull|jefferson|physioball hip bridge|judo flip|heavy bag thrust|keg load|stiff leg/,
+      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b|\bsnatch\b|romanian|back extension|hyperextension|pull[- ]?through|rack pull|high pull|jefferson|physioball hip bridge|judo flip|heavy bag thrust|keg load|stiff leg/,
     mapping: { pattern: "hinge", rule: "股関節優位の屈伸" },
   },
   {
@@ -82,7 +90,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /shrug|lateral raise|front raise|side raise|scaption|upright row|deltoid raise|shoulder raise|plate raise|front two raise|front incline raise|side lateral|^raise$|butterfly|delt raise|single raise|straight raise/,
+      /shrug|lateral raise|front raise|side raise|scaption|upright row|deltoid raise|shoulder raise|plate raise|front two raise|front incline raise|side lateral|^raise$|delt raise|single raise|straight raise/,
     mapping: { pattern: "shoulder_raise", rule: "肩関節の単関節挙上" },
   },
   {
@@ -95,7 +103,9 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "incline_press", rule: "斜め上へ押す" },
   },
   {
-    pattern: /\bfly\b|\bflye|pec deck|crossover|cross over|iron cross|crucifix|svend press/,
+    // butterfly は \bfly\b に当たらない。r と fly の間に語境界がないため。
+    pattern:
+      /\bfly\b|\bflye|butterfly|pec deck|crossover|cross over|iron cross|crucifix|svend press/,
     mapping: { pattern: "horizontal_adduction", rule: "肘を伸ばしたまま水平内転" },
   },
   {
