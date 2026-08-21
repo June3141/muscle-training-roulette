@@ -18,6 +18,9 @@ const dataset = [
     mechanic: "isolation",
   }),
   exercise({ id: "squat", muscleWeights: { quadriceps: 1 }, movementPattern: "squat" }),
+  exercise({ id: "curl", muscleWeights: { biceps_brachii: 1 }, mechanic: "isolation" }),
+  exercise({ id: "wristcurl", muscleWeights: { wrist_flexors: 1 }, mechanic: "isolation" }),
+  exercise({ id: "excluded", muscleWeights: { quadriceps: 1 }, selectable: false }),
 ];
 
 describe("parseRequest: 部位の解釈", () => {
@@ -145,6 +148,54 @@ describe("差し替えとカバレッジ差分（#16）", () => {
 
   it("--replace の書式が違えばエラーにする", () => {
     expect(() => swap("squat")).toThrow(/replace/);
+  });
+
+  /**
+   * **差し替えは選択と同じ制約の中で行う。**
+   * 器具フィルタを迂回できると、指定した器具では実行できないメニューが黙って返る。
+   */
+  it("許可されていない器具しか持たない種目への差し替えはエラーにする", () => {
+    expect(() =>
+      runCli(
+        [
+          "--targets",
+          "quadriceps",
+          "--count",
+          "1",
+          "--equipment",
+          "barbell",
+          "--replace",
+          "1=pushdown",
+        ],
+        dataset,
+      ),
+    ).toThrow(/pushdown/);
+  });
+
+  it("selectable が false の種目への差し替えはエラーにする", () => {
+    expect(() => swap("1=excluded")).toThrow(/excluded/);
+  });
+
+  /** 同じ種目が 2 行並ぶとカバレッジが二重に計上され、図が良い出力に見える。 */
+  it("すでに選ばれている種目への差し替えはエラーにする", () => {
+    expect(() =>
+      runCli(
+        ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=curl"],
+        dataset,
+      ),
+    ).toThrow(/curl/);
+  });
+
+  /** SelectionResult.exercises は実行順という契約（types.ts）。差し替えでも守る。 */
+  it("差し替えた後も実行順に並べ直す", () => {
+    const output = runCli(
+      ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=wristcurl"],
+      dataset,
+    );
+    const lines = output.split("\n").filter((line) => /^\d\. /.test(line));
+    // 上腕二頭筋（種目 4）は前腕屈筋群（種目 5）より対象部位への寄与が大きいので先に来る。
+    expect(lines[0]).toContain("種目 4");
+    expect(lines[1]).toContain("種目 5");
   });
 });
 
