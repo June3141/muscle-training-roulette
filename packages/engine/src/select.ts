@@ -31,10 +31,7 @@ const IMPROVEMENT_EPSILON = 1e-12;
  * 既定の器具が許可されているならそれを使う。器具は選択後に切り替えられる軸なので（§6 の [4]）、
  * ここでの決定は初期値でしかない。
  */
-export function equipmentFor(
-  exercise: Exercise,
-  allowed: readonly Equipment[] | undefined,
-): Equipment {
+function equipmentFor(exercise: Exercise, allowed: readonly Equipment[] | undefined): Equipment {
   if (allowed === undefined || allowed.length === 0) return exercise.defaultEquipment;
   if (allowed.includes(exercise.defaultEquipment)) return exercise.defaultEquipment;
   return (

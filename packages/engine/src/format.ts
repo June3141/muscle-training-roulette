@@ -45,6 +45,9 @@ export function formatSelection(result: SelectionResult): string {
   ].join("\n");
 }
 
+/** 表示できる最小の差。これを下回る変化は数値ではなく「未満」で書く。 */
+const DIFF_RESOLUTION = 0.01;
+
 /**
  * カバレッジの差分（design.md §6 の [5]）。
  *
@@ -54,9 +57,6 @@ export function formatSelection(result: SelectionResult): string {
  * 読み手が区別できなくなる。器具を切り替えてもカバレッジは動かないので（ADR 0002）、
  * この区別は実際に必要になる。
  */
-/** 表示できる最小の差。これを下回る変化は数値ではなく「未満」で書く。 */
-const DIFF_RESOLUTION = 0.01;
-
 export function formatCoverageDiff(diff: Coverage): string {
   const lines = MUSCLE_IDS.filter((muscle) => (diff[muscle] ?? 0) !== 0).map((muscle) => {
     const delta = diff[muscle] ?? 0;

@@ -103,22 +103,34 @@ function resolveCount(raw: string | undefined): number {
   return count;
 }
 
+interface CliOptions {
+  readonly targets?: string | undefined;
+  readonly count?: string | undefined;
+  readonly equipment?: string | undefined;
+  /**
+   * **複数指定を受け取ってから弾く。**`multiple` を付けないと 2 回目が
+   * 前の値を黙って上書きし、打ち間違えた条件が無視されたまま結果が返る。
+   */
+  readonly replace?: readonly string[] | undefined;
+  readonly format?: string | undefined;
+}
+
 /** 知らないオプションを許すと、打ち間違えた条件が無視されたまま結果が返る。 */
-function optionsOf(argv: readonly string[]): Record<string, string | undefined> {
+function optionsOf(argv: readonly string[]): CliOptions {
   return parseArgs({
     args: [...argv],
     options: {
       targets: { type: "string" },
       count: { type: "string" },
       equipment: { type: "string" },
-      replace: { type: "string" },
+      replace: { type: "string", multiple: true },
       format: { type: "string" },
     },
     strict: true,
   }).values;
 }
 
-function requestOf(values: Record<string, string | undefined>): SelectionRequest {
+function requestOf(values: CliOptions): SelectionRequest {
   if (values.targets === undefined) fail("--targets が要ります。");
   const equipment =
     values.equipment === undefined ? undefined : resolveEquipment(splitList(values.equipment));
@@ -142,8 +154,11 @@ const REPLACE_SPEC = /^(\d+)=([a-z0-9_]+)$/;
  * **番号も id も、当たらなければ黙って無視せずエラーにする。**
  * 無視すると差し替えたつもりの結果が元のまま返り、差分が「変化なし」に見える。
  *
- * 差し替えは選択と同じ制約の中で行う。器具フィルタや `selectable` を迂回できると、
- * **指定した条件では実行できないメニューが黙って返る。**
+ * 差し替え先には候補と同じ条件のうち、`selectable` と器具フィルタを課す。
+ * 迂回できると**指定した条件では実行できないメニューが黙って返る。**
+ *
+ * 対象部位への寄与は問わない。**指定部位に効かない種目へ差し替えて
+ * カバレッジがどれだけ落ちるかを見るのは、計測器としての正当な使い方。**
  */
 function resolveReplacement(
   spec: string,
@@ -183,10 +198,12 @@ export function runCli(argv: readonly string[], dataset: readonly Exercise[]): s
   const values = optionsOf(argv);
   const request = requestOf(values);
   const before = selectExercises(request, dataset);
+  if (values.replace !== undefined && values.replace.length > 1) {
+    fail("--replace は 1 件だけ指定できます。");
+  }
+  const spec = values.replace?.[0];
   const replacement =
-    values.replace === undefined
-      ? undefined
-      : resolveReplacement(values.replace, before, request, dataset);
+    spec === undefined ? undefined : resolveReplacement(spec, before, request, dataset);
   const after =
     replacement === undefined
       ? before
@@ -215,7 +232,9 @@ export function runCli(argv: readonly string[], dataset: readonly Exercise[]): s
   return [
     ...head,
     "",
-    `差し替え: ${replacement.index + 1}. ${swapped} → ${replacement.exercise.nameJa}`,
+    // 番号を書かない。上のリストは差し替え後の実行順で採番されるので、
+    // 差し替え前の番号を書くと画面のどの行も指さない。
+    `差し替え: ${swapped} → ${replacement.exercise.nameJa}`,
     "",
     "カバレッジの変化",
     formatCoverageDiff(diffCoverage(before.coverage, after.coverage)),

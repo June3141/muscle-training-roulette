@@ -48,6 +48,14 @@ export function coverageOf(coverage: Coverage, targets: readonly MuscleId[]): nu
 }
 
 /**
+ * 変化とみなす下限。
+ *
+ * **足す順が変わるだけで 1e-16 台の残差が出る。** 残すと表示側で「わずかな変化」として
+ * 扱われ、実際には変わっていないものが変わったように読める。重みの最小桁より十分小さく取る。
+ */
+const NEGLIGIBLE_DELTA = 1e-9;
+
+/**
  * カバレッジの差分（§6 の [5]）。
  *
  * 「フライ → ディップスに変更 / 三頭 +0.18, 大胸筋上部 −0.05」を出すための計算。
@@ -58,7 +66,7 @@ export function diffCoverage(before: Coverage, after: Coverage): Coverage {
   const diff: Coverage = {};
   for (const muscle of muscles) {
     const delta = (after[muscle] ?? 0) - (before[muscle] ?? 0);
-    if (delta !== 0) diff[muscle] = delta;
+    if (Math.abs(delta) >= NEGLIGIBLE_DELTA) diff[muscle] = delta;
   }
   return diff;
 }
