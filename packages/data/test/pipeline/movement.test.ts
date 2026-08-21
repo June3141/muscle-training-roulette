@@ -171,6 +171,8 @@ describe("収縮様式と移動手段に動作を引きずられない", () => {
   /** 上腕三頭筋のキックバックが、大臀筋のキックバックのためのルールに取られていた。 */
   it("三頭のキックバックを下肢の単関節にしない", () => {
     expect(patternOf("tricep kickback")).toBe("elbow_extension");
+    // 上流に両方の綴りがある。片方だけ効く形にすると、上流が変わったときに黙って戻る。
+    expect(patternOf("triceps kickback")).toBe("elbow_extension");
     expect(patternOf("glute kickback")).toBe("leg_isolation");
   });
 
