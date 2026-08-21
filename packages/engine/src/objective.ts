@@ -48,9 +48,23 @@ export function coverageTerm(set: readonly Exercise[], targets: readonly MuscleI
   return targets.reduce((sum, muscle) => sum + Math.sqrt(coverage[muscle] ?? 0), 0);
 }
 
+/**
+ * 多様性項が数えない種目（ADR 0011）。
+ *
+ * **プライオメトリクスに「珍しいパターン」の加点を払わない。**
+ * `throw` と `jump` はこのカテゴリしか持たないので、数えると多様性項が必ずそこへ手を伸ばす。
+ * 候補からは外さない。カバレッジで勝つなら選ばれる。
+ *
+ * カテゴリ一律では切らない。`olympic_weightlifting` と `strongman` には
+ * 一般的な筋力種目が混ざっている（docs/data-survey.md）。
+ */
+function countsForDiversity(exercise: Exercise): boolean {
+  return exercise.category !== "plyometrics";
+}
+
 /** 多様性項。動作パターンの種類数（design.md §5.2）。 */
 export function diversityTerm(set: readonly Exercise[]): number {
-  return new Set(set.map((exercise) => exercise.movementPattern)).size;
+  return new Set(set.filter(countsForDiversity).map((exercise) => exercise.movementPattern)).size;
 }
 
 export function objective(set: readonly Exercise[], targets: readonly MuscleId[]): number {

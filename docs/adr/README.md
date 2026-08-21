@@ -100,3 +100,4 @@ Draft ──→ Proposed ──→ Accepted ──→ Superseded
 | [0008](./0008-selection-objective-and-algorithm.md) | 選択エンジンの目的関数の形とアルゴリズムの止めどころ | Accepted |
 | [0009](./0009-exercise-ordering.md) | 種目の順序付けルールと、複合種目優先をどこに置くか | Accepted |
 | [0010](./0010-base-name-muscle-words.md) | ベース名から筋肉名を落とす範囲 | Accepted |
+| [0011](./0011-diversity-term-scope.md) | 多様性項がどの種目に加点を払うか | Accepted |
