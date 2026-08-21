@@ -141,6 +141,37 @@ describe("広いキーワードによる覆い隠し", () => {
   });
 });
 
+/**
+ * 上流が主働筋を chest としているのに胸の動作へ落ちていなかった組（#56）。
+ * **`isometric` は収縮様式で、動作パターンではない。**
+ * 同じ語から胸の内転にも体幹にも行きうるので、判定のキーワードには使えない。
+ */
+describe("収縮様式と移動手段に動作を引きずられない", () => {
+  it("等尺性の胸の種目を体幹種目にしない", () => {
+    expect(patternOf("isometric chest squeeze")).toBe("horizontal_adduction");
+    expect(patternOf("isometric wiper")).toBe("horizontal_press");
+  });
+
+  it("ベンチ上で腕が描く弧を体幹の回旋にしない", () => {
+    expect(patternOf("around the world")).toBe("horizontal_adduction");
+  });
+
+  it("押しながら移動する種目は押す動作にする", () => {
+    expect(patternOf("forward drag with press")).toBe("horizontal_press");
+    expect(patternOf("backward drag")).toBe("carry");
+  });
+
+  it("腰をひねって押す種目は股関節の屈伸ではない", () => {
+    expect(patternOf("heavy bag thrust")).toBe("horizontal_press");
+    expect(patternOf("hip thrust")).toBe("hinge");
+  });
+
+  it("バンドでの側方移動は運搬ではなく股関節の外転", () => {
+    expect(patternOf("monster walk")).toBe("leg_isolation");
+    expect(patternOf("farmer walk")).toBe("carry");
+  });
+});
+
 describe("上流データ全件", () => {
   it("データセットに載るレコードで other が出ない", async () => {
     // other が増えると §5.2 の多様性制約が効かなくなる。
