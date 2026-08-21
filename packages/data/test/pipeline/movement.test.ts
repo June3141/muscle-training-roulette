@@ -150,6 +150,8 @@ describe("収縮様式と移動手段に動作を引きずられない", () => {
   it("等尺性の胸の種目を体幹種目にしない", () => {
     expect(patternOf("isometric chest squeeze")).toBe("horizontal_adduction");
     expect(patternOf("isometric wiper")).toBe("horizontal_press");
+    // ワイパーは単独だと体幹の回旋を指す。プッシュアップ姿勢の方だけを押す動作にする。
+    expect(patternOf("windshield wiper")).toBe("trunk_rotation");
   });
 
   it("ベンチ上で腕が描く弧を体幹の回旋にしない", () => {
