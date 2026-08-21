@@ -49,7 +49,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|spell caster|standing lift/,
+      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|spell caster|standing lift|(?<!isometric )wiper/,
     mapping: { pattern: "trunk_rotation", rule: "体幹の回旋・側屈" },
   },
   {
@@ -125,7 +125,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drag with press|heavy bag thrust|wiper|drop push|push off|return push|\bdip\b|power partial|^press$/,
+      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drag with press|heavy bag thrust|isometric wiper|drop push|push off|return push|\bdip\b|power partial|^press$/,
     mapping: { pattern: "horizontal_press", rule: "水平に押す" },
   },
   {
