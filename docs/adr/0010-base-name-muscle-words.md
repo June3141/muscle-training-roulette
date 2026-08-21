@@ -74,6 +74,31 @@ ADR 0007 は同じベース名で主働筋が違うレコードに接尾辞を�
 ADR 0007 の決定は変えない。接尾辞は依然として上流の割れを示す印だが、
 **接尾辞が付いていたら、まず正規化で落としすぎていないかを疑う。**
 
+## 実装後に分かったこと
+
+### 衝突していたのは `press` だけではなかった
+
+「他の動作語に同じ性質があれば、その語も除外に加える。今のデータで衝突しているのは `press` だけだった」
+と書いたが、**当時の確認は `press` を含む名前しか見ていなかった。**
+
+筋肉名を落としたことで別種目が同名になっている組を上流全件で洗い直した結果:
+
+```
+[kickback]
+   One-Legged Cable Kickback  [glutes]
+   Tricep Dumbbell Kickback   [triceps]
+[curl]
+   Barbell Curl / Dumbbell Bicep Curl / EZ-Bar Curl / Machine Bicep Curl  [すべて biceps]
+[standing curl]
+   Standing Biceps Cable Curl / Standing One-Arm Cable Curl               [すべて biceps]
+```
+
+`kickback` だけが実際の衝突だった。`curl` 系は主働筋が割れていないので畳んでよい。
+`kickback` を除外に加える。
+
+決定そのものは変えていない。除外する語が 1 つ増えただけで、
+「総称の動作語では筋肉名が動作を決める」という基準は変わらない。
+
 ## 影響
 
 - id と日本語名が 7 件変わる。id は主キーなので、この判断を覆すと再び変わる
