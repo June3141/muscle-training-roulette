@@ -63,6 +63,17 @@ describe("ベース名の正規化", () => {
     expect(normalizeBaseName("EZ-Bar Curl")).toBe("curl");
   });
 
+  /**
+   * プレスでは筋肉名が動作そのものを決める。
+   * **落とすと `Lying Triceps Press` が `Seated Dumbbell Press` と同じ形になり、
+   * 名前からは動作パターンを分けられなくなる。**
+   */
+  it("プレスでは筋肉名を落とさない", () => {
+    expect(normalizeBaseName("Lying Triceps Press")).toBe("lying triceps press");
+    expect(normalizeBaseName("Seated Triceps Press")).toBe("seated triceps press");
+    expect(normalizeBaseName("Body Tricep Press")).toBe("body tricep press");
+  });
+
   it("角度とグリップは残す（別種目なので畳まない）", () => {
     expect(normalizeBaseName("Decline Barbell Bench Press")).toBe("decline bench press");
     expect(normalizeBaseName("Close-Grip Barbell Bench Press")).toBe("close grip bench press");

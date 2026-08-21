@@ -34,6 +34,56 @@ describe("動作パターンの判定（§5.2）", () => {
     expect(patternOf("plate twist")).toBe("trunk_rotation");
   });
 
+  /**
+   * 握力種目のために置いた `\bgrip\b` が、グリップ幅を名前に持つ種目を全部さらっていた。
+   * **グリップ幅は握り方の指定であって、握力を鍛える動作ではない。**
+   */
+  it("グリップ幅の指定を握力種目と見なさない", () => {
+    expect(patternOf("mixed grip chin")).toBe("vertical_pull");
+    expect(patternOf("close grip curl")).toBe("elbow_flexion");
+    expect(patternOf("wide grip standing curl")).toBe("elbow_flexion");
+    expect(patternOf("reverse grip pushdown")).toBe("elbow_extension");
+    expect(patternOf("extension pronated grip")).toBe("elbow_extension");
+    expect(patternOf("lying close grip extension behind the head")).toBe("elbow_extension");
+    expect(patternOf("close grip press")).toBe("elbow_extension");
+  });
+
+  it("握力そのものの種目は握力に残す", () => {
+    expect(patternOf("plate pinch")).toBe("wrist_flexion");
+    expect(patternOf("standing olympic plate hand squeeze")).toBe("wrist_flexion");
+    expect(patternOf("wrist roller")).toBe("wrist_flexion");
+  });
+
+  /** 荷重に使う器具の名前は動作を決めない。 */
+  it("器具の名前に動作を引きずられない", () => {
+    // カーフマシンはシュラッグの荷重に使っているだけ。
+    expect(patternOf("calf shoulder shrug")).toBe("shoulder_raise");
+    expect(patternOf("standing calf raise")).toBe("calf_raise");
+    // ハイプーリーは滑車の位置。ハイプルではない。
+    expect(patternOf("kneeling high pulley row")).toBe("horizontal_pull");
+    expect(patternOf("lying close grip bar curl on high pulley")).toBe("elbow_flexion");
+    expect(patternOf("sumo high pull")).toBe("hinge");
+  });
+
+  it("クリーングリップはクリーンではない", () => {
+    expect(patternOf("front squat clean grip")).toBe("squat");
+    expect(patternOf("hang clean")).toBe("hinge");
+  });
+
+  it("ドラッグカールは運搬ではない", () => {
+    expect(patternOf("drag curl")).toBe("elbow_flexion");
+    expect(patternOf("sled drag")).toBe("carry");
+  });
+
+  /** 三頭のプレスは肘の伸展。肩や胸のプレスと同じ形の名前を持つ。 */
+  it("三頭のプレスを肩・胸のプレスと分ける", () => {
+    expect(patternOf("lying triceps press")).toBe("elbow_extension");
+    expect(patternOf("seated triceps press")).toBe("elbow_extension");
+    expect(patternOf("body tricep press")).toBe("elbow_extension");
+    expect(patternOf("seated press")).toBe("vertical_press");
+    expect(patternOf("reverse triceps bench press")).toBe("horizontal_press");
+  });
+
   it("股関節を伸展するブリッジは体幹種目ではない", () => {
     expect(patternOf("barbell glute bridge")).toBe("hinge");
     expect(patternOf("physioball hip bridge")).toBe("hinge");
