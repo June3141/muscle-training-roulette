@@ -255,7 +255,7 @@ describe("selectExercises: 目的関数の項（#13）", () => {
       quadOnly,
       hamOnly,
     ]);
-    expect(result.exercises.map((s) => s.exercise.id).sort()).toEqual(["hamOnly", "quadOnly"]);
+    expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["hamOnly", "quadOnly"]);
   });
 });
 
