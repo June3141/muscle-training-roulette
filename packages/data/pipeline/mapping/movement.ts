@@ -25,7 +25,7 @@ export interface MovementMapping {
 const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapping }[] = [
   {
     pattern:
-      /\bcarry\b|farmer|yoke|suitcase|sandbag|keg carry|atlas stone|tire flip|power stair|log lift|circus bell|sled (drag|push|pull)|backward drag|forward drag|conan|\bdrag\b(?! curl)|\bwalk\b|\bhold\b/,
+      /\bcarry\b|farmer|yoke|suitcase|sandbag|keg carry|atlas stone|tire flip|power stair|log lift|circus bell|sled (push|pull)|conan|\bdrag\b(?! curl| with press)|(?<!monster )\bwalk\b|\bhold\b/,
     mapping: { pattern: "carry", rule: "保持・運搬" },
   },
   {
@@ -36,7 +36,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|isometric|pallof|cocoon|side bridge|balance board|downward facing balance|spider crawl|suspended fallout/,
+      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|pallof|cocoon|side bridge|balance board|downward facing balance|spider crawl|suspended fallout/,
     mapping: { pattern: "trunk_antiextension", rule: "体幹の抗伸展・抗回旋" },
   },
   {
@@ -49,8 +49,16 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|around the world|spell caster|standing lift/,
+      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|spell caster|standing lift/,
     mapping: { pattern: "trunk_rotation", rule: "体幹の回旋・側屈" },
+  },
+  {
+    /**
+     * 片脚立位での屈伸。
+     * **下の体幹屈曲より先に採る。** ステップアップに付いた膝上げが動作を決めてしまう。
+     */
+    pattern: /lunge|split squat|step[- ]?up|bulgarian|step over|pass between the leg/,
+    mapping: { pattern: "lunge", rule: "片脚立位での屈伸" },
   },
   {
     pattern:
@@ -58,17 +66,13 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "trunk_flexion", rule: "体幹の屈曲" },
   },
   {
-    pattern: /lunge|split squat|step[- ]?up|bulgarian|step over|pass between the leg/,
-    mapping: { pattern: "lunge", rule: "片脚立位での屈伸" },
-  },
-  {
     pattern:
-      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|kickback|glute ham raise|glute squeeze|prone manual hamstring|floor glute ham/,
+      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
     mapping: { pattern: "leg_isolation", rule: "下肢の単関節" },
   },
   {
     pattern:
-      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b(?! grip)|\bsnatch\b|romanian|back extension|hyperextension|pull[- ]?through|rack pull|high pull\b|jefferson|physioball hip bridge|judo flip|heavy bag thrust|keg load|stiff leg/,
+      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b(?! grip)|\bsnatch\b|romanian|back extension|hyperextension|hip extension|pull[- ]?through|rack pull|high pull\b|jefferson|physioball hip bridge|judo flip|keg load|stiff leg/,
     mapping: { pattern: "hinge", rule: "股関節優位の屈伸" },
   },
   {
@@ -116,12 +120,12 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   {
     // butterfly は \bfly\b に当たらない。r と fly の間に語境界がないため。
     pattern:
-      /\bfly\b|\bflye|butterfly|pec deck|crossover|cross over|iron cross|crucifix|svend press/,
+      /\bfly\b|\bflye|butterfly|pec deck|crossover|cross over|iron cross|crucifix|svend press|chest squeeze|around the world/,
     mapping: { pattern: "horizontal_adduction", rule: "肘を伸ばしたまま水平内転" },
   },
   {
     pattern:
-      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drop push|push off|return push|\bdip\b|power partial|^press$/,
+      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drag with press|heavy bag thrust|wiper|drop push|push off|return push|\bdip\b|power partial|^press$/,
     mapping: { pattern: "horizontal_press", rule: "水平に押す" },
   },
   {

@@ -166,6 +166,17 @@ describe("収縮様式と移動手段に動作を引きずられない", () => {
     expect(patternOf("hip thrust")).toBe("hinge");
   });
 
+  /** ゴールデンセットの差分で見つかった。どちらも上流の主働筋は大臀筋。 */
+  it("股関節の伸展を肘の伸展にしない", () => {
+    expect(patternOf("hip extension")).toBe("hinge");
+    expect(patternOf("lying extension")).toBe("elbow_extension");
+  });
+
+  it("ステップアップに付いた膝上げが動作を決めない", () => {
+    expect(patternOf("step up with knee raise")).toBe("lunge");
+    expect(patternOf("hanging knee raise")).toBe("trunk_flexion");
+  });
+
   it("バンドでの側方移動は運搬ではなく股関節の外転", () => {
     expect(patternOf("monster walk")).toBe("leg_isolation");
     expect(patternOf("farmer walk")).toBe("carry");
