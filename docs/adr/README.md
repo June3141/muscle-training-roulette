@@ -99,3 +99,4 @@ Draft ──→ Proposed ──→ Accepted ──→ Superseded
 | [0007](./0007-duplicate-base-name-ids.md) | 同じベース名の種目をどう区別するか | Accepted |
 | [0008](./0008-selection-objective-and-algorithm.md) | 選択エンジンの目的関数の形とアルゴリズムの止めどころ | Accepted |
 | [0009](./0009-exercise-ordering.md) | 種目の順序付けルールと、複合種目優先をどこに置くか | Accepted |
+| [0010](./0010-base-name-muscle-words.md) | ベース名から筋肉名を落とす範囲 | Accepted |
