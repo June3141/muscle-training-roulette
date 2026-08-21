@@ -49,17 +49,25 @@ export function coverageTerm(set: readonly Exercise[], targets: readonly MuscleI
 }
 
 /**
- * 多様性項が数えない種目（ADR 0011）。
+ * 多様性項が加点を払わない動作パターン（ADR 0011）。
  *
- * **プライオメトリクスに「珍しいパターン」の加点を払わない。**
- * `throw` と `jump` はこのカテゴリしか持たないので、数えると多様性項が必ずそこへ手を伸ばす。
- * 候補からは外さない。カバレッジで勝つなら選ばれる。
+ * **`MOVEMENT_PATTERNS` に置いたのは 72 レコードが `other` に落ちるのを防ぐためで、
+ * 刺激の種類として置いたものではない。** 数えると多様性項が必ずそこへ手を伸ばす。
+ */
+const UNCOUNTED_PATTERNS: ReadonlySet<Exercise["movementPattern"]> = new Set(["throw", "jump"]);
+
+/**
+ * 多様性項が数える種目（ADR 0011）。
+ *
+ * **候補からは外さない。** カバレッジで勝つなら選ばれる。
+ * 内転筋のようにプライオメトリクスが主力の部位では出力が変わらない。
  *
  * カテゴリ一律では切らない。`olympic_weightlifting` と `strongman` には
  * 一般的な筋力種目が混ざっている（docs/data-survey.md）。
+ * 逆にカテゴリだけでも足りない。`throw` と `jump` の 4 件は上流が `strength` としている。
  */
 function countsForDiversity(exercise: Exercise): boolean {
-  return exercise.category !== "plyometrics";
+  return exercise.category !== "plyometrics" && !UNCOUNTED_PATTERNS.has(exercise.movementPattern);
 }
 
 /** 多様性項。動作パターンの種類数（design.md §5.2）。 */
