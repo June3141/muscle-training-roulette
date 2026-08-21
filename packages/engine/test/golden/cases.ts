@@ -41,7 +41,13 @@ export const GOLDEN_CASES: readonly GoldenCase[] = [
       "triceps_brachii",
     ],
     count: 6,
-    mustContain: [["horizontal_press"], ["incline_press"], ["vertical_press"], ["elbow_extension"]],
+    mustContain: [
+      ["horizontal_press"],
+      ["incline_press"],
+      ["vertical_press", "shoulder_raise"],
+      ["elbow_extension"],
+    ],
+    note: "§7 の期待は「水平プレス1、インクライン1、肩1、三頭1〜2」。肩は頭上へ押す種目に限らない。",
   },
   {
     id: "ppl_pull",
@@ -79,7 +85,12 @@ export const GOLDEN_CASES: readonly GoldenCase[] = [
     count: 6,
     allowedEquipment: ["body_only"],
     mustContain: [],
-    knownUncovered: ["biceps_brachii"],
-    note: "primary が二頭の自重種目は上流に 0 件（docs/data-survey.md）。枯渇せず生成できること、かつ二頭が空くことを明示できることの両方を確認する。",
+    knownUncovered: [
+      "deltoid_posterior",
+      "pectoralis_major_clavicular",
+      "trapezius_upper",
+      "brachioradialis",
+    ],
+    note: "二頭はここに入らない。主働とする自重種目は 0 件だが、チンアップの補助として重みが乗るため uncovered にはならない。「主働の候補が無い」は uncovered では表現できない（dataset.test.ts で別途検査）。",
   },
 ];

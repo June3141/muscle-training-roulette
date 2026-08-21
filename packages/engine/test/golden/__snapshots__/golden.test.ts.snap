@@ -1,0 +1,131 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ゴールデンセットの実行（M3） > bodyweight_full: 自重のみ — 全身 / 6種目 > スナップショットと一致する 1`] = `
+"1. チンアップ（広背筋）
+   vertical_pull / compound / body_only / bilateral
+2. グルートブリッジ
+   hinge / compound / body_only / bilateral
+3. スクワット
+   squat / compound / body_only / bilateral
+4. クローズグリッププッシュアップオフオブ
+   horizontal_press / compound / body_only / bilateral
+5. ゴリラチンクランチ
+   trunk_flexion / compound / body_only / bilateral
+6. サイドブリッジ
+   trunk_antiextension / mechanic 不明 / body_only / bilateral
+
+カバレッジ（種目数換算）
+  三角筋前部: 0.12
+  三角筋中部: 0.20
+  大胸筋中下部: 0.12
+  広背筋: 0.82
+  僧帽筋中下部・菱形筋: 0.12
+  脊柱起立筋: 0.06
+  上腕二頭筋: 0.29
+  上腕三頭筋: 0.65
+  前腕屈筋群: 0.12
+  大腿四頭筋: 0.65
+  ハムストリングス: 0.17
+  大臀筋: 0.71
+  中臀筋: 0.17
+  内転筋群: 0.06
+  下腿三頭筋: 0.17
+  腹直筋: 0.65
+  腹斜筋: 0.80
+  腹横筋: 0.12
+
+カバーできない部位: 三角筋後部、大胸筋上部、僧帽筋上部、腕橈骨筋"
+`;
+
+exports[`ゴールデンセットの実行（M3） > chest_only: 胸のみ — 胸 / 5種目 > スナップショットと一致する 1`] = `
+"1. アラウンドワールド
+   trunk_rotation / compound / dumbbell / bilateral
+2. デクラインプッシュアップ
+   horizontal_press / compound / other / bilateral
+3. プレス付きフォワードドラッグ
+   carry / compound / other / bilateral
+4. パームフェイシング付きインクラインベンチ
+   incline_press / compound / dumbbell / bilateral
+5. バタフライ
+   horizontal_adduction / isolation / machine / bilateral
+
+カバレッジ（種目数換算）
+  三角筋前部: 0.75
+  三角筋中部: 0.05
+  大胸筋上部: 1.30
+  大胸筋中下部: 2.30
+  上腕三頭筋: 0.40
+  大腿四頭筋: 0.05
+  ハムストリングス: 0.05
+  大臀筋: 0.05
+  下腿三頭筋: 0.05
+
+カバーできない部位: なし"
+`;
+
+exports[`ゴールデンセットの実行（M3） > lower_body: 下半身 — 四頭・ハム・臀 / 5種目 > スナップショットと一致する 1`] = `
+"1. エレベーテッドバックランジ
+   lunge / compound / barbell / bilateral
+2. ハイボックススクワット
+   squat / compound / other / unilateral
+3. バットリフトブリッジ
+   hinge / isolation / body_only / bilateral
+4. プラットフォームハムストリングスライド
+   leg_isolation / isolation / other / bilateral
+5. モンスターウォーク
+   carry / compound / bands / bilateral
+
+カバレッジ（種目数換算）
+  大腿四頭筋: 1.30
+  ハムストリングス: 1.23
+  大臀筋: 1.23
+  中臀筋: 1.23
+
+カバーできない部位: なし"
+`;
+
+exports[`ゴールデンセットの実行（M3） > ppl_pull: PPL Pull — 広背・僧帽・二頭 / 6種目 > スナップショットと一致する 1`] = `
+"1. ジロンダスターナムチン
+   vertical_pull / compound / other / bilateral
+2. ニーリングハイプーリーロウ
+   hinge / compound / cable / bilateral
+3. パーム付きベントオーバーツーロウ
+   horizontal_pull / compound / dumbbell / bilateral
+4. ミックスグリップチン
+   wrist_flexion / compound / other / bilateral
+5. カーフショルダーシュラッグ
+   calf_raise / isolation / machine / bilateral
+6. カールライイングアゲインストインクライン
+   elbow_flexion / isolation / barbell / bilateral
+
+カバレッジ（種目数換算）
+  広背筋: 1.65
+  僧帽筋上部: 1.00
+  僧帽筋中下部・菱形筋: 1.65
+  上腕二頭筋: 1.70
+
+カバーできない部位: なし"
+`;
+
+exports[`ゴールデンセットの実行（M3） > ppl_push: PPL Push — 胸・三角前部・三頭 / 6種目 > スナップショットと一致する 1`] = `
+"1. クロックプッシュアップ
+   horizontal_press / compound / body_only / bilateral
+2. パームフェイシング付きインクラインベンチ
+   incline_press / compound / dumbbell / bilateral
+3. アイソメトリックチェストスクイーズ
+   trunk_antiextension / compound / body_only / bilateral
+4. インクラインフライ
+   horizontal_adduction / isolation / dumbbell / bilateral
+5. インクラインショルダーレイズ
+   shoulder_raise / compound / barbell / bilateral
+6. ライイングエクステンション
+   elbow_extension / isolation / dumbbell / bilateral
+
+カバレッジ（種目数換算）
+  三角筋前部: 1.48
+  大胸筋上部: 1.63
+  大胸筋中下部: 1.40
+  上腕三頭筋: 1.50
+
+カバーできない部位: なし"
+`;

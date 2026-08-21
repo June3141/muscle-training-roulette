@@ -8,7 +8,7 @@
       "entry": ["test/**/*.test.ts"]
     },
     "packages/engine": {
-      "entry": ["test/**/*.test.ts"]
+      "entry": ["test/**/*.test.ts", "bin/mtr.ts"]
     }
   }
 }

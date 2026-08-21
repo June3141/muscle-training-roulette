@@ -4,17 +4,15 @@
  * 固定値のフィクスチャでは多様性項が効いているかを確かめられない。
  * 候補が 100 件を超えて初めて「同じ動作パターンばかり並ぶか」が出る。
  *
- * ゴールデンセット 5 件の実行とスナップショットは #15。ここは #13 の完了条件だけを見る。
+ * ゴールデンセット 5 件の実行とスナップショットは golden/。ここは受け入れ条件だけを見る。
  */
-import { readFileSync } from "node:fs";
-import { datasetSchema, type Exercise, type MovementPattern } from "@mtr/data";
+import type { Exercise, MovementPattern } from "@mtr/data";
 import { describe, expect, it } from "vitest";
+import { loadDataset } from "../src/dataset.ts";
 import { primaryMuscleOf } from "../src/order.ts";
 import { selectExercises } from "../src/select.ts";
 
-const dataset = datasetSchema.parse(
-  JSON.parse(readFileSync(new URL("../../../data/dataset.json", import.meta.url), "utf8")),
-);
+const dataset = loadDataset();
 
 /** ゴールデンセットの `chest_only`（packages/engine/test/golden/cases.ts）と同じ要求。 */
 const CHEST_ONLY = {
@@ -87,5 +85,28 @@ describe("ppl_push を実データで解く", () => {
     );
     expect(tricepsIsolation).toBeGreaterThanOrEqual(0);
     expect(tricepsIsolation).toBeGreaterThan(set.findLastIndex(isPress));
+  });
+});
+
+/**
+ * §5.4「候補の枯渇」。
+ *
+ * **主働の候補が無いことは `uncovered` では表現できない。**
+ * 補助として重みが乗れば合計は 0 にならないので、`bodyweight_full` の二頭は
+ * チンアップに拾われて `uncovered` から消える。分布は別に見るしかない。
+ */
+describe("候補プールの偏り", () => {
+  const bodyweight = dataset.filter(
+    (exercise) => exercise.selectable && exercise.equipmentOptions.includes("body_only"),
+  );
+
+  it("自重で上腕二頭筋を主働とする種目が 1 件も無い", () => {
+    expect(bodyweight.filter((e) => primaryMuscleOf(e) === "biceps_brachii")).toEqual([]);
+  });
+
+  it("それでも補助としては乗るので uncovered には落ちない", () => {
+    expect(
+      bodyweight.filter((e) => (e.muscleWeights.biceps_brachii ?? 0) > 0).length,
+    ).toBeGreaterThan(0);
   });
 });
