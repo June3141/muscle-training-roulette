@@ -92,6 +92,8 @@ describe("広いキーワードによる覆い隠し", () => {
     expect(patternOf("extension pronated grip")).toBe("elbow_extension");
     expect(patternOf("lying close grip extension behind the head")).toBe("elbow_extension");
     expect(patternOf("close grip press")).toBe("elbow_extension");
+    // 下の垂直プルが `\bchin\b` で拾う位置にある。三頭のプレスを先に採れているか。
+    expect(patternOf("lying close grip triceps press to chin")).toBe("elbow_extension");
   });
 
   it("握力そのものの種目は握力に残す", () => {
@@ -105,6 +107,8 @@ describe("広いキーワードによる覆い隠し", () => {
     // カーフマシンはシュラッグの荷重に使っているだけ。
     expect(patternOf("calf shoulder shrug")).toBe("shoulder_raise");
     expect(patternOf("standing calf raise")).toBe("calf_raise");
+    // 除外はカーフマシンを荷重に使う形だけに効かせる。名前に shrug があれば何でも外す、ではない。
+    expect(patternOf("calf raise shrug")).toBe("calf_raise");
     // ハイプーリーは滑車の位置。ハイプルではない。
     expect(patternOf("kneeling high pulley row")).toBe("horizontal_pull");
     expect(patternOf("lying close grip bar curl on high pulley")).toBe("elbow_flexion");
