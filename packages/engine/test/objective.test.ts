@@ -64,6 +64,20 @@ describe("coverageTerm", () => {
     expect(diversityTerm([press, slam])).toBe(1);
   });
 
+  /**
+   * `throw` と `jump` の 51 件中 4 件は上流が `strength` としている
+   * （ウインドスプリント、パイレーツシップ、スラム、バトリングロープ）。
+   * **カテゴリだけで切ると、この 4 件が加点を引き継ぐ。**
+   */
+  it("throw と jump は strength でも種類数に数えない", () => {
+    const press = exercise({
+      muscleWeights: { quadriceps: 1 },
+      movementPattern: "horizontal_press",
+    });
+    const sprint = exercise({ muscleWeights: { quadriceps: 1 }, movementPattern: "jump" });
+    expect(diversityTerm([press, sprint])).toBe(1);
+  });
+
   it("プライオメトリクス以外のカテゴリは数える", () => {
     // olympic_weightlifting と strongman には一般的な筋力種目が混ざっている
     // （docs/data-survey.md）。カテゴリ一律では切らない。
