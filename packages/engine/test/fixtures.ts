@@ -29,7 +29,8 @@ export function exercise(over: ExerciseOverrides): Exercise {
     nameEn: `Exercise ${counter}`,
     nameJa: `種目 ${counter}`,
     force: "push",
-    mechanic: over.mechanic ?? "compound",
+    // `??` にすると null が既定値に潰れ、mechanic 欠損を検査できなくなる。
+    mechanic: over.mechanic === undefined ? "compound" : over.mechanic,
     level: "beginner",
     category: "strength",
     movementPattern: over.movementPattern ?? "horizontal_press",

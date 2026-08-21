@@ -1,22 +1,30 @@
 /**
- * 指定部位を最もよくカバーする N 種目を選ぶ（design.md §5.1）。
+ * 指定部位を最もよくカバーする N 種目を選ぶ（design.md §5.1、ADR 0008）。
  *
- * **この段階の目的関数はモジュラなので、貪欲法は上位 k 件の選択と完全に一致する。**
- * f(S) = Σ_{e∈S}（e の対象筋の重み和）で種目間に相互作用がなく、
- * 限界利得が選択済みの集合に依存しない。だから反復せず一度並べ替えれば足りる。
+ * 目的関数に凹関数が入って劣モジュラになったので、**限界利得が選択済みの集合に依存する。**
+ * 一度並べ替えるだけでは足りず、1 種目ずつ足し直す反復が要る。
+ * ここで初めて貪欲法が近似（(1 − 1/e) 保証）になる。
  *
- * 反復する貪欲法に書き換える必要が出るのは、#13 で凹関数（同一筋への集中の減点）や
- * 多様性項を入れて劣モジュラになったとき。**そこで初めて (1 − 1/e) の近似の話になる。**
- * 先に反復で書いても今は同じ結果しか出ないので、差が出る時点まで待つ。
+ * 貪欲法の後に 1-swap を回す。**1 手目の取りこぼしは後続の手では回収できない。**
+ * 厳密解は入れない。目的関数が最適解の近傍で平坦で、詰めても出力の質が変わらない（ADR 0008）。
  *
  * 順序付け（§5.3）は #14。ここでは選んだ順で返す。
  */
 import type { Equipment, Exercise, MuscleId } from "@mtr/data";
 import { computeCoverage, uncoveredTargets } from "./coverage.ts";
+import { objective } from "./objective.ts";
 import type { SelectedExercise, SelectionRequest, SelectionResult } from "./types.ts";
 
-/** 対象筋に乗っている重みの合計。目的関数のカバレッジ項（§5.2）。 */
-function scoreOf(exercise: Exercise, targets: readonly MuscleId[]): number {
+/**
+ * 改善とみなす下限。
+ *
+ * **同点を改善と数えると、入れ替えが延々と続いて出力が入力順に依存する。**
+ * 厳密な不等号だけでは浮動小数の丸めで同点が同点にならない。
+ */
+const IMPROVEMENT_EPSILON = 1e-12;
+
+/** 対象筋に乗っている重みの合計。候補を絞るためだけに使う（順位付けは目的関数）。 */
+function targetWeightOf(exercise: Exercise, targets: readonly MuscleId[]): number {
   return targets.reduce((sum, muscle) => sum + (exercise.muscleWeights[muscle] ?? 0), 0);
 }
 
@@ -40,11 +48,83 @@ function candidatesOf(request: SelectionRequest, dataset: readonly Exercise[]): 
   return dataset.filter(
     (exercise) =>
       exercise.selectable &&
-      scoreOf(exercise, request.targets) > 0 &&
+      targetWeightOf(exercise, request.targets) > 0 &&
       (allowed === undefined ||
         allowed.length === 0 ||
         exercise.equipmentOptions.some((option) => allowed.includes(option))),
   );
+}
+
+/** 目的関数を最も伸ばす 1 件。同点なら候補の並び順で先に来た方（データセット順は決定論的）。 */
+function bestAddition(
+  chosen: readonly Exercise[],
+  pool: readonly Exercise[],
+  targets: readonly MuscleId[],
+): Exercise | undefined {
+  let best: Exercise | undefined;
+  let bestValue = Number.NEGATIVE_INFINITY;
+  for (const candidate of pool) {
+    if (chosen.includes(candidate)) continue;
+    const value = objective([...chosen, candidate], targets);
+    if (value > bestValue + IMPROVEMENT_EPSILON) {
+      bestValue = value;
+      best = candidate;
+    }
+  }
+  return best;
+}
+
+function greedy(
+  pool: readonly Exercise[],
+  targets: readonly MuscleId[],
+  count: number,
+): Exercise[] {
+  const chosen: Exercise[] = [];
+  while (chosen.length < count) {
+    const next = bestAddition(chosen, pool, targets);
+    if (next === undefined) break;
+    chosen.push(next);
+  }
+  return chosen;
+}
+
+/** 1 件だけ入れ替えて最も良くなる集合。`value` を超えるものが無ければ undefined。 */
+function bestSwap(
+  current: readonly Exercise[],
+  pool: readonly Exercise[],
+  targets: readonly MuscleId[],
+  value: number,
+): { readonly set: Exercise[]; readonly value: number } | undefined {
+  let best: Exercise[] | undefined;
+  let bestValue = value;
+  for (let index = 0; index < current.length; index += 1) {
+    for (const candidate of pool) {
+      if (current.includes(candidate)) continue;
+      const next = [...current];
+      next[index] = candidate;
+      const nextValue = objective(next, targets);
+      if (nextValue > bestValue + IMPROVEMENT_EPSILON) {
+        bestValue = nextValue;
+        best = next;
+      }
+    }
+  }
+  return best === undefined ? undefined : { set: best, value: bestValue };
+}
+
+/** 選択済み 1 件を候補 1 件と入れ替え、改善する限り繰り返す。 */
+function improveBySwap(
+  chosen: readonly Exercise[],
+  pool: readonly Exercise[],
+  targets: readonly MuscleId[],
+): Exercise[] {
+  let current = [...chosen];
+  let swap = bestSwap(current, pool, targets, objective(current, targets));
+  while (swap !== undefined) {
+    current = swap.set;
+    swap = bestSwap(current, pool, targets, swap.value);
+  }
+  return current;
 }
 
 export function selectExercises(
@@ -52,10 +132,9 @@ export function selectExercises(
   dataset: readonly Exercise[],
 ): SelectionResult {
   const pool = candidatesOf(request, dataset);
-  // 対象筋への寄与が同点なら先に来た方を採る。データセットの順序が決定論的なので出力も決まる。
-  pool.sort((a, b) => scoreOf(b, request.targets) - scoreOf(a, request.targets));
+  const greedyChoice = greedy(pool, request.targets, Math.max(0, request.count));
+  const chosen = improveBySwap(greedyChoice, pool, request.targets);
 
-  const chosen = pool.slice(0, Math.max(0, request.count));
   const exercises: readonly SelectedExercise[] = chosen.map((exercise) => ({
     exercise,
     equipment: equipmentFor(exercise, request.allowedEquipment),
