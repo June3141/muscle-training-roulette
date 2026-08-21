@@ -200,7 +200,8 @@ describe("selectExercises: 目的関数の項（#13）", () => {
       quadB,
       ham,
     ]);
-    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["quadA", "ham"]);
+    // 何が選ばれたかだけを見る。並び順は §5.3 の順序付けが決める。
+    expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["ham", "quadA"]);
   });
 
   it("重みが少し劣っても、動作パターンの違う種目を混ぜる", () => {
@@ -256,6 +257,18 @@ describe("selectExercises: 目的関数の項（#13）", () => {
       hamOnly,
     ]);
     expect(result.exercises.map((s) => s.exercise.id).toSorted()).toEqual(["hamOnly", "quadOnly"]);
+  });
+});
+
+describe("selectExercises: 順序付け（#14）", () => {
+  it("結果は選んだ順ではなく実行順で返る", () => {
+    const curl = exercise({ id: "curl", muscleWeights: { biceps_brachii: 1 } });
+    const row = exercise({ id: "row", muscleWeights: { latissimus_dorsi: 1 } });
+    const result = selectExercises({ targets: ["biceps_brachii", "latissimus_dorsi"], count: 2 }, [
+      curl,
+      row,
+    ]);
+    expect(result.exercises.map((s) => s.exercise.id)).toEqual(["row", "curl"]);
   });
 });
 
