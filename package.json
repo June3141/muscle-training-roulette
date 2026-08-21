@@ -6,6 +6,7 @@
   "license": "Unlicense",
   "type": "module",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
     "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run coverage && pnpm run complexity && pnpm run unused && pnpm run build",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix",

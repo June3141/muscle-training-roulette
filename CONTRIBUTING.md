@@ -29,6 +29,10 @@ pnpm verify        # lint + typecheck + test + 複雑度チェックを一括実
 
 `data/upstream/` はコミットしていないので、**クローン直後は `pnpm data:fetch` が要る。**
 
+`pnpm install` が `core.hooksPath` を `.githooks/` に向けるので、**push の前に `pnpm verify` が
+自動で走ります。**赤ければ push は中断されます。急ぐときは `git push --no-verify` で飛ばせますが、
+CI は同じ検査を回すので結果は変わりません。
+
 Node.js は `.node-version` のバージョンに合わせてください。
 
 ## ゴールデンセット
