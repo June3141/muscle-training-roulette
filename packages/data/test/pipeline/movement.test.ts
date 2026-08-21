@@ -168,6 +168,20 @@ describe("収縮様式と移動手段に動作を引きずられない", () => {
     expect(patternOf("hip thrust")).toBe("hinge");
   });
 
+  /** 上腕三頭筋のキックバックが、大臀筋のキックバックのためのルールに取られていた。 */
+  it("三頭のキックバックを下肢の単関節にしない", () => {
+    expect(patternOf("tricep kickback")).toBe("elbow_extension");
+    expect(patternOf("glute kickback")).toBe("leg_isolation");
+  });
+
+  /**
+   * 上流の説明は「体をまっすぐ保つ」と 2 回書いていて、体幹は屈曲しない。
+   * ロープを手繰って体を倒し、また戻す動作で、主働筋は広背筋。
+   */
+  it("ロンドンブリッジを体幹の屈曲にしない", () => {
+    expect(patternOf("london bridge")).toBe("horizontal_pull");
+  });
+
   /** ゴールデンセットの差分で見つかった。どちらも上流の主働筋は大臀筋。 */
   it("股関節の伸展を肘の伸展にしない", () => {
     expect(patternOf("hip extension")).toBe("hinge");

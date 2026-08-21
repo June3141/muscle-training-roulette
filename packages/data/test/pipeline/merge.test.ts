@@ -74,6 +74,12 @@ describe("ベース名の正規化", () => {
     expect(normalizeBaseName("Body Tricep Press")).toBe("body tricep press");
   });
 
+  it("キックバックでも筋肉名を落とさない", () => {
+    // 上腕三頭筋のキックバックと大臀筋のキックバックは別の動作。
+    expect(normalizeBaseName("Tricep Dumbbell Kickback")).toBe("tricep kickback");
+    expect(normalizeBaseName("Glute Kickback")).toBe("glute kickback");
+  });
+
   it("角度とグリップは残す（別種目なので畳まない）", () => {
     expect(normalizeBaseName("Decline Barbell Bench Press")).toBe("decline bench press");
     expect(normalizeBaseName("Close-Grip Barbell Bench Press")).toBe("close grip bench press");
