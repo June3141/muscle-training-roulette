@@ -30,7 +30,8 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     // カーフマシンは荷重に使っているだけで、動作はシュラッグ。
-    pattern: /calf(?!.*shrug)/,
+    // **除外はこの並びだけに効かせる。** 名前のどこかに shrug があれば外す、にすると巻き添えが出る。
+    pattern: /calf(?! shoulder shrug)/,
     mapping: { pattern: "calf_raise", rule: "下腿三頭筋の単関節" },
   },
   {
