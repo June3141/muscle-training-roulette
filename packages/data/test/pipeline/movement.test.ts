@@ -141,6 +141,50 @@ describe("広いキーワードによる覆い隠し", () => {
   });
 });
 
+/**
+ * 上流が主働筋を chest としているのに胸の動作へ落ちていなかった組（#56）。
+ * **`isometric` は収縮様式で、動作パターンではない。**
+ * 同じ語から胸の内転にも体幹にも行きうるので、判定のキーワードには使えない。
+ */
+describe("収縮様式と移動手段に動作を引きずられない", () => {
+  it("等尺性の胸の種目を体幹種目にしない", () => {
+    expect(patternOf("isometric chest squeeze")).toBe("horizontal_adduction");
+    expect(patternOf("isometric wiper")).toBe("horizontal_press");
+    // ワイパーは単独だと体幹の回旋を指す。プッシュアップ姿勢の方だけを押す動作にする。
+    expect(patternOf("windshield wiper")).toBe("trunk_rotation");
+  });
+
+  it("ベンチ上で腕が描く弧を体幹の回旋にしない", () => {
+    expect(patternOf("around the world")).toBe("horizontal_adduction");
+  });
+
+  it("押しながら移動する種目は押す動作にする", () => {
+    expect(patternOf("forward drag with press")).toBe("horizontal_press");
+    expect(patternOf("backward drag")).toBe("carry");
+  });
+
+  it("腰をひねって押す種目は股関節の屈伸ではない", () => {
+    expect(patternOf("heavy bag thrust")).toBe("horizontal_press");
+    expect(patternOf("hip thrust")).toBe("hinge");
+  });
+
+  /** ゴールデンセットの差分で見つかった。どちらも上流の主働筋は大臀筋。 */
+  it("股関節の伸展を肘の伸展にしない", () => {
+    expect(patternOf("hip extension")).toBe("hinge");
+    expect(patternOf("lying extension")).toBe("elbow_extension");
+  });
+
+  it("ステップアップに付いた膝上げが動作を決めない", () => {
+    expect(patternOf("step up with knee raise")).toBe("lunge");
+    expect(patternOf("hanging knee raise")).toBe("trunk_flexion");
+  });
+
+  it("バンドでの側方移動は運搬ではなく股関節の外転", () => {
+    expect(patternOf("monster walk")).toBe("leg_isolation");
+    expect(patternOf("farmer walk")).toBe("carry");
+  });
+});
+
 describe("上流データ全件", () => {
   it("データセットに載るレコードで other が出ない", async () => {
     // other が増えると §5.2 の多様性制約が効かなくなる。
