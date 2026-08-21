@@ -46,6 +46,40 @@ describe("coverageTerm", () => {
     expect(coverageTerm(spread, targets)).toBe(4);
   });
 
+  /**
+   * **プライオメトリクスに「珍しいパターン」の加点を払わない。**
+   * `throw` と `jump` はプライオメトリクスしか持たないので、
+   * 数えると多様性項が必ずそこへ手を伸ばす。
+   */
+  it("プライオメトリクスは種類数に数えない", () => {
+    const press = exercise({
+      muscleWeights: { quadriceps: 1 },
+      movementPattern: "horizontal_press",
+    });
+    const slam = exercise({
+      muscleWeights: { quadriceps: 1 },
+      movementPattern: "throw",
+      category: "plyometrics",
+    });
+    expect(diversityTerm([press, slam])).toBe(1);
+  });
+
+  it("プライオメトリクス以外のカテゴリは数える", () => {
+    // olympic_weightlifting と strongman には一般的な筋力種目が混ざっている
+    // （docs/data-survey.md）。カテゴリ一律では切らない。
+    const clean = exercise({
+      muscleWeights: { quadriceps: 1 },
+      movementPattern: "hinge",
+      category: "olympic_weightlifting",
+    });
+    const carry = exercise({
+      muscleWeights: { quadriceps: 1 },
+      movementPattern: "carry",
+      category: "strongman",
+    });
+    expect(diversityTerm([clean, carry])).toBe(2);
+  });
+
   it("種目を足しても減らない（単調非減少）", () => {
     const a = exercise({ muscleWeights: { quadriceps: 1 } });
     const b = exercise({ muscleWeights: { triceps_brachii: 1 } });
