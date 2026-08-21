@@ -43,6 +43,11 @@ describe("parseRequest: 部位の解釈", () => {
     expect(() => parseRequest(["--targets", "triceps"])).toThrow(/triceps/);
   });
 
+  it("前方一致する筋肉 ID を候補として出す", () => {
+    // triceps は triceps_brachii と triceps_surae のどちらとも決まらない。勝手に補完しない。
+    expect(() => parseRequest(["--targets", "triceps"])).toThrow(/triceps_brachii.*triceps_surae/);
+  });
+
   it("部位を指定しなければエラーにする", () => {
     expect(() => parseRequest([])).toThrow(/--targets/);
   });
@@ -63,7 +68,7 @@ describe("parseRequest: 種目数と器具", () => {
   });
 
   it("数値でない種目数はエラーにする", () => {
-    expect(() => parseRequest(["--targets", "chest", "--count", "six"])).toThrow();
+    expect(() => parseRequest(["--targets", "chest", "--count", "six"])).toThrow(/six/);
   });
 
   it("器具を指定できる", () => {
@@ -83,7 +88,7 @@ describe("parseRequest: 種目数と器具", () => {
   });
 
   it("知らないオプションはエラーにする", () => {
-    expect(() => parseRequest(["--targets", "chest", "--sets", "3"])).toThrow();
+    expect(() => parseRequest(["--targets", "chest", "--sets", "3"])).toThrow(/sets/);
   });
 });
 
