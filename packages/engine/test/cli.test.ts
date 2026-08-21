@@ -186,6 +186,28 @@ describe("差し替えとカバレッジ差分（#16）", () => {
     ).toThrow(/curl/);
   });
 
+  /**
+   * 差し替え行に番号を書くと、上に印字されるリストは差し替え *後* の実行順で採番されるのに
+   * 番号は差し替え *前* のものになり、**画面のどの行を指すのか読めなくなる。**
+   */
+  it("差し替え行は番号ではなく種目名で示す", () => {
+    const output = runCli(
+      ["--targets", "quadriceps,biceps_brachii", "--count", "2", "--replace", "1=wristcurl"],
+      dataset,
+    );
+    expect(output).toContain("差し替え: 種目 3 → 種目 5");
+    expect(output).not.toMatch(/差し替え: \d+\./);
+  });
+
+  it("--replace を 2 回渡したら黙って捨てずエラーにする", () => {
+    expect(() =>
+      runCli(
+        ["--targets", "quadriceps", "--count", "1", "--replace", "1=curl", "--replace", "1=bench"],
+        dataset,
+      ),
+    ).toThrow(/replace/);
+  });
+
   /** SelectionResult.exercises は実行順という契約（types.ts）。差し替えでも守る。 */
   it("差し替えた後も実行順に並べ直す", () => {
     const output = runCli(
