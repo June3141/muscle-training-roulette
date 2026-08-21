@@ -113,3 +113,37 @@ describe("runCli", () => {
     expect(output).toContain("カバーできない部位: 上腕三頭筋");
   });
 });
+
+describe("差し替えとカバレッジ差分（#16）", () => {
+  const swap = (spec: string): string =>
+    runCli(["--targets", "quadriceps", "--count", "1", "--replace", spec], dataset);
+
+  it("指定した番号の種目を入れ替える", () => {
+    // 素の選択はスクワット（種目 3）。プッシュダウン（種目 2）へ差し替える。
+    expect(swap("1=pushdown")).toContain("種目 2");
+  });
+
+  it("差し替えの前後でカバレッジの差分を出す", () => {
+    const output = swap("1=pushdown");
+    expect(output).toContain("カバレッジの変化");
+    expect(output).toContain("大腿四頭筋 \u22121.00");
+    expect(output).toContain("上腕三頭筋 +1.00");
+  });
+
+  it("変化がなければ変化がないと書く", () => {
+    // 同じ種目への差し替え。黙って何も出さないと差分が無いのか壊れたのか分からない。
+    expect(swap("1=squat")).toContain("変化なし");
+  });
+
+  it("範囲外の番号はエラーにする", () => {
+    expect(() => swap("9=squat")).toThrow(/9/);
+  });
+
+  it("知らない種目 id はエラーにする", () => {
+    expect(() => swap("1=nope")).toThrow(/nope/);
+  });
+
+  it("--replace の書式が違えばエラーにする", () => {
+    expect(() => swap("squat")).toThrow(/replace/);
+  });
+});
