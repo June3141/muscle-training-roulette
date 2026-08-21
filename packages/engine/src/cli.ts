@@ -20,9 +20,9 @@ import {
   type MuscleId,
 } from "@mtr/data";
 import { renderCoverageChart } from "./chart.ts";
-import { computeCoverage, diffCoverage, uncoveredTargets } from "./coverage.ts";
+import { diffCoverage } from "./coverage.ts";
 import { formatCoverageDiff, formatSelection } from "./format.ts";
-import { equipmentFor, selectExercises } from "./select.ts";
+import { allowsEquipment, resultOf, selectExercises } from "./select.ts";
 import type { SelectionRequest, SelectionResult } from "./types.ts";
 
 /** §3 の範囲。 */
@@ -137,47 +137,65 @@ export function parseRequest(argv: readonly string[]): SelectionRequest {
 const REPLACE_SPEC = /^(\d+)=([a-z0-9_]+)$/;
 
 /**
- * 種目 1 件を差し替えた結果を返す（design.md §6 の [4][5]）。
+ * 差し替えの指定を解く。
  *
  * **番号も id も、当たらなければ黙って無視せずエラーにする。**
  * 無視すると差し替えたつもりの結果が元のまま返り、差分が「変化なし」に見える。
+ *
+ * 差し替えは選択と同じ制約の中で行う。器具フィルタや `selectable` を迂回できると、
+ * **指定した条件では実行できないメニューが黙って返る。**
  */
-function replaceOne(
+function resolveReplacement(
   spec: string,
-  result: SelectionResult,
+  before: SelectionResult,
   request: SelectionRequest,
   dataset: readonly Exercise[],
-): SelectionResult {
+): { readonly index: number; readonly exercise: Exercise } {
   const matched = REPLACE_SPEC.exec(spec);
   if (matched === null) fail(`--replace は <番号>=<種目 id> の形で指定します: ${spec}`);
 
   const [, rawIndex = "", id = ""] = matched;
   const index = Number(rawIndex) - 1;
-  if (index < 0 || index >= result.exercises.length) {
+  if (index < 0 || index >= before.exercises.length) {
     fail(
-      `種目の番号が範囲外です: ${rawIndex}\n  1〜${result.exercises.length} を指定してください。`,
+      `種目の番号が範囲外です: ${rawIndex}\n  1〜${before.exercises.length} を指定してください。`,
     );
   }
 
-  const replacement = dataset.find((exercise) => exercise.id === id);
-  if (replacement === undefined) fail(`知らない種目 id です: ${id}`);
+  const exercise = dataset.find((candidate) => candidate.id === id);
+  if (exercise === undefined) fail(`知らない種目 id です: ${id}`);
+  if (!exercise.selectable) fail(`候補に出せない種目です: ${id}`);
+  if (!allowsEquipment(exercise, request.allowedEquipment)) {
+    fail(
+      `指定した器具では行えない種目です: ${id}\n` +
+        `  この種目の器具: ${exercise.equipmentOptions.join(", ")}`,
+    );
+  }
+  // 同じ種目が 2 行並ぶとカバレッジが二重に計上され、図が良い出力に見える。
+  if (before.exercises.some((selected, at) => at !== index && selected.exercise.id === id)) {
+    fail(`すでに選ばれている種目です: ${id}`);
+  }
 
-  const exercises = [...result.exercises];
-  exercises[index] = {
-    exercise: replacement,
-    equipment: equipmentFor(replacement, request.allowedEquipment),
-    laterality: replacement.defaultLaterality,
-  };
-  const coverage = computeCoverage(exercises.map((selected) => selected.exercise));
-  return { exercises, coverage, uncovered: uncoveredTargets(coverage, request.targets) };
+  return { index, exercise };
 }
 
 export function runCli(argv: readonly string[], dataset: readonly Exercise[]): string {
   const values = optionsOf(argv);
   const request = requestOf(values);
   const before = selectExercises(request, dataset);
+  const replacement =
+    values.replace === undefined
+      ? undefined
+      : resolveReplacement(values.replace, before, request, dataset);
   const after =
-    values.replace === undefined ? before : replaceOne(values.replace, before, request, dataset);
+    replacement === undefined
+      ? before
+      : resultOf(
+          before.exercises.map((selected, at) =>
+            at === replacement.index ? replacement.exercise : selected.exercise,
+          ),
+          request,
+        );
 
   if (values.format === "svg") return renderCoverageChart(after.coverage, request.targets);
   if (values.format !== undefined && values.format !== "text") {
@@ -191,13 +209,13 @@ export function runCli(argv: readonly string[], dataset: readonly Exercise[]): s
     "",
     formatSelection(after),
   ];
-  if (values.replace === undefined) return head.join("\n");
+  if (replacement === undefined) return head.join("\n");
 
-  const swapped = before.exercises[Number(REPLACE_SPEC.exec(values.replace)?.[1]) - 1];
+  const swapped = before.exercises[replacement.index]?.exercise.nameJa ?? "";
   return [
     ...head,
     "",
-    `差し替え: ${values.replace.split("=")[0]}. ${swapped?.exercise.nameJa ?? ""} を入れ替えた`,
+    `差し替え: ${replacement.index + 1}. ${swapped} → ${replacement.exercise.nameJa}`,
     "",
     "カバレッジの変化",
     formatCoverageDiff(diffCoverage(before.coverage, after.coverage)),

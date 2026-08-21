@@ -54,12 +54,20 @@ export function formatSelection(result: SelectionResult): string {
  * 読み手が区別できなくなる。器具を切り替えてもカバレッジは動かないので（ADR 0002）、
  * この区別は実際に必要になる。
  */
+/** 表示できる最小の差。これを下回る変化は数値ではなく「未満」で書く。 */
+const DIFF_RESOLUTION = 0.01;
+
 export function formatCoverageDiff(diff: Coverage): string {
   const lines = MUSCLE_IDS.filter((muscle) => (diff[muscle] ?? 0) !== 0).map((muscle) => {
     const delta = diff[muscle] ?? 0;
     // 負号は U+2212。ASCII のハイフンだと箇条書きの記号と紛れる。
     const sign = delta > 0 ? "+" : "−";
-    return `  ${MUSCLES[muscle].ja} ${sign}${Math.abs(delta).toFixed(2)}`;
+    const size = Math.abs(delta);
+    // **`+0.00` と書くと「変化なし」と区別がつかない。** 重みには 4 桁の値があるので、
+    // 差が表示桁より小さくなる組は実在する。
+    const amount =
+      size < DIFF_RESOLUTION / 2 ? `${DIFF_RESOLUTION.toFixed(2)} 未満` : size.toFixed(2);
+    return `  ${MUSCLES[muscle].ja} ${sign}${amount}`;
   });
   return lines.length === 0 ? "  変化なし" : lines.join("\n");
 }

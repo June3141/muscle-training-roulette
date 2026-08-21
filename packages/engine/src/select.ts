@@ -43,15 +43,21 @@ export function equipmentFor(
   );
 }
 
+/** 許可された器具のどれかで実行できるか。空・未指定なら制限なし。 */
+export function allowsEquipment(
+  exercise: Exercise,
+  allowed: readonly Equipment[] | undefined,
+): boolean {
+  if (allowed === undefined || allowed.length === 0) return true;
+  return exercise.equipmentOptions.some((option) => allowed.includes(option));
+}
+
 function candidatesOf(request: SelectionRequest, dataset: readonly Exercise[]): Exercise[] {
-  const allowed = request.allowedEquipment;
   return dataset.filter(
     (exercise) =>
       exercise.selectable &&
       targetWeightOf(exercise, request.targets) > 0 &&
-      (allowed === undefined ||
-        allowed.length === 0 ||
-        exercise.equipmentOptions.some((option) => allowed.includes(option))),
+      allowsEquipment(exercise, request.allowedEquipment),
   );
 }
 
@@ -127,23 +133,28 @@ function improveBySwap(
   return current;
 }
 
+/**
+ * 種目の集合を実行順に並べて結果にする。
+ *
+ * **`SelectionResult.exercises` は実行順という契約なので、集合から結果を作る経路を 1 つにする。**
+ * 差し替え（cli.ts）も同じ経路を通す。
+ */
+export function resultOf(chosen: readonly Exercise[], request: SelectionRequest): SelectionResult {
+  const ordered = orderExercises(chosen, request.targets);
+  const exercises: readonly SelectedExercise[] = ordered.map((exercise) => ({
+    exercise,
+    equipment: equipmentFor(exercise, request.allowedEquipment),
+    laterality: exercise.defaultLaterality,
+  }));
+  const coverage = computeCoverage(ordered);
+  return { exercises, coverage, uncovered: uncoveredTargets(coverage, request.targets) };
+}
+
 export function selectExercises(
   request: SelectionRequest,
   dataset: readonly Exercise[],
 ): SelectionResult {
   const pool = candidatesOf(request, dataset);
   const greedyChoice = greedy(pool, request.targets, Math.max(0, request.count));
-  const chosen = orderExercises(
-    improveBySwap(greedyChoice, pool, request.targets),
-    request.targets,
-  );
-
-  const exercises: readonly SelectedExercise[] = chosen.map((exercise) => ({
-    exercise,
-    equipment: equipmentFor(exercise, request.allowedEquipment),
-    laterality: exercise.defaultLaterality,
-  }));
-
-  const coverage = computeCoverage(chosen);
-  return { exercises, coverage, uncovered: uncoveredTargets(coverage, request.targets) };
+  return resultOf(improveBySwap(greedyChoice, pool, request.targets), request);
 }
