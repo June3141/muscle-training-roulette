@@ -48,13 +48,17 @@ const EQUIPMENT_WORDS = [
 const MUSCLE_WORDS = [/\bbiceps?\b/g, /\btriceps?\b/g];
 
 /**
- * 筋肉名を落とさない動作。**プレスでは筋肉名が動作そのものを決める。**
+ * 筋肉名を落とさない動作。**総称なので、どこへ効かせるかを筋肉名が決めている。**
  *
  * 「Triceps Press」は肘の伸展で、「Press」は肩や胸で押す。落とすと
  * `Lying Triceps Press` が `Seated Dumbbell Press` と同じベース名になり、
  * 名前からは動作パターンを分けられなくなる。
+ * 「Tricep Kickback」と「Glute Kickback」も同じ関係にある。
+ *
+ * `curl` と `extension` はここに入れない。動作を名指ししていて、
+ * 筋肉名は重複した情報でしかない（ADR 0010）。
  */
-const MUSCLE_WORD_KEPT = /\bpress(es)?\b/;
+const MUSCLE_WORD_KEPT = /\b(press(es)?|kickbacks?)\b/;
 
 /** 器具名を落とした結果、末尾に残ってしまう語。「Squats - With Bands」→「squat with」を防ぐ。 */
 const DANGLING_TAIL = /\s+(with|and|a|an|the|of|to|in|on)$/;

@@ -62,12 +62,12 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /crunch|sit[- ]?up|leg raise|knee raise|leg lift|knee lift|v[- ]?up|jackknife|toe touch|hip raise|hip lift|hip flexion|scissor kick|flutter|frog|heel touch|reverse hyper|leg pull|mountain climber|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up|london bridge/,
+      /crunch|sit[- ]?up|leg raise|knee raise|leg lift|knee lift|v[- ]?up|jackknife|toe touch|hip raise|hip lift|hip flexion|scissor kick|flutter|frog|heel touch|reverse hyper|leg pull|mountain climber|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up/,
     mapping: { pattern: "trunk_flexion", rule: "体幹の屈曲" },
   },
   {
     pattern:
-      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
+      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!triceps? )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
     mapping: { pattern: "leg_isolation", rule: "下肢の単関節" },
   },
   {
@@ -99,7 +99,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /\brows?\b|face pull|rear[- ]?delt|pull[- ]?apart|shotgun|incline bench pull|^pull$|moving claw/,
+      /\brows?\b|face pull|rear[- ]?delt|pull[- ]?apart|shotgun|incline bench pull|^pull$|moving claw|london bridge/,
     mapping: { pattern: "horizontal_pull", rule: "水平に引く" },
   },
   {
@@ -138,7 +138,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "elbow_flexion", rule: "肘の屈曲" },
   },
   {
-    pattern: /extension|pushdown|push[- ]?down|skull|\bdips?\b|speed overhead|tate press/,
+    pattern: /extension|kickback|pushdown|push[- ]?down|skull|\bdips?\b|speed overhead|tate press/,
     mapping: { pattern: "elbow_extension", rule: "肘の伸展" },
   },
   {
