@@ -88,8 +88,17 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     mapping: { pattern: "elbow_extension", rule: "肘の伸展（三頭のプレス）" },
   },
   {
+    /**
+     * 肘を曲げない引き。
+     * **下の垂直プルが `pulldown` で拾うので、その前に採る。**
+     * `straight arm` だけでは前挙上（`standing straight arm front delt raise`）まで奪う。
+     */
+    pattern: /pull[- ]?over|straight[- ]?arm pull[- ]?down/,
+    mapping: { pattern: "shoulder_extension", rule: "肩関節の伸展（肘を曲げない引き）" },
+  },
+  {
     pattern:
-      /pulldown|pull[- ]?up|chin[- ]?up|muscle[- ]?up|pull[- ]?over|lat pull|gironda sternum|rope climb|\bchin\b/,
+      /pulldown|pull[- ]?up|chin[- ]?up|muscle[- ]?up|lat pull|gironda sternum|rope climb|\bchin\b/,
     mapping: { pattern: "vertical_pull", rule: "頭上から引く" },
   },
   {
