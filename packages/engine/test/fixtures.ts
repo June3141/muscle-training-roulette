@@ -17,6 +17,7 @@ export interface ExerciseOverrides {
   readonly equipmentOptions?: readonly Exercise["defaultEquipment"][];
   readonly movementPattern?: Exercise["movementPattern"];
   readonly mechanic?: Exercise["mechanic"];
+  readonly category?: Exercise["category"];
   readonly selectable?: boolean;
 }
 
@@ -32,7 +33,7 @@ export function exercise(over: ExerciseOverrides): Exercise {
     // `??` にすると null が既定値に潰れ、mechanic 欠損を検査できなくなる。
     mechanic: over.mechanic === undefined ? "compound" : over.mechanic,
     level: "beginner",
-    category: "strength",
+    category: over.category ?? "strength",
     movementPattern: over.movementPattern ?? "horizontal_press",
     equipmentOptions,
     defaultEquipment: equipmentOptions[0] ?? "barbell",

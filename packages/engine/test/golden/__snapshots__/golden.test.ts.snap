@@ -38,23 +38,24 @@ exports[`ゴールデンセットの実行（M3） > bodyweight_full: 自重の�
 `;
 
 exports[`ゴールデンセットの実行（M3） > chest_only: 胸のみ — 胸 / 5種目 > スナップショットと一致する 1`] = `
-"1. チェストパス
-   throw / compound / medicine_ball / bilateral
-2. デクラインプッシュアップ
+"1. デクラインプッシュアップ
    horizontal_press / compound / other / bilateral
-3. パームフェイシング付きインクラインベンチ
+2. パームフェイシング付きインクラインベンチ
    incline_press / compound / dumbbell / bilateral
-4. ワイドグリップデクラインプルオーバー
+3. ワイドグリップデクラインプルオーバー
    vertical_pull / compound / barbell / bilateral
+4. ネックプレス
+   vertical_press / compound / barbell / bilateral
 5. バタフライ
    horizontal_adduction / isolation / machine / bilateral
 
 カバレッジ（種目数換算）
-  三角筋前部: 0.52
+  三角筋前部: 0.47
+  三角筋中部: 0.12
   三角筋後部: 0.17
   大胸筋上部: 1.30
   大胸筋中下部: 2.30
-  上腕三頭筋: 0.70
+  上腕三頭筋: 0.64
 
 カバーできない部位: なし"
 `;
@@ -81,47 +82,49 @@ exports[`ゴールデンセットの実行（M3） > lower_body: 下半身 — �
 `;
 
 exports[`ゴールデンセットの実行（M3） > ppl_pull: PPL Pull — 広背・僧帽・二頭 / 6種目 > スナップショットと一致する 1`] = `
-"1. オーバーヘッドスラム
-   throw / compound / medicine_ball / bilateral
-2. インクラインプッシュダウン
+"1. インクラインプッシュダウン
    elbow_extension / isolation / cable / bilateral
-3. ミックスグリップチン
-   vertical_pull / compound / other / bilateral
-4. カーフショルダーシュラッグ
+2. インバーテッドロウ
+   horizontal_pull / compound / other / bilateral
+3. カーフショルダーシュラッグ
    shoulder_raise / isolation / machine / bilateral
-5. ライイングカンバーロウ
-   horizontal_pull / isolation / barbell / bilateral
-6. カールライイングアゲインストインクライン
+4. スキャプラプルアップ
+   vertical_pull / isolation / other / bilateral
+5. カールライイングアゲインストインクライン
    elbow_flexion / isolation / barbell / bilateral
+6. リバースカール
+   wrist_flexion / isolation / barbell / bilateral
 
 カバレッジ（種目数換算）
-  広背筋: 2.27
+  広背筋: 1.55
   僧帽筋上部: 1.00
   僧帽筋中下部・菱形筋: 1.45
-  上腕二頭筋: 1.27
+  上腕二頭筋: 1.80
+  腕橈骨筋: 0.20
 
 カバーできない部位: なし"
 `;
 
 exports[`ゴールデンセットの実行（M3） > ppl_push: PPL Push — 胸・三角前部・三頭 / 6種目 > スナップショットと一致する 1`] = `
-"1. チェストパス
-   throw / compound / medicine_ball / bilateral
-2. クロックプッシュアップ
+"1. クロックプッシュアップ
    horizontal_press / compound / body_only / bilateral
-3. パームフェイシング付きインクラインベンチ
+2. パームフェイシング付きインクラインベンチ
    incline_press / compound / dumbbell / bilateral
-4. インクラインフライ
-   horizontal_adduction / isolation / dumbbell / bilateral
+3. ツイスト付きインクラインフライ
+   horizontal_adduction / compound / dumbbell / bilateral
+4. ベントアームプルオーバー（大胸筋中下部）
+   vertical_pull / compound / dumbbell / bilateral
 5. インクラインショルダーレイズ
    shoulder_raise / compound / barbell / bilateral
 6. ライイングエクステンション
    elbow_extension / isolation / dumbbell / bilateral
 
 カバレッジ（種目数換算）
-  三角筋前部: 1.48
-  大胸筋上部: 1.63
+  三角筋前部: 1.57
+  大胸筋上部: 1.48
   大胸筋中下部: 1.40
-  上腕三頭筋: 1.50
+  広背筋: 0.12
+  上腕三頭筋: 1.44
 
 カバーできない部位: なし"
 `;
