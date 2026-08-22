@@ -217,7 +217,7 @@ describe("肘を曲げない引きを頭上からの引きと分ける", () => {
 
   it("肘を曲げる引きは頭上からの引きに残す", () => {
     expect(patternOf("wide grip lat pulldown")).toBe("vertical_pull");
-    expect(patternOf("mixed grip chin")).toBe("vertical_pull");
+    expect(patternOf("pull up")).toBe("vertical_pull");
   });
 
   /** 前挙上は肩関節の屈曲。`straight arm` を広く取ると奪われる。 */
@@ -238,6 +238,20 @@ describe("上流データ全件", () => {
       .filter((record) => record.sourceIds.some((id) => kept.has(id)))
       .filter((record) => mapMovementPattern(record.baseName).pattern === "other");
     expect(others.map((record) => record.baseName)).toEqual([]);
+  });
+
+  /**
+   * ルールは今の綴りに合わせて絞ってある。
+   * **上流が名前を変えると、ルールから外れて黙って `vertical_pull` に戻る。**
+   * ここではルールと独立した網で数え、取りこぼしと件数の変化を検出する。
+   */
+  it("肘を曲げない引きを取りこぼさない", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory);
+    const straightPulls = mergeUpstream(all)
+      .filter((record) => /pull ?-? ?over|straight ?-? ?arm.*pull/.test(record.baseName))
+      .map((record) => [record.baseName, mapMovementPattern(record.baseName).pattern] as const);
+    expect(straightPulls.filter(([, pattern]) => pattern !== "shoulder_extension")).toEqual([]);
+    expect(straightPulls).toHaveLength(7);
   });
 
   it("同じ入力から同じ出力が出る", async () => {
