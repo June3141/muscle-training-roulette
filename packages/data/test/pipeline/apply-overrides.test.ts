@@ -86,7 +86,7 @@ describe("上流データとの整合性", () => {
     // スキャプラプルアップは肩甲骨を下制するだけで肘を曲げないので対象外。
     // ゴリラチンクランチは懸垂位でのクランチ、トライセプスプレストゥチンは三頭の種目。
     const chins = all.filter(
-      (ex) => /\bchin|pull-up/i.test(ex.name) && !/scapular|crunch|triceps/i.test(ex.name),
+      (ex) => /\bchin|pull-?ups?/i.test(ex.name) && !/scapular|crunch|triceps/i.test(ex.name),
     );
 
     // 上流ではグリップと片手だけを変えた 2 件が middle back に割れていた。

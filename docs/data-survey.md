@@ -159,7 +159,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 ### 監査の結果、修正したのは 12 件
 
 `pnpm data:audit` で動作パターン単位の割れを機械的に列挙し、全件を判定した。
-対象 736 件のうち 15 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
+対象 736 件のうち 16 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
 
 | 判定 | 例 |
 |---|---|
@@ -174,7 +174,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 | Barbell Deadlift / Axle Deadlift / Deadlift with Bands / Deadlift with Chains / Deficit Deadlift / Reverse Band Deadlift | `lower back` | `hamstrings` + `glutes` | コンベンショナルデッドリフトの主働筋は股関節伸展筋。脊柱起立筋は脊柱を中立に保つ等尺性の働きであって主働筋ではない。同じ動作の Romanian Deadlift や Sumo Deadlift は上流でも `hamstrings` |
 | Bench Press - Powerlifting / Bench Press with Chains / Reverse Band Bench Press | `triceps` | `chest` | 通常のベンチプレス。チェーンやリバースバンドは負荷曲線を変えるだけで主働筋を変えない |
 | Wind Sprints | `abdominals` | `quadriceps` | 走種目の主働筋は下肢。対象カテゴリのスプリント 5 件のうち 4 件は上流でも `quadriceps`。補助筋も空で、下肢へ 1 g も配分されない |
-| Mixed Grip Chin / One Arm Chin-Up | `middle back` | `lats` | チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。チン・プルアップ 8 件のうち 6 件は上流でも `lats` |
+| Mixed Grip Chin / One Arm Chin-Up | `middle back` | `lats` | チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。チン・プルアップ 10 件のうち 8 件は上流でも `lats` |
 
 `One Arm Chin-Up` を直すと `Chin-Up` とベース名も主働筋も一致するので、2 件が 1 レコードに畳まれる。
 `chin_up__latissimus_dorsi` / `chin_up__trapezius_middle_lower` という id の分裂は上流の誤りの副産物だった。
@@ -183,7 +183,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 
 照合が `\bkeyword\b` だったので、`Calf Raises` が `raise` のグループに入らなかった
 （[#76](https://github.com/June3141/muscle-training-roulette/issues/76)）。
-末尾の `e` / `s` / `es` を許すと 13 グループが増え、`sprint` を足して 15 グループになった。
+末尾の `e` / `s` / `es` を許すと 13 グループが増え、`sprint` と `chin` を足して 16 グループになった。
 `e` 単独は `Flye` のような綴り揺れのため。
 
 | グループ | 前 | 後 |

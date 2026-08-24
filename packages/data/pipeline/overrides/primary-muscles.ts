@@ -40,8 +40,8 @@ const DEADLIFT_REASON =
 
 const CHIN_UP_REASON =
   "チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。" +
-  "上流はチン・プルアップ 8 件のうち 6 件を lats にしており、" +
-  "この 2 件だけ middle back としている（`pnpm data:audit` で確認できる）。" +
+  "上流はチン・プルアップ 10 件のうち 8 件を lats にしており、" +
+  "この 2 件だけ middle back としている（`pnpm data:audit` の chin グループ）。" +
   "肩甲骨を下制するだけの Scapular Pull-Up は肘を曲げないので traps のままでよい。";
 
 const BENCH_PRESS_REASON =
