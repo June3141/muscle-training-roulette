@@ -179,7 +179,8 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 
 照合が `\bkeyword\b` だったので、`Calf Raises` が `raise` のグループに入らなかった
 （[#76](https://github.com/June3141/muscle-training-roulette/issues/76)）。
-末尾の `s` / `es` を許すと 12 グループが増え、`sprint` を足して 15 グループになった。
+末尾の `e` / `s` / `es` を許すと 13 グループが増え、`sprint` を足して 15 グループになった。
+`e` 単独は `Flye` のような綴り揺れのため。
 
 | グループ | 前 | 後 |
 |---|---|---|
@@ -190,6 +191,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 | dip | 4 | 8 |
 | extension | 30 | 32 |
 | press | 95 | 97 |
+| fly | 11 | 14 |
 | sprint | — | 5 |
 
 新しく見えた割れは `extension`（三頭 / レッグ / ヒップ / バック）と `dip`（三頭版 / 胸版）で、
@@ -201,8 +203,10 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 「どこを何のために変えたか」が残るため。上書き対象の id が上流から消えた場合は
 テストが落ちる（黙って効かなくなるのを防ぐ）。
 
-`Car Deadlift` / `Rickshaw Deadlift` / `Leverage Deadlift` の `quadriceps` は直していない。
-ハンドル位置やマシンの軌道で動作そのものが変わるため、上流の判定を尊重した。
+デッドリフトの `quadriceps` バケット 6 件（`Car Deadlift` / `Rickshaw Deadlift` /
+`Leverage Deadlift` / `One-Arm Side Deadlift` / `Trap Bar Deadlift` / `Cable Deadlifts`）は
+直していない。**どれも荷重が体側にある。** ハンドル位置やマシンの軌道で動作そのものが変わり、
+バーが前にある 12 件とは別の動作なので、上流の判定を尊重した。
 
 ## 自重制約（§5.4 の確認）
 

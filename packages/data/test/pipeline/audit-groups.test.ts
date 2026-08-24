@@ -18,6 +18,11 @@ describe("キーワードの照合", () => {
     expect(matchesKeyword("Dumbbell Flyes", "fly")).toBe(true);
   });
 
+  /** 上流は同じ動作に `Flyes` と `Flye` の両方を使う。 */
+  it("綴りの揺れた単数形も拾う", () => {
+    expect(matchesKeyword("Incline Cable Flye", "fly")).toBe(true);
+  });
+
   it("es を取る複数形も拾う", () => {
     expect(matchesKeyword("Chest Presses", "press")).toBe(true);
     expect(matchesKeyword("Cable Crunches", "crunch")).toBe(true);
@@ -33,9 +38,15 @@ describe("キーワードの照合", () => {
     expect(matchesKeyword("Dipping Belt", "dip")).toBe(false);
   });
 
-  /** 手で複数形を並べると、足し忘れた語が黙って漏れる。 */
+  /**
+   * 手で複数形を並べると、足し忘れた語が黙って漏れる。
+   * `press` は単数で `s` に終わるので、そこだけ除く。
+   */
   it("キーワードに複数形を手で置かない", () => {
-    expect(MOVEMENT_KEYWORDS.filter((keyword) => keyword.endsWith("es"))).toEqual([]);
+    const plurals = MOVEMENT_KEYWORDS.filter(
+      (keyword) => keyword.endsWith("s") && !keyword.endsWith("press"),
+    );
+    expect(plurals).toEqual([]);
   });
 });
 

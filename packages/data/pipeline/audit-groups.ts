@@ -41,15 +41,19 @@ export interface Group {
 }
 
 /**
- * 末尾の `s` / `es` を許す。
+ * 末尾の `e` / `s` / `es` を許す。
  *
- * **許さないと複数形の種目名がグループから漏れ、割れとして見えなくなる。**
+ * **許さないと綴りの揺れた種目名がグループから漏れ、割れとして見えなくなる。**
  * 漏れたレコードは監査に出ないので、上書きの判断材料そのものが欠ける。
+ * `e` 単独は `fly` と `flye` のような綴り揺れのため。
+ *
  * 単語境界は残す（`Narrow Stance` の `row` を拾わないため）。
+ * ここより緩めるとハイフンと空白の揺れ（`Pullups` / `Pull Ups`）や
+ * 複合語（`Hyperextension`）まで欲しくなるが、境界を外すと誤検出が増える。
  */
 export function matchesKeyword(name: string, keyword: string): boolean {
   const escaped = keyword.replaceAll("-", "\\-");
-  return new RegExp(`\\b${escaped}(e?s)?\\b`, "i").test(name);
+  return new RegExp(`\\b${escaped}(e|s|es)?\\b`, "i").test(name);
 }
 
 export function groupByKeyword(exercises: readonly UpstreamExercise[]): Group[] {
