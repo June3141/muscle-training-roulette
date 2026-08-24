@@ -10,64 +10,9 @@
  * 割れていること自体は異常ではない（リストカールとレッグカールは正当に別）。
  * **人間が「正当な差異 / 本当の不整合」を判定し、後者だけを overrides に書く。**
  */
+import { type Group, groupByKeyword } from "./audit-groups.ts";
 import { PRIMARY_MUSCLE_OVERRIDES } from "./overrides/primary-muscles.ts";
-import { type UpstreamExercise, isTargetCategory, loadUpstream } from "./upstream.ts";
-
-/**
- * 動作パターンのキーワード。単語境界でマッチさせる。
- *
- * 境界を見ないと `Nar(row) Stance Leg Press` が「row」に引っかかる。
- */
-const MOVEMENT_KEYWORDS = [
-  "deadlift",
-  "squat",
-  "bench press",
-  "shoulder press",
-  "overhead press",
-  "pulldown",
-  "row",
-  "curl",
-  "extension",
-  "raise",
-  "fly",
-  "flyes",
-  "lunge",
-  "press",
-  "pull-up",
-  "chin-up",
-  "dip",
-  "shrug",
-  "crunch",
-  "calf raise",
-] as const;
-
-interface Group {
-  readonly keyword: string;
-  readonly byPrimary: Map<string, UpstreamExercise[]>;
-}
-
-function matchesKeyword(name: string, keyword: string): boolean {
-  const escaped = keyword.replaceAll("-", "\\-");
-  return new RegExp(`\\b${escaped}\\b`, "i").test(name);
-}
-
-function groupByKeyword(exercises: readonly UpstreamExercise[]): Group[] {
-  const groups: Group[] = [];
-  for (const keyword of MOVEMENT_KEYWORDS) {
-    const hits = exercises.filter((ex) => matchesKeyword(ex.name, keyword));
-    if (hits.length < 2) continue;
-
-    const byPrimary = new Map<string, UpstreamExercise[]>();
-    for (const ex of hits) {
-      const key = ex.primaryMuscles.toSorted().join(",");
-      const bucket = byPrimary.get(key);
-      if (bucket) bucket.push(ex);
-      else byPrimary.set(key, [ex]);
-    }
-    groups.push({ keyword, byPrimary });
-  }
-  return groups;
-}
+import { isTargetCategory, loadUpstream } from "./upstream.ts";
 
 function reportGroup(group: Group): void {
   const total = [...group.byPrimary.values()].reduce((n, v) => n + v.length, 0);
