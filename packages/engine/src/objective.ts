@@ -51,8 +51,9 @@ export function coverageTerm(set: readonly Exercise[], targets: readonly MuscleI
 /**
  * 多様性項が加点を払わない動作パターン（ADR 0011）。
  *
- * **`MOVEMENT_PATTERNS` に置いたのは 61 レコードが `other` に落ちるのを防ぐためで、
+ * **`MOVEMENT_PATTERNS` に置いたのは `other` に落ちるレコードを減らすためで、
  * 刺激の種類として置いたものではない。** 数えると多様性項が必ずそこへ手を伸ばす。
+ * 件数は `docs/data-survey.md` の分布表を見る（ここに書くとドリフトする）。
  */
 const UNCOUNTED_PATTERNS: ReadonlySet<Exercise["movementPattern"]> = new Set(["throw", "jump"]);
 

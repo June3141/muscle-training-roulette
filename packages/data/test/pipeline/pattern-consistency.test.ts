@@ -17,8 +17,10 @@ const dataset = buildDataset((await loadUpstream()).filter(isTargetCategory));
  * その動作なら少なくとも 1 つは主働筋か補助筋に現れるはずの筋。
  *
  * **絞りすぎると誤検出になるので、動作の定義から外せない筋だけを並べる。**
- * 空配列は「動作から筋を特定できない」もの。運搬・跳躍・投擲は全身を使い、
- * `other` はそもそも分類できなかった残りなので、ここでは検査しない。
+ *
+ * 空配列は「動作の定義から筋を決められない」もの。
+ * 運搬は荷を体側・前面・頭上のどこで保つかで主働筋が変わり、投擲は上半身と下半身の両方に散る。
+ * `other` はそもそも分類できなかった残り。
  */
 const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   horizontal_press: [
@@ -87,7 +89,7 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   trunk_antiextension: ["rectus_abdominis", "obliques", "transversus_abdominis", "erector_spinae"],
   /** 腕橈骨筋は入れない。回内位の肘屈曲筋なので（`forearms.ts`）、手関節の動作を意味しない。 */
   wrist_flexion: ["wrist_flexors"],
-  /** 走跳は下肢で駆動する。**空にすると 40 件が検査から丸ごと抜ける。** */
+  /** 走跳は下肢で駆動するので、運搬・投擲と違って筋を決められる。**空にすると全件が検査から抜ける。** */
   jump: ["quadriceps", "hamstrings", "gluteus_maximus", "triceps_surae", "adductors"],
   carry: [],
   throw: [],
