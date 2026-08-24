@@ -52,4 +52,14 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
   "Bench_Press_-_Powerlifting": { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Bench_Press_with_Chains: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Reverse_Band_Bench_Press: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
+
+  // --- スプリント系: abdominals → quadriceps ---
+  Wind_Sprints: {
+    primaryMuscles: ["quadriceps"],
+    reason:
+      "走種目の主働筋は下肢。上流にあるスプリント 6 件のうち abdominals としているのは" +
+      "この 1 件だけで、Single-Cone Sprint Drill / Side Hop-Sprint / Bench Sprint は " +
+      "quadriceps、Moving Claw Series / Prowler Sprint は hamstrings にしている。" +
+      "補助筋も空なので、このままでは下肢に 1 g も配分されない。",
+  },
 };

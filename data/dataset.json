@@ -12999,7 +12999,8 @@
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
-      "transversus_abdominis": 1
+      "quadriceps": 0.65,
+      "transversus_abdominis": 0.35
     }
   },
   {

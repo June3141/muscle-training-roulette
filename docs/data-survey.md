@@ -442,18 +442,27 @@ Middle Back Shrug / Scapular Pull-Up）。
 [#56](https://github.com/June3141/muscle-training-roulette/issues/56) では拾えず、
 [#72](https://github.com/June3141/muscle-training-roulette/issues/72) の突き合わせで出た。
 
-### 動作パターンと筋重みの矛盾は 19 件だった
+### 動作パターンと筋重みの矛盾は 21 件だった
 
 パターンごとに「これが主働筋にも補助筋にも無いのはおかしい」筋の集合を決め、
 `muscleWeights` と交差しないレコードを数えた。
 
-607 件中 19 件が矛盾していて、上流の解説文と突き合わせると 18 件はパターン側が誤っていた
-（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
-`Flutter Kicks` はうつ伏せで脚を上げる種目なのに `trunk_flexion`、
-`Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` という具合。
+607 件中 21 件が矛盾していた（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
+上流の解説文と突き合わせた内訳は次の通り。
 
-残る 1 件の `Bottoms-Up Clean From The Hang Position` は、上流が握力を主働筋に置いているだけで
-動作としては `hinge` が正しい。検査に例外として置いてある。
+| 誤っていた側 | 件数 | 例 |
+|---|---|---|
+| 動作パターン | 18 | `Flutter Kicks` はうつ伏せで脚を上げるのに `trunk_flexion`、`Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` |
+| 重み | 1 | `Wind_Sprints` の主働筋が abdominals。上流のスプリント 6 件でこれだけ割れている |
+| どちらも正しい | 2 | 下表 |
+
+`Bottoms-Up Clean From The Hang Position` は上流が握力を主働筋に置いているだけで、
+動作としては `hinge` が正しい。
+`Kneeling Arm Drill` は膝立ちで腕だけを振るので、走の分類でありながら下肢を使わない。
+どちらも検査に例外として置いてある。
+
+**`carry` と `throw` は検査しない。** 全身を使うので「必ず使う筋」を決められない。
+`jump` は下肢で駆動するので検査する。空にすると 40 件が丸ごと抜ける。
 
 ## データセットの組み立て（M2 の成果物）
 
