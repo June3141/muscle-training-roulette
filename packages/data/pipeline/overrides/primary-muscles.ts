@@ -13,9 +13,8 @@
  * （Close-Grip Bench Press → triceps）ので、上流全体を疑う必要はない。
  *
  * もう 1 つの入口が動作パターンと筋重みの矛盾検査（`test/pipeline/pattern-consistency.test.ts`）。
- * **`Wind_Sprints` は audit に出ない。** `MOVEMENT_KEYWORDS` に `sprint` が無く、
- * 足しても `\bsprint\b` が複数形の `Wind Sprints` を取りこぼすため。
- * パターン側が正しく重み側が誤っているレコードは、こちらでしか出ないことがある。
+ * **audit は同じ動作の相手がいるレコードしか見ない。** 相手のいない種目や、
+ * `MOVEMENT_KEYWORDS` に語が無い種目は割れとして出ないので、こちらの網でしか掛からない。
  *
  * 割れていても、以下は**正当な差異なので直さない**。
  *

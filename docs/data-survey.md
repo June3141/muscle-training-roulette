@@ -156,23 +156,46 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 ラットプルダウンは Close-Grip / Wide-Grip / Underhand / V-Bar すべて `lats` のまま。
 **この性質は M1 の種目統合を機械化する足がかりになる**（ADR 0002 を参照）。
 
-### 監査の結果、修正したのは 9 件
+### 監査の結果、修正したのは 10 件
 
 `pnpm data:audit` で動作パターン単位の割れを機械的に列挙し、全件を判定した。
-対象 736 件のうち 14 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
+対象 736 件のうち 15 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
 
 | 判定 | 例 |
 |---|---|
 | **正当な差異**（直さない） | リストカール（forearms）とレッグカール（hamstrings）が「curl」で同居 / アップライトロウ（traps）とベントオーバーロウ（middle back）/ リアデルトフライ（shoulders）とダンベルフライ（chest）/ Board Press・Floor Press 系（triceps。可動域を制限して三頭を狙う意図の種目） |
 | キーワードの誤マッチ | Kettlebell Turkish Get-Up (Squat style) |
-| **本当の不整合**（修正した） | 下表の 9 件 |
+| **本当の不整合**（修正した） | 下表の 10 件 |
 
-**修正した 9 件**（`packages/data/pipeline/overrides/primary-muscles.ts`）:
+**修正した 10 件**（`packages/data/pipeline/overrides/primary-muscles.ts`）:
 
 | 種目 | 上流 | 修正後 | 理由 |
 |---|---|---|---|
 | Barbell Deadlift / Axle Deadlift / Deadlift with Bands / Deadlift with Chains / Deficit Deadlift / Reverse Band Deadlift | `lower back` | `hamstrings` + `glutes` | コンベンショナルデッドリフトの主働筋は股関節伸展筋。脊柱起立筋は脊柱を中立に保つ等尺性の働きであって主働筋ではない。同じ動作の Romanian Deadlift や Sumo Deadlift は上流でも `hamstrings` |
 | Bench Press - Powerlifting / Bench Press with Chains / Reverse Band Bench Press | `triceps` | `chest` | 通常のベンチプレス。チェーンやリバースバンドは負荷曲線を変えるだけで主働筋を変えない |
+| Wind Sprints | `abdominals` | `quadriceps` | 走種目の主働筋は下肢。対象カテゴリのスプリント 5 件のうち 4 件は上流でも `quadriceps`。補助筋も空で、下肢へ 1 g も配分されない |
+
+### キーワードが複数形を取りこぼしていた
+
+照合が `\bkeyword\b` だったので、`Calf Raises` が `raise` のグループに入らなかった
+（[#76](https://github.com/June3141/muscle-training-roulette/issues/76)）。
+末尾の `s` / `es` を許すと 12 グループが増え、`sprint` を足して 15 グループになった。
+
+| グループ | 前 | 後 |
+|---|---|---|
+| curl | 57 | 69 |
+| squat | 46 | 54 |
+| row | 35 | 41 |
+| raise | 44 | 49 |
+| dip | 4 | 8 |
+| extension | 30 | 32 |
+| press | 95 | 97 |
+| sprint | — | 5 |
+
+新しく見えた割れは `extension`（三頭 / レッグ / ヒップ / バック）と `dip`（三頭版 / 胸版）で、
+どちらも語の衝突。**上書きが必要なものは 1 件も増えなかった。**
+`Wind Sprints` が監査に出るようになったのがこの修正の実質的な成果で、
+これまでは動作パターンと筋重みの矛盾検査でしか見つけられなかった。
 
 **上流を直接書き換えず、差分として持つ。** 上流が更新されたときに再適用でき、
 「どこを何のために変えたか」が残るため。上書き対象の id が上流から消えた場合は

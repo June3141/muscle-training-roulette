@@ -10,6 +10,7 @@ import type { UpstreamExercise } from "./upstream.ts";
  * 動作パターンのキーワード。単語境界でマッチさせる。
  *
  * 境界を見ないと `Nar(row) Stance Leg Press` が「row」に引っかかる。
+ * 複数形は `matchesKeyword` が吸収するので、ここには単数だけを置く。
  */
 export const MOVEMENT_KEYWORDS = [
   "deadlift",
@@ -23,7 +24,6 @@ export const MOVEMENT_KEYWORDS = [
   "extension",
   "raise",
   "fly",
-  "flyes",
   "lunge",
   "press",
   "pull-up",
@@ -32,6 +32,7 @@ export const MOVEMENT_KEYWORDS = [
   "shrug",
   "crunch",
   "calf raise",
+  "sprint",
 ] as const;
 
 export interface Group {
@@ -39,9 +40,16 @@ export interface Group {
   readonly byPrimary: Map<string, UpstreamExercise[]>;
 }
 
+/**
+ * 末尾の `s` / `es` を許す。
+ *
+ * **許さないと複数形の種目名がグループから漏れ、割れとして見えなくなる。**
+ * 漏れたレコードは監査に出ないので、上書きの判断材料そのものが欠ける。
+ * 単語境界は残す（`Narrow Stance` の `row` を拾わないため）。
+ */
 export function matchesKeyword(name: string, keyword: string): boolean {
   const escaped = keyword.replaceAll("-", "\\-");
-  return new RegExp(`\\b${escaped}\\b`, "i").test(name);
+  return new RegExp(`\\b${escaped}(e?s)?\\b`, "i").test(name);
 }
 
 export function groupByKeyword(exercises: readonly UpstreamExercise[]): Group[] {
