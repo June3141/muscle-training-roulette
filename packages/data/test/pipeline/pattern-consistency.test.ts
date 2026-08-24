@@ -87,8 +87,9 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   trunk_antiextension: ["rectus_abdominis", "obliques", "transversus_abdominis", "erector_spinae"],
   /** 腕橈骨筋は入れない。回内位の肘屈曲筋なので（`forearms.ts`）、手関節の動作を意味しない。 */
   wrist_flexion: ["wrist_flexors"],
+  /** 走跳は下肢で駆動する。**空にすると 40 件が検査から丸ごと抜ける。** */
+  jump: ["quadriceps", "hamstrings", "gluteus_maximus", "triceps_surae", "adductors"],
   carry: [],
-  jump: [],
   throw: [],
   other: [],
 };
@@ -101,6 +102,8 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
 const ALLOWED: Readonly<Record<string, string>> = {
   bottom_up_clean_from_the_hang_position:
     "ボトムズアップクリーンは動作としてはハングクリーンで hinge が正しい。上流が握力を主働筋に置いているだけ。",
+  kneeling_arm_drill:
+    "膝立ちで腕だけを振るスプリントドリルなので、走の分類でありながら下肢を使わない。",
 };
 
 describe("動作パターンと筋重みの整合（#72）", () => {
@@ -122,6 +125,8 @@ describe("動作パターンと筋重みの整合（#72）", () => {
       const exercise = dataset.exercises.find((candidate) => candidate.id === id);
       expect(exercise, id).toBeDefined();
       const movers = PRIME_MOVERS[exercise?.movementPattern ?? "other"];
+      // 検査対象外のパターンに移ると some が常に false になり、例外が何も守らないまま緑になる。
+      expect(movers.length, `${id} のパターンは検査対象外`).toBeGreaterThan(0);
       expect(
         movers.some((muscle) => exercise?.muscleWeights[muscle] !== undefined),
         `${id} はもう矛盾していない: ${reason}`,
