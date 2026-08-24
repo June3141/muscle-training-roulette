@@ -2,7 +2,7 @@
  * 動作パターンと筋重みの整合（#72）。
  *
  * `movement.ts` は種目名の正規表現しか見ないので、名前が動作を表していないレコードを取り違える。
- * **重み側は上流の primaryMuscles から来るので、両者は独立に決まる。**
+ * **重み側は上流の primaryMuscles / secondaryMuscles から来るので、両者は独立に決まる。**
  * 片方が誤っていれば「この動作なら必ず使う筋」が重みに現れないという形で出る。
  */
 import { describe, expect, it } from "vitest";
@@ -17,8 +17,10 @@ const dataset = buildDataset((await loadUpstream()).filter(isTargetCategory));
  * その動作なら少なくとも 1 つは主働筋か補助筋に現れるはずの筋。
  *
  * **絞りすぎると誤検出になるので、動作の定義から外せない筋だけを並べる。**
- * 空配列は「動作から筋を特定できない」もの。運搬・跳躍・投擲は全身を使い、
- * `other` はそもそも分類できなかった残りなので、ここでは検査しない。
+ *
+ * 空配列は「動作の定義から筋を決められない」もの。
+ * 運搬は荷を体側・前面・頭上のどこで保つかで主働筋が変わり、投擲は上半身と下半身の両方に散る。
+ * `other` はそもそも分類できなかった残り。
  */
 const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   horizontal_press: [
@@ -87,8 +89,9 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   trunk_antiextension: ["rectus_abdominis", "obliques", "transversus_abdominis", "erector_spinae"],
   /** 腕橈骨筋は入れない。回内位の肘屈曲筋なので（`forearms.ts`）、手関節の動作を意味しない。 */
   wrist_flexion: ["wrist_flexors"],
+  /** 走跳は下肢で駆動するので、運搬・投擲と違って筋を決められる。**空にすると全件が検査から抜ける。** */
+  jump: ["quadriceps", "hamstrings", "gluteus_maximus", "triceps_surae", "adductors"],
   carry: [],
-  jump: [],
   throw: [],
   other: [],
 };
@@ -96,11 +99,13 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
 /**
  * 矛盾したままでよいレコード。
  *
- * **消すと矛盾が黙って通るので、理由なしに足さない。**
+ * **足すと矛盾が黙って通るので、理由なしに足さない。**
  */
 const ALLOWED: Readonly<Record<string, string>> = {
   bottom_up_clean_from_the_hang_position:
     "ボトムズアップクリーンは動作としてはハングクリーンで hinge が正しい。上流が握力を主働筋に置いているだけ。",
+  kneeling_arm_drill:
+    "膝立ちで腕だけを振るスプリントドリルなので、走の分類でありながら下肢を使わない。",
 };
 
 describe("動作パターンと筋重みの整合（#72）", () => {
@@ -122,6 +127,8 @@ describe("動作パターンと筋重みの整合（#72）", () => {
       const exercise = dataset.exercises.find((candidate) => candidate.id === id);
       expect(exercise, id).toBeDefined();
       const movers = PRIME_MOVERS[exercise?.movementPattern ?? "other"];
+      // 検査対象外のパターンに移ると some が常に false になり、例外が何も守らないまま緑になる。
+      expect(movers.length, `${id} のパターンは検査対象外`).toBeGreaterThan(0);
       expect(
         movers.some((muscle) => exercise?.muscleWeights[muscle] !== undefined),
         `${id} はもう矛盾していない: ${reason}`,

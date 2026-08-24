@@ -422,7 +422,8 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 ### §4.2 の暫定リストに 3 つ足した
 
-太字の 3 つ。無いと **76 レコードが `other` に落ちて**多様性制約が効かなくなる。
+太字の 3 つ。無いと **61 レコードが `other` に落ちて**多様性制約が効かなくなる
+（ルールごと外して測った。`wrist curl` のように下位の `curl` が拾う 8 件は `other` に行かない）。
 
 - `wrist_flexion` — リストカールは肘を曲げない。`elbow_flexion` に入れるとカールと同一視される
 - `jump` — プライオメトリクスとスプリントドリル
@@ -441,19 +442,31 @@ Middle Back Shrug / Scapular Pull-Up）。
 [#56](https://github.com/June3141/muscle-training-roulette/issues/56) では拾えず、
 [#72](https://github.com/June3141/muscle-training-roulette/issues/72) の突き合わせで出た。
 
-### 動作パターンと筋重みの矛盾は 17 件だった
+### 動作パターンと筋重みの矛盾は 21 件だった
 
 パターンごとに「これが主働筋にも補助筋にも無いのはおかしい」筋の集合を決め、
-`muscleWeights` と交差しないレコードを数えた。判定は種目名の正規表現、
-重みは上流の `primaryMuscles` から来るので、両者は独立に決まる。
+`muscleWeights` と交差しないレコードを数えた。
 
-607 件中 17 件が矛盾していて、上流の解説文と突き合わせると 16 件はパターン側が誤っていた
-（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
-`Flutter Kicks` はうつ伏せで脚を上げる種目なのに `trunk_flexion`、
-`Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` という具合。
+607 件中 21 件が矛盾していた（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
+上流の解説文と突き合わせた内訳は次の通り。
 
-残る 1 件の `Bottoms-Up Clean From The Hang Position` は、上流が握力を主働筋に置いているだけで
-動作としては `hinge` が正しい。検査に例外として置いてある。
+| 誤っていた側 | 件数 | 例 |
+|---|---|---|
+| 動作パターン | 18 | `Flutter Kicks` はうつ伏せで脚を上げるのに `trunk_flexion`、`Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` |
+| 重み | 1 | `Wind_Sprints` の主働筋が abdominals。上流のスプリント 6 件でこれだけ割れている |
+| どちらも正しい | 2 | 下表 |
+
+`Bottoms-Up Clean From The Hang Position` は上流が握力を主働筋に置いているだけで、
+動作としては `hinge` が正しい。
+`Kneeling Arm Drill` は膝立ちで腕だけを振るので、走の分類でありながら下肢を使わない。
+どちらも検査に例外として置いてある。
+
+**`carry` と `throw` は検査しない。**
+運搬は荷を体側・前面・頭上のどこで保つかで主働筋が変わり、投擲は上半身と下半身の両方に散る
+（`overhead_slam` は広背筋のみ、`scoop_throw` は大腿四頭筋まで入る）。
+動作の定義から外せる筋が決まらない。
+
+**`jump` は検査する。** 走跳は下肢で駆動するので筋を決められる。
 
 ## データセットの組み立て（M2 の成果物）
 

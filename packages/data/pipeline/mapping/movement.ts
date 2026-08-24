@@ -67,9 +67,11 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     /**
-     * バランスボードは立って静止するだけだが、使うのは下腿三頭筋だけ。
+     * バランスボードは立って静止するだけだが、主働筋は下腿三頭筋だけ。
      * **体幹の抗伸展に入れると、腹筋を 1 g も使わない種目が体幹の枠を埋める。**
-     * `other` にも落とせない（データセットに載る `other` を作らない。上の docstring）。
+     * 板の上で姿勢を保つだけで底屈しないので `calf_raise` でもない。
+     * `other` にも落とせない。データセットに載るレコードで `other` を出さないという
+     * 不変条件がテスト側にあり、`other` が増えると多様性制約が効かなくなる。
      */
     pattern:
       /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!triceps? )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham|flutter kick|leg lift|hip flexion|balance board/,
@@ -144,7 +146,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /wrist curl|wrist rotation|finger curl|wrist roller|plate pinch|pronation|supination|bottom up|hand squeeze/,
+      /wrist curl|wrist rotation|finger curl|wrist roller|plate pinch|pronation|supination|hand squeeze/,
     mapping: { pattern: "wrist_flexion", rule: "手関節・握力" },
   },
   {

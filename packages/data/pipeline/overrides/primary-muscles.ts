@@ -12,6 +12,11 @@
  * 全件を見直さない。上流は「主働筋の入れ替わり」自体は正しく記録できている
  * （Close-Grip Bench Press → triceps）ので、上流全体を疑う必要はない。
  *
+ * もう 1 つの入口が動作パターンと筋重みの矛盾検査（`test/pipeline/pattern-consistency.test.ts`）。
+ * **`Wind_Sprints` は audit に出ない。** `MOVEMENT_KEYWORDS` に `sprint` が無く、
+ * 足しても `\bsprint\b` が複数形の `Wind Sprints` を取りこぼすため。
+ * パターン側が正しく重み側が誤っているレコードは、こちらでしか出ないことがある。
+ *
  * 割れていても、以下は**正当な差異なので直さない**。
  *
  * - リストカール（forearms）とレッグカール（hamstrings）が「curl」で同居する類
@@ -52,4 +57,15 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
   "Bench_Press_-_Powerlifting": { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Bench_Press_with_Chains: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Reverse_Band_Bench_Press: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
+
+  // --- スプリント系: abdominals → quadriceps ---
+  Wind_Sprints: {
+    primaryMuscles: ["quadriceps"],
+    reason:
+      "走種目の主働筋は下肢。対象カテゴリのスプリント 5 件のうち abdominals としているのは" +
+      "この 1 件だけで、Bench Sprint / Lunge Sprint / Side Hop-Sprint / " +
+      "Single-Cone Sprint Drill はすべて quadriceps にしている。" +
+      "うち Lunge Sprint は同じ strength カテゴリ。" +
+      "補助筋も空なので、このままでは下肢に 1 g も配分されない。",
+  },
 };

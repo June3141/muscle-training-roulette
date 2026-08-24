@@ -33,7 +33,7 @@ export const EQUIPMENT = [
  * ここが粗いと「胸 5 種目が全部水平プレス」を検出できない。
  *
  * §4.2 の暫定リストに `wrist_flexion` / `jump` / `throw` を足した。
- * 全 616 レコードに振ってみると、この 3 つが無いと 69 レコードが `other` に落ちる。
+ * 全 616 レコードに振ってみると、この 3 つが無いと 61 レコードが `other` に落ちる。
  */
 export const MOVEMENT_PATTERNS = [
   "horizontal_press",
@@ -42,7 +42,7 @@ export const MOVEMENT_PATTERNS = [
   "horizontal_pull",
   "vertical_pull",
   /**
-   * 肘を曲げない肩関節の伸展。プルオーバーとストレートアームプルダウン（7 レコード）。
+   * 肘を曲げない肩関節の伸展。プルオーバー、ストレートアームプルダウン、ケーブルインクラインプッシュダウン（8 レコード）。
    * 頭上から引く動作と同じ枠にすると、多様性項が両者を 1 種類として数える。
    */
   "shoulder_extension",
@@ -59,12 +59,12 @@ export const MOVEMENT_PATTERNS = [
   "trunk_flexion",
   "trunk_rotation",
   "trunk_antiextension",
-  /** 手首の屈伸と握力。リストカールは肘を曲げないので elbow_flexion と分ける（26 レコード）。 */
+  /** 手首の屈伸と握力。リストカールは肘を曲げないので elbow_flexion と分ける（14 レコード）。 */
   "wrist_flexion",
   "carry",
-  /** 跳躍・走。プライオメトリクスとスプリントドリル（36 レコード）。 */
+  /** 跳躍・走。プライオメトリクスとスプリントドリル（40 レコード）。 */
   "jump",
-  /** 投擲。メディシンボール系（10 レコード）。跳躍と同じ枠にすると多様性制約が誤作動する。 */
+  /** 投擲。メディシンボール系（15 レコード）。跳躍と同じ枠にすると多様性制約が誤作動する。 */
   "throw",
   "other",
 ] as const;
