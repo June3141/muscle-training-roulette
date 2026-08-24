@@ -36,7 +36,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|pallof|cocoon|side bridge|balance board|downward facing balance|spider crawl|suspended fallout/,
+      /plank|ab wheel|ab roller|rollout|hollow|dead bug|bird dog|superman|pallof|cocoon|side bridge|downward facing balance|spider crawl|suspended fallout/,
     mapping: { pattern: "trunk_antiextension", rule: "体幹の抗伸展・抗回旋" },
   },
   {
@@ -49,7 +49,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|spell caster|standing lift|(?<!isometric )wiper/,
+      /twist|russian|woodchop|\bchop\b|side bend|oblique|windmill|180|figure 8|spell caster|standing lift|judo flip|sledgehammer|(?<!isometric )wiper/,
     mapping: { pattern: "trunk_rotation", rule: "体幹の回旋・側屈" },
   },
   {
@@ -62,17 +62,22 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /crunch|sit[- ]?up|leg raise|knee raise|leg lift|knee lift|v[- ]?up|jackknife|toe touch|hip raise|hip lift|hip flexion|scissor kick|flutter|frog|heel touch|reverse hyper|leg pull|mountain climber|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up/,
+      /crunch|sit[- ]?up|leg raise|knee raise|knee lift|v[- ]?up|jackknife|toe touch|hip raise|scissor kick|frog|heel touch|leg pull|otis up|seated leg tuck|elbow to knee|butt up|air bike|hanging pike|body up|^pull$|^bottom up$/,
     mapping: { pattern: "trunk_flexion", rule: "体幹の屈曲" },
   },
   {
+    /**
+     * バランスボードは立って静止するだけだが、使うのは下腿三頭筋だけ。
+     * **体幹の抗伸展に入れると、腹筋を 1 g も使わない種目が体幹の枠を埋める。**
+     * `other` にも落とせない（データセットに載る `other` を作らない。上の docstring）。
+     */
     pattern:
-      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!triceps? )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham/,
+      /leg extension|leg curl|hamstring curl|hamstring slide|hip adduction|hip abduction|thigh (adductor|abductor)|(?<!triceps? )kickback|glute ham raise|glute squeeze|monster walk|prone manual hamstring|floor glute ham|flutter kick|leg lift|hip flexion|balance board/,
     mapping: { pattern: "leg_isolation", rule: "下肢の単関節" },
   },
   {
     pattern:
-      /deadlift|good morning|hip thrust|glute bridge|butt lift|swing|\bclean\b(?! grip)|\bsnatch\b|romanian|back extension|hyperextension|hip extension|pull[- ]?through|rack pull|high pull\b|jefferson|physioball hip bridge|judo flip|keg load|stiff leg/,
+      /deadlift|good morning|hip thrust|glute bridge|butt lift|hip lift|swing|\bclean\b(?! grip)|\bsnatch\b|romanian|back extension|hyperextension|hip extension|pull[- ]?through|rack pull|high pull\b|jefferson|physioball hip bridge|keg load|stiff leg/,
     mapping: { pattern: "hinge", rule: "股関節優位の屈伸" },
   },
   {
@@ -93,7 +98,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
      * **下の垂直プルが `pulldown` で拾うので、その前に採る。**
      * `straight arm` だけでは前挙上（`standing straight arm front delt raise`）まで奪う。
      */
-    pattern: /pull[- ]?over|straight[- ]?arm pull[- ]?down/,
+    pattern: /pull[- ]?over|straight[- ]?arm pull[- ]?down|incline pushdown/,
     mapping: { pattern: "shoulder_extension", rule: "肩関節の伸展（肘を曲げない引き）" },
   },
   {
@@ -108,12 +113,12 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /\brows?\b|face pull|rear[- ]?delt|pull[- ]?apart|shotgun|incline bench pull|^pull$|moving claw|london bridge/,
+      /\brows?\b|face pull|rear[- ]?delt|pull[- ]?apart|shotgun|incline bench pull|london bridge/,
     mapping: { pattern: "horizontal_pull", rule: "水平に引く" },
   },
   {
     pattern:
-      /shrug|lateral raise|front raise|side raise|scaption|upright row|deltoid raise|shoulder raise|plate raise|front two raise|front incline raise|side lateral|^raise$|delt raise|single raise|straight raise/,
+      /shrug|lateral raise|front raise|side raise|scaption|upright row|deltoid raise|shoulder raise|plate raise|front two raise|front incline raise|side lateral|^raise$|delt raise|single raise|straight raise|power partial/,
     mapping: { pattern: "shoulder_raise", rule: "肩関節の単関節挙上" },
   },
   {
@@ -129,17 +134,17 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   {
     // butterfly は \bfly\b に当たらない。r と fly の間に語境界がないため。
     pattern:
-      /\bfly\b|\bflye|butterfly|pec deck|crossover|cross over|iron cross|crucifix|svend press|chest squeeze|around the world/,
+      /\bfly\b|\bflye|butterfly|pec deck|(?<!jump )crossover|cross over|iron cross|crucifix|svend press|chest squeeze|around the world/,
     mapping: { pattern: "horizontal_adduction", rule: "肘を伸ばしたまま水平内転" },
   },
   {
     pattern:
-      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drag with press|heavy bag thrust|isometric wiper|drop push|push off|return push|\bdip\b|power partial|^press$/,
+      /bench press|chest press|floor press|push[- ]?up|decline press|smith press|guillotine|board press|pin press|chain press|jm press|drag with press|heavy bag thrust|isometric wiper|drop push|return push|\bdip\b|^press$/,
     mapping: { pattern: "horizontal_press", rule: "水平に押す" },
   },
   {
     pattern:
-      /wrist curl|wrist rotation|reverse curl|finger curl|wrist roller|plate pinch|pronation|supination|bottom up|hand squeeze/,
+      /wrist curl|wrist rotation|finger curl|wrist roller|plate pinch|pronation|supination|bottom up|hand squeeze/,
     mapping: { pattern: "wrist_flexion", rule: "手関節・握力" },
   },
   {
@@ -156,7 +161,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /jump|hop\b|bound|leap|skip|plyo|box drill|sprint|\brun\b|drill|shuffle|carioca|butt kick|high knee|ladder|start technique|depth|burpee/,
+      /jump|hop\b|bound|leap|skip|plyo|box drill|sprint|\brun\b|drill|shuffle|carioca|butt kick|high knee|ladder|start technique|depth|burpee|push off|moving claw|mountain climber/,
     mapping: { pattern: "jump", rule: "跳躍・走" },
   },
   {

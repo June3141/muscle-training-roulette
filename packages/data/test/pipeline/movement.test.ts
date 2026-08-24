@@ -115,9 +115,12 @@ describe("広いキーワードによる覆い隠し", () => {
     expect(patternOf("sumo high pull")).toBe("hinge");
   });
 
-  /** ゴールデンセットの差分で見つかった。プッシュダウンは押す動作ではない。 */
+  /**
+   * ゴールデンセットの差分で見つかった。プッシュダウンは押す動作ではない。
+   * ケーブルインクラインプッシュダウンは広背筋しか使わないので、肘の伸展でもない。
+   */
   it("インクラインが下位のプッシュダウンを覆わない", () => {
-    expect(patternOf("incline pushdown")).toBe("elbow_extension");
+    expect(patternOf("incline pushdown")).toBe("shoulder_extension");
     expect(patternOf("incline push up")).toBe("incline_press");
   });
 
