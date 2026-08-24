@@ -28,6 +28,18 @@ describe("キーワードの照合", () => {
     expect(matchesKeyword("Cable Crunches", "crunch")).toBe(true);
   });
 
+  /** 上流はハイフンと空白を揃えずに `Pull-Up` `Pullup` `Pull Ups` を混在させる。 */
+  it("ハイフンと空白の揺れを吸収する", () => {
+    expect(matchesKeyword("Pullups", "pull-up")).toBe(true);
+    expect(matchesKeyword("V-Bar Pullup", "pull-up")).toBe(true);
+    expect(matchesKeyword("Weighted Pull Ups", "pull-up")).toBe(true);
+  });
+
+  /** 複合語は区切りが無いので、語幹を緩めずキーワードとして持つ。 */
+  it("複合語をキーワードとして持つ", () => {
+    expect(MOVEMENT_KEYWORDS).toContain("hyperextension");
+  });
+
   /**
    * 単語境界を外すと `Nar(row) Stance Leg Press` が引っかかる（`audit-groups.ts`）。
    * 複数形を許すのは末尾だけで、語中の一致は拾わない。
