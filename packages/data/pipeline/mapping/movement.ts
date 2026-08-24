@@ -69,6 +69,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
     /**
      * バランスボードは立って静止するだけだが、主働筋は下腿三頭筋だけ。
      * **体幹の抗伸展に入れると、腹筋を 1 g も使わない種目が体幹の枠を埋める。**
+     * 板の上で姿勢を保つだけで底屈しないので `calf_raise` でもない。
      * `other` にも落とせない。データセットに載るレコードで `other` を出さないという
      * 不変条件がテスト側にあり、`other` が増えると多様性制約が効かなくなる。
      */
@@ -145,7 +146,7 @@ const RULES: readonly { readonly pattern: RegExp; readonly mapping: MovementMapp
   },
   {
     pattern:
-      /wrist curl|wrist rotation|finger curl|wrist roller|plate pinch|pronation|supination|bottom up|hand squeeze/,
+      /wrist curl|wrist rotation|finger curl|wrist roller|plate pinch|pronation|supination|hand squeeze/,
     mapping: { pattern: "wrist_flexion", rule: "手関節・握力" },
   },
   {
