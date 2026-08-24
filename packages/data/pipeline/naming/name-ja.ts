@@ -21,7 +21,7 @@ export interface JapaneseName {
  * `X with Y` を「Y 付き X」にする。
  *
  * 語順どおりに繋ぐと「ベンチプレスウィズチェーン」になって読めない。
- * ベース名 616 件のうち 27 件がこの形。
+ * ベース名 615 件のうち 27 件がこの形。
  */
 const WITH = " with ";
 

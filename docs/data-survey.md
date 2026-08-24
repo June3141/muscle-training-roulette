@@ -156,7 +156,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 ラットプルダウンは Close-Grip / Wide-Grip / Underhand / V-Bar すべて `lats` のまま。
 **この性質は M1 の種目統合を機械化する足がかりになる**（ADR 0002 を参照）。
 
-### 監査の結果、修正したのは 10 件
+### 監査の結果、修正したのは 12 件
 
 `pnpm data:audit` で動作パターン単位の割れを機械的に列挙し、全件を判定した。
 対象 736 件のうち 15 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
@@ -165,15 +165,19 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 |---|---|
 | **正当な差異**（直さない） | リストカール（forearms）とレッグカール（hamstrings）が「curl」で同居 / アップライトロウ（traps）とベントオーバーロウ（middle back）/ リアデルトフライ（shoulders）とダンベルフライ（chest）/ Board Press・Floor Press 系（triceps。可動域を制限して三頭を狙う意図の種目） |
 | キーワードの誤マッチ | Kettlebell Turkish Get-Up (Squat style) |
-| **本当の不整合**（修正した） | 下表の 10 件 |
+| **本当の不整合**（修正した） | 下表の 12 件 |
 
-**修正した 10 件**（`packages/data/pipeline/overrides/primary-muscles.ts`）:
+**修正した 12 件**（`packages/data/pipeline/overrides/primary-muscles.ts`）:
 
 | 種目 | 上流 | 修正後 | 理由 |
 |---|---|---|---|
 | Barbell Deadlift / Axle Deadlift / Deadlift with Bands / Deadlift with Chains / Deficit Deadlift / Reverse Band Deadlift | `lower back` | `hamstrings` + `glutes` | コンベンショナルデッドリフトの主働筋は股関節伸展筋。脊柱起立筋は脊柱を中立に保つ等尺性の働きであって主働筋ではない。同じ動作の Romanian Deadlift や Sumo Deadlift は上流でも `hamstrings` |
 | Bench Press - Powerlifting / Bench Press with Chains / Reverse Band Bench Press | `triceps` | `chest` | 通常のベンチプレス。チェーンやリバースバンドは負荷曲線を変えるだけで主働筋を変えない |
 | Wind Sprints | `abdominals` | `quadriceps` | 走種目の主働筋は下肢。対象カテゴリのスプリント 5 件のうち 4 件は上流でも `quadriceps`。補助筋も空で、下肢へ 1 g も配分されない |
+| Mixed Grip Chin / One Arm Chin-Up | `middle back` | `lats` | チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。チン・プルアップ 8 件のうち 6 件は上流でも `lats` |
+
+`One Arm Chin-Up` を直すと `Chin-Up` とベース名も主働筋も一致するので、2 件が 1 レコードに畳まれる。
+`chin_up__latissimus_dorsi` / `chin_up__trapezius_middle_lower` という id の分裂は上流の誤りの副産物だった。
 
 ### キーワードが複数形を取りこぼしていた
 
@@ -405,11 +409,11 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 ## 種目の統合（器具・片手両手を軸にした結果）
 
-**736 件 → 616 レコード。** 83 レコードが 203 件の上流種目を吸収した。
+**736 件 → 615 レコード。** 84 レコードが 205 件の上流種目を吸収した。
 
 ベース名（器具名と片手/両手の語を落とした名前）でグルーピングし、
 `primaryMuscles` が一致するものだけを畳んでいる（ADR 0002）。
-主働筋が違うため畳まなかったベース名が **15 件**ある。
+主働筋が違うため畳まなかったベース名が **11 件**ある。
 
 | 例 | 結果 |
 |---|---|
@@ -430,11 +434,11 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 ## 動作パターンの分布（§5.2 の多様性制約）
 
-616 レコードに `movementPattern` を振った結果。
+615 レコードに `movementPattern` を振った結果。
 
 | パターン | 件数 | | パターン | 件数 |
 |---|---|---|---|---|
-| hinge | 76 | | vertical_pull | 22 |
+| hinge | 76 | | vertical_pull | 21 |
 | horizontal_press | 49 | | horizontal_adduction | 19 |
 | trunk_flexion | 41 | | carry | 16 |
 | **jump** | 40 | | **throw** | 15 |
@@ -474,7 +478,7 @@ Middle Back Shrug / Scapular Pull-Up）。
 パターンごとに「これが主働筋にも補助筋にも無いのはおかしい」筋の集合を決め、
 `muscleWeights` と交差しないレコードを数えた。
 
-607 件中 21 件が矛盾していた（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
+矛盾していたのは 21 件（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
 上流の解説文と突き合わせた内訳は次の通り。
 
 | 誤っていた側 | 件数 | 例 |
@@ -497,7 +501,7 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 ## データセットの組み立て（M2 の成果物）
 
-**上流 736 件 → 統合 616 レコード → データセット 607 種目。**
+**上流 736 件 → 統合 615 レコード → データセット 606 種目。**
 
 載せなかった 9 レコードは、タキソノミーに写せる主働筋が無いもの。
 

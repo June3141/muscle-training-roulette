@@ -2786,18 +2786,18 @@
     }
   },
   {
-    "id": "chin_up__latissimus_dorsi",
-    "sourceIds": ["Chin-Up"],
+    "id": "chin_up",
+    "sourceIds": ["Chin-Up", "One_Arm_Chin-Up"],
     "nameEn": "Chin-Up",
-    "nameJa": "チンアップ（広背筋）",
+    "nameJa": "チンアップ",
     "force": "pull",
     "mechanic": "compound",
     "level": "beginner",
     "category": "strength",
     "movementPattern": "vertical_pull",
-    "equipmentOptions": ["body_only"],
+    "equipmentOptions": ["body_only", "other"],
     "defaultEquipment": "body_only",
-    "lateralityOptions": ["bilateral"],
+    "lateralityOptions": ["bilateral", "unilateral"],
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
@@ -7325,8 +7325,8 @@
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
-      "trapezius_middle_lower": 0.65,
-      "latissimus_dorsi": 0.175,
+      "latissimus_dorsi": 0.65,
+      "trapezius_middle_lower": 0.175,
       "biceps_brachii": 0.175
     }
   },
@@ -7991,28 +7991,6 @@
       "gluteus_maximus": 0.8,
       "hamstrings": 0.1,
       "gluteus_medius": 0.1
-    }
-  },
-  {
-    "id": "chin_up__trapezius_middle_lower",
-    "sourceIds": ["One_Arm_Chin-Up"],
-    "nameEn": "One Arm Chin-Up",
-    "nameJa": "チンアップ（僧帽筋中下部・菱形筋）",
-    "force": "pull",
-    "mechanic": "compound",
-    "level": "expert",
-    "category": "strength",
-    "movementPattern": "vertical_pull",
-    "equipmentOptions": ["other"],
-    "defaultEquipment": "other",
-    "lateralityOptions": ["unilateral"],
-    "defaultLaterality": "unilateral",
-    "selectable": true,
-    "muscleWeights": {
-      "trapezius_middle_lower": 0.6499,
-      "latissimus_dorsi": 0.1167,
-      "biceps_brachii": 0.1167,
-      "wrist_flexors": 0.1167
     }
   },
   {
