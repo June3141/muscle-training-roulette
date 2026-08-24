@@ -422,7 +422,8 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 ### §4.2 の暫定リストに 3 つ足した
 
-太字の 3 つ。無いと **76 レコードが `other` に落ちて**多様性制約が効かなくなる。
+太字の 3 つ。無いと **61 レコードが `other` に落ちて**多様性制約が効かなくなる
+（ルールごと外して測った。`wrist curl` のように下位の `curl` が拾う 8 件は `other` に行かない）。
 
 - `wrist_flexion` — リストカールは肘を曲げない。`elbow_flexion` に入れるとカールと同一視される
 - `jump` — プライオメトリクスとスプリントドリル
@@ -441,13 +442,12 @@ Middle Back Shrug / Scapular Pull-Up）。
 [#56](https://github.com/June3141/muscle-training-roulette/issues/56) では拾えず、
 [#72](https://github.com/June3141/muscle-training-roulette/issues/72) の突き合わせで出た。
 
-### 動作パターンと筋重みの矛盾は 17 件だった
+### 動作パターンと筋重みの矛盾は 19 件だった
 
 パターンごとに「これが主働筋にも補助筋にも無いのはおかしい」筋の集合を決め、
-`muscleWeights` と交差しないレコードを数えた。判定は種目名の正規表現、
-重みは上流の `primaryMuscles` から来るので、両者は独立に決まる。
+`muscleWeights` と交差しないレコードを数えた。
 
-607 件中 17 件が矛盾していて、上流の解説文と突き合わせると 16 件はパターン側が誤っていた
+607 件中 19 件が矛盾していて、上流の解説文と突き合わせると 18 件はパターン側が誤っていた
 （[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
 `Flutter Kicks` はうつ伏せで脚を上げる種目なのに `trunk_flexion`、
 `Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` という具合。

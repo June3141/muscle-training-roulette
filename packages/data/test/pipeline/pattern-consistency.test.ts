@@ -2,7 +2,7 @@
  * 動作パターンと筋重みの整合（#72）。
  *
  * `movement.ts` は種目名の正規表現しか見ないので、名前が動作を表していないレコードを取り違える。
- * **重み側は上流の primaryMuscles から来るので、両者は独立に決まる。**
+ * **重み側は上流の primaryMuscles / secondaryMuscles から来るので、両者は独立に決まる。**
  * 片方が誤っていれば「この動作なら必ず使う筋」が重みに現れないという形で出る。
  */
 import { describe, expect, it } from "vitest";
@@ -96,7 +96,7 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
 /**
  * 矛盾したままでよいレコード。
  *
- * **消すと矛盾が黙って通るので、理由なしに足さない。**
+ * **足すと矛盾が黙って通るので、理由なしに足さない。**
  */
 const ALLOWED: Readonly<Record<string, string>> = {
   bottom_up_clean_from_the_hang_position:

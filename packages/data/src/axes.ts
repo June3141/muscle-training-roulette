@@ -33,7 +33,7 @@ export const EQUIPMENT = [
  * ここが粗いと「胸 5 種目が全部水平プレス」を検出できない。
  *
  * §4.2 の暫定リストに `wrist_flexion` / `jump` / `throw` を足した。
- * 全 616 レコードに振ってみると、この 3 つが無いと 69 レコードが `other` に落ちる。
+ * 全 616 レコードに振ってみると、この 3 つが無いと 61 レコードが `other` に落ちる。
  */
 export const MOVEMENT_PATTERNS = [
   "horizontal_press",
@@ -42,7 +42,7 @@ export const MOVEMENT_PATTERNS = [
   "horizontal_pull",
   "vertical_pull",
   /**
-   * 肘を曲げない肩関節の伸展。プルオーバーとストレートアームプルダウン（7 レコード）。
+   * 肘を曲げない肩関節の伸展。プルオーバー、ストレートアームプルダウン、ケーブルインクラインプッシュダウン（8 レコード）。
    * 頭上から引く動作と同じ枠にすると、多様性項が両者を 1 種類として数える。
    */
   "shoulder_extension",
