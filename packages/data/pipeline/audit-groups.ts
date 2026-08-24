@@ -28,6 +28,7 @@ export const MOVEMENT_KEYWORDS = [
   "press",
   "pull-up",
   "chin-up",
+  "chin",
   "dip",
   "shrug",
   "crunch",

@@ -81,6 +81,20 @@ describe("上流データとの整合性", () => {
     expect(withLowerBackPrimary.map((ex) => ex.name)).toEqual([]);
   });
 
+  it("チンアップの primary が広背筋で揃う", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory).map(applyPrimaryOverride);
+    // スキャプラプルアップは肩甲骨を下制するだけで肘を曲げないので対象外。
+    // ゴリラチンクランチは懸垂位でのクランチ、トライセプスプレストゥチンは三頭の種目。
+    const chins = all.filter(
+      (ex) => /\bchin|pull-?ups?/i.test(ex.name) && !/scapular|crunch|triceps/i.test(ex.name),
+    );
+
+    // 上流ではグリップと片手だけを変えた 2 件が middle back に割れていた。
+    // 握り方と片手/両手は主働筋を入れ替えない。
+    const notLats = chins.filter((ex) => !ex.primaryMuscles.includes("lats"));
+    expect(notLats.map((ex) => ex.name)).toEqual([]);
+  });
+
   it("クローズグリップ以外のベンチプレスの primary が chest になる", async () => {
     const all = (await loadUpstream()).map(applyPrimaryOverride);
     const notCloseGrip = all.filter(

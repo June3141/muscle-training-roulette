@@ -38,6 +38,12 @@ const DEADLIFT_REASON =
   "上流はこの 6 件だけ lower back としており、同じ動作の Romanian Deadlift や " +
   "Sumo Deadlift は hamstrings にしている（`pnpm data:audit` で確認できる）。";
 
+const CHIN_UP_REASON =
+  "チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。" +
+  "上流はチン・プルアップ 10 件のうち 8 件を lats にしており、" +
+  "この 2 件だけ middle back としている（`pnpm data:audit` の chin グループ）。" +
+  "肩甲骨を下制するだけの Scapular Pull-Up は肘を曲げないので traps のままでよい。";
+
 const BENCH_PRESS_REASON =
   "通常のベンチプレスであり、主働筋は大胸筋。チェーンやリバースバンドは" +
   "負荷曲線を変えるだけで主働筋を変えない。上流で triceps とされている他の 3 件" +
@@ -56,6 +62,10 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
   "Bench_Press_-_Powerlifting": { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Bench_Press_with_Chains: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Reverse_Band_Bench_Press: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
+
+  // --- チンアップ系: middle back → lats ---
+  Mixed_Grip_Chin: { primaryMuscles: ["lats"], reason: CHIN_UP_REASON },
+  "One_Arm_Chin-Up": { primaryMuscles: ["lats"], reason: CHIN_UP_REASON },
 
   // --- スプリント系: abdominals → quadriceps ---
   Wind_Sprints: {

@@ -33,7 +33,7 @@ export const EQUIPMENT = [
  * ここが粗いと「胸 5 種目が全部水平プレス」を検出できない。
  *
  * §4.2 の暫定リストに `wrist_flexion` / `jump` / `throw` を足した。
- * 全 616 レコードに振ってみると、この 3 つが無いと 61 レコードが `other` に落ちる。
+ * 全 615 レコードに振ってみると、この 3 つが無いと 61 レコードが `other` に落ちる。
  */
 export const MOVEMENT_PATTERNS = [
   "horizontal_press",

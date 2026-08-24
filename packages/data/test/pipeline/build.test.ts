@@ -25,7 +25,7 @@ describe("データセットの組み立て", () => {
   });
 
   it("落とした件数と残した件数の合計が統合後のレコード数と一致する", () => {
-    expect(dataset.exercises.length + dataset.dropped.length).toBe(616);
+    expect(dataset.exercises.length + dataset.dropped.length).toBe(615);
   });
 
   it("id が一意", () => {
