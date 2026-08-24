@@ -159,7 +159,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 ### 監査の結果、修正したのは 12 件
 
 `pnpm data:audit` で動作パターン単位の割れを機械的に列挙し、全件を判定した。
-対象 736 件のうち 16 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
+対象 736 件のうち 17 グループで primaryMuscles が割れていたが、**大半は正当な差異**。
 
 | 判定 | 例 |
 |---|---|
@@ -185,6 +185,15 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 （[#76](https://github.com/June3141/muscle-training-roulette/issues/76)）。
 末尾の `e` / `s` / `es` を許すと 13 グループが増え、`sprint` と `chin` を足して 16 グループになった。
 `e` 単独は `Flye` のような綴り揺れのため。
+
+区切りのハイフンと空白も揺れる。上流は `Pull-Up` と `Pullup` と `Pull Ups` を混在させていて、
+`pull-up` のグループが 4 件から 7 件に増えた
+（[#78](https://github.com/June3141/muscle-training-roulette/issues/78)）。
+
+区切りの無い複合語は単語境界を守ったままでは吸収できないので、キーワードとして足す。
+`hyperextension` を足して 17 グループ。
+バックエクステンション 3 件の `lower back` と `Reverse Hyperextension` の `hamstrings` に割れるが、
+前者は脊柱の伸展、後者は股関節の伸展で動作が違う。
 
 | グループ | 前 | 後 |
 |---|---|---|

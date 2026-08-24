@@ -33,6 +33,7 @@ export const MOVEMENT_KEYWORDS = [
   "shrug",
   "crunch",
   "calf raise",
+  "hyperextension",
   "sprint",
 ] as const;
 
@@ -42,19 +43,19 @@ export interface Group {
 }
 
 /**
- * 末尾の `e` / `s` / `es` を許す。
+ * 末尾の `e` / `s` / `es` と、語の区切りのハイフン・空白の揺れを許す。
  *
  * **許さないと綴りの揺れた種目名がグループから漏れ、割れとして見えなくなる。**
  * 漏れたレコードは監査に出ないので、上書きの判断材料そのものが欠ける。
- * `e` 単独は `fly` と `flye` のような綴り揺れのため。
+ * `e` 単独は `fly` と `flye`、区切りは `Pull-Up` と `Pullup` と `Pull Ups` のため。
  *
- * 単語境界は残す（`Narrow Stance` の `row` を拾わないため）。
- * ここより緩めるとハイフンと空白の揺れ（`Pullups` / `Pull Ups`）や
- * 複合語（`Hyperextension`）まで欲しくなるが、境界を外すと誤検出が増える。
+ * 単語境界は残す。外すと `Nar(row) Stance Leg Press` が `row` に引っかかる。
+ * そのため区切りの無い複合語は吸収できない。
+ * `Hyperextension` のようなものは語幹を緩めずキーワードとして足す。
  */
 export function matchesKeyword(name: string, keyword: string): boolean {
-  const escaped = keyword.replaceAll("-", "\\-");
-  return new RegExp(`\\b${escaped}(e|s|es)?\\b`, "i").test(name);
+  const pattern = keyword.replaceAll(/[- ]/g, "[- ]?");
+  return new RegExp(`\\b${pattern}(e|s|es)?\\b`, "i").test(name);
 }
 
 export function groupByKeyword(exercises: readonly UpstreamExercise[]): Group[] {
