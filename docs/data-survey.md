@@ -174,7 +174,7 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 | Barbell Deadlift / Axle Deadlift / Deadlift with Bands / Deadlift with Chains / Deficit Deadlift / Reverse Band Deadlift | `lower back` | `hamstrings` + `glutes` | コンベンショナルデッドリフトの主働筋は股関節伸展筋。脊柱起立筋は脊柱を中立に保つ等尺性の働きであって主働筋ではない。同じ動作の Romanian Deadlift や Sumo Deadlift は上流でも `hamstrings` |
 | Bench Press - Powerlifting / Bench Press with Chains / Reverse Band Bench Press | `triceps` | `chest` | 通常のベンチプレス。チェーンやリバースバンドは負荷曲線を変えるだけで主働筋を変えない |
 | Wind Sprints | `abdominals` | `quadriceps` | 走種目の主働筋は下肢。対象カテゴリのスプリント 5 件のうち 4 件は上流でも `quadriceps`。補助筋も空で、下肢へ 1 g も配分されない |
-| Mixed Grip Chin / One Arm Chin-Up | `middle back` | `lats` | チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。チン・プルアップ 10 件のうち 8 件は上流でも `lats` |
+| Mixed Grip Chin / One Arm Chin-Up | `middle back` | `lats` | チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。監査の chin / chin-up / pull-up グループ 14 件のうち 9 件は上流でも `lats` |
 
 `One Arm Chin-Up` を直すと `Chin-Up` とベース名も主働筋も一致するので、2 件が 1 レコードに畳まれる。
 `chin_up__latissimus_dorsi` / `chin_up__trapezius_middle_lower` という id の分裂は上流の誤りの副産物だった。
@@ -192,8 +192,10 @@ secondary に持つ 3 件はいずれも primary が `quadriceps`（スクワッ
 
 区切りの無い複合語は単語境界を守ったままでは吸収できないので、キーワードとして足す。
 `hyperextension` を足して 17 グループ。
-バックエクステンション 3 件の `lower back` と `Reverse Hyperextension` の `hamstrings` に割れるが、
-前者は脊柱の伸展、後者は股関節の伸展で動作が違う。
+バックエクステンション 3 件の `lower back` と `Reverse Hyperextension` の `hamstrings` に割れる。
+**この割れはまだ判定していない。** 上流の解説文は 3 件のうち 2 件を
+「背中を平らに保ったままハムストリングスを伸ばす」と書いていて、脊柱ではなく股関節の動作に読める。
+デッドリフトの `lower back` を直したのと同じ形なので、[#17](https://github.com/June3141/muscle-training-roulette/issues/17) で見る。
 
 | グループ | 前 | 後 |
 |---|---|---|
