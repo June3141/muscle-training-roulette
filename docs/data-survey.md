@@ -407,22 +407,22 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 | パターン | 件数 | | パターン | 件数 |
 |---|---|---|---|---|
-| hinge | 76 | | trunk_rotation | 20 |
-| horizontal_press | 51 | | horizontal_adduction | 20 |
-| trunk_flexion | 45 | | leg_isolation | 18 |
-| squat | 40 | | **wrist_flexion** | 17 |
-| vertical_press | 38 | | carry | 16 |
-| horizontal_pull | 38 | | trunk_antiextension | 15 |
-| **jump** | 36 | | **throw** | 15 |
-| elbow_extension | 36 | | lunge | 13 |
-| elbow_flexion | 35 | | incline_press | 11 |
-| shoulder_raise | 31 | | calf_raise | 9 |
-| vertical_pull | 22 | | shoulder_extension | 7 |
-| | | | other | 7 |
+| hinge | 76 | | vertical_pull | 22 |
+| horizontal_press | 49 | | horizontal_adduction | 19 |
+| trunk_flexion | 41 | | carry | 16 |
+| **jump** | 40 | | **throw** | 15 |
+| squat | 40 | | trunk_antiextension | 14 |
+| vertical_press | 38 | | **wrist_flexion** | 14 |
+| elbow_flexion | 37 | | lunge | 13 |
+| horizontal_pull | 36 | | incline_press | 11 |
+| elbow_extension | 35 | | calf_raise | 9 |
+| shoulder_raise | 32 | | shoulder_extension | 8 |
+| leg_isolation | 22 | | other | 7 |
+| trunk_rotation | 22 | | | |
 
 ### §4.2 の暫定リストに 3 つ足した
 
-太字の 3 つ。無いと **79 レコードが `other` に落ちて**多様性制約が効かなくなる。
+太字の 3 つ。無いと **76 レコードが `other` に落ちて**多様性制約が効かなくなる。
 
 - `wrist_flexion` — リストカールは肘を曲げない。`elbow_flexion` に入れるとカールと同一視される
 - `jump` — プライオメトリクスとスプリントドリル
@@ -436,6 +436,24 @@ Middle Back Shrug / Scapular Pull-Up）。
 プルオーバーとストレートアームプルダウン 7 件は肘を曲げない肩関節の伸展で、
 `vertical_pull` に入れると多様性項が実際のチンアップと 1 種類として数える（[#56](https://github.com/June3141/muscle-training-roulette/issues/56)）。
 `other` を減らすために足した上の 3 つとは動機が違う。
+
+8 件目のケーブルインクラインプッシュダウンは、名前に `pullover` も `straight arm` も持たないので
+[#56](https://github.com/June3141/muscle-training-roulette/issues/56) では拾えず、
+[#72](https://github.com/June3141/muscle-training-roulette/issues/72) の突き合わせで出た。
+
+### 動作パターンと筋重みの矛盾は 17 件だった
+
+パターンごとに「これが主働筋にも補助筋にも無いのはおかしい」筋の集合を決め、
+`muscleWeights` と交差しないレコードを数えた。判定は種目名の正規表現、
+重みは上流の `primaryMuscles` から来るので、両者は独立に決まる。
+
+607 件中 17 件が矛盾していて、上流の解説文と突き合わせると 16 件はパターン側が誤っていた
+（[#72](https://github.com/June3141/muscle-training-roulette/issues/72)）。
+`Flutter Kicks` はうつ伏せで脚を上げる種目なのに `trunk_flexion`、
+`Cable Incline Pushdown` は広背筋しか使わないのに `elbow_extension` という具合。
+
+残る 1 件の `Bottoms-Up Clean From The Hang Position` は、上流が握力を主働筋に置いているだけで
+動作としては `hinge` が正しい。検査に例外として置いてある。
 
 ## データセットの組み立て（M2 の成果物）
 

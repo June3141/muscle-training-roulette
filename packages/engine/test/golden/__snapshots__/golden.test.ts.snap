@@ -61,45 +61,52 @@ exports[`ゴールデンセットの実行（M3） > chest_only: 胸のみ — �
 `;
 
 exports[`ゴールデンセットの実行（M3） > lower_body: 下半身 — 四頭・ハム・臀 / 5種目 > スナップショットと一致する 1`] = `
-"1. フラッターキック
-   trunk_flexion / compound / body_only / bilateral
-2. ハイボックススクワット
+"1. ハイボックススクワット
    squat / compound / other / unilateral
-3. パワークリーンフロムブロック
+2. パワークリーンフロムブロック
    hinge / compound / barbell / bilateral
-4. ニーレイズ付きステップアップ
+3. ニーレイズ付きステップアップ
    lunge / compound / body_only / bilateral
+4. ダウンワードフェイシングバランス
+   trunk_antiextension / isolation / exercise_ball / bilateral
 5. モンスターウォーク
    leg_isolation / compound / bands / bilateral
 
 カバレッジ（種目数換算）
   大腿四頭筋: 1.12
-  ハムストリングス: 1.23
-  大臀筋: 1.42
+  ハムストリングス: 0.98
+  大臀筋: 1.57
   中臀筋: 1.23
+  腹横筋: 0.10
 
 カバーできない部位: なし"
 `;
 
 exports[`ゴールデンセットの実行（M3） > ppl_pull: PPL Pull — 広背・僧帽・二頭 / 6種目 > スナップショットと一致する 1`] = `
 "1. インクラインプッシュダウン
-   elbow_extension / isolation / cable / bilateral
-2. ロープストレートアームプルダウン
    shoulder_extension / isolation / cable / bilateral
+2. パーム付きベントオーバーツーロウ
+   horizontal_pull / compound / dumbbell / bilateral
 3. ミックスグリップチン
    vertical_pull / compound / other / bilateral
-4. カーフショルダーシュラッグ
+4. スモウハイプル
+   hinge / compound / kettlebell / bilateral
+5. カーフショルダーシュラッグ
    shoulder_raise / isolation / machine / bilateral
-5. ライイングカンバーロウ
-   horizontal_pull / isolation / barbell / bilateral
 6. カールライイングアゲインストインクライン
    elbow_flexion / isolation / barbell / bilateral
 
 カバレッジ（種目数換算）
-  広背筋: 2.27
-  僧帽筋上部: 1.00
-  僧帽筋中下部・菱形筋: 1.45
-  上腕二頭筋: 1.27
+  三角筋後部: 0.06
+  広背筋: 1.35
+  僧帽筋上部: 1.65
+  僧帽筋中下部・菱形筋: 1.30
+  上腕二頭筋: 1.35
+  大腿四頭筋: 0.06
+  ハムストリングス: 0.06
+  大臀筋: 0.06
+  中臀筋: 0.06
+  内転筋群: 0.06
 
 カバーできない部位: なし"
 `;

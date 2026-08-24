@@ -68,7 +68,7 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
     "trapezius_upper",
     "trapezius_middle_lower",
   ],
-  elbow_flexion: ["biceps_brachii", "brachioradialis", "wrist_flexors"],
+  elbow_flexion: ["biceps_brachii", "brachioradialis"],
   elbow_extension: ["triceps_brachii"],
   squat: ["quadriceps", "gluteus_maximus", "hamstrings", "adductors"],
   lunge: ["quadriceps", "gluteus_maximus", "gluteus_medius", "hamstrings", "adductors"],
@@ -85,7 +85,8 @@ const PRIME_MOVERS: Readonly<Record<MovementPattern, readonly MuscleId[]>> = {
   trunk_flexion: ["rectus_abdominis", "obliques", "transversus_abdominis"],
   trunk_rotation: ["obliques", "rectus_abdominis", "transversus_abdominis", "erector_spinae"],
   trunk_antiextension: ["rectus_abdominis", "obliques", "transversus_abdominis", "erector_spinae"],
-  wrist_flexion: ["wrist_flexors", "brachioradialis"],
+  /** 腕橈骨筋は入れない。回内位の肘屈曲筋なので（`forearms.ts`）、手関節の動作を意味しない。 */
+  wrist_flexion: ["wrist_flexors"],
   carry: [],
   jump: [],
   throw: [],
