@@ -43,7 +43,7 @@ exports[`ゴールデンセットの実行（M3） > chest_only: 胸のみ — �
 2. パームフェイシング付きインクラインベンチ
    incline_press / compound / dumbbell / bilateral
 3. ワイドグリップデクラインプルオーバー
-   vertical_pull / compound / barbell / bilateral
+   shoulder_extension / compound / barbell / bilateral
 4. ネックプレス
    vertical_press / compound / barbell / bilateral
 5. バタフライ
@@ -84,23 +84,22 @@ exports[`ゴールデンセットの実行（M3） > lower_body: 下半身 — �
 exports[`ゴールデンセットの実行（M3） > ppl_pull: PPL Pull — 広背・僧帽・二頭 / 6種目 > スナップショットと一致する 1`] = `
 "1. インクラインプッシュダウン
    elbow_extension / isolation / cable / bilateral
-2. インバーテッドロウ
-   horizontal_pull / compound / other / bilateral
-3. カーフショルダーシュラッグ
+2. ロープストレートアームプルダウン
+   shoulder_extension / isolation / cable / bilateral
+3. ミックスグリップチン
+   vertical_pull / compound / other / bilateral
+4. カーフショルダーシュラッグ
    shoulder_raise / isolation / machine / bilateral
-4. スキャプラプルアップ
-   vertical_pull / isolation / other / bilateral
-5. カールライイングアゲインストインクライン
+5. ライイングカンバーロウ
+   horizontal_pull / isolation / barbell / bilateral
+6. カールライイングアゲインストインクライン
    elbow_flexion / isolation / barbell / bilateral
-6. リバースカール
-   wrist_flexion / isolation / barbell / bilateral
 
 カバレッジ（種目数換算）
-  広背筋: 1.55
+  広背筋: 2.27
   僧帽筋上部: 1.00
   僧帽筋中下部・菱形筋: 1.45
-  上腕二頭筋: 1.80
-  腕橈骨筋: 0.20
+  上腕二頭筋: 1.27
 
 カバーできない部位: なし"
 `;
@@ -113,7 +112,7 @@ exports[`ゴールデンセットの実行（M3） > ppl_push: PPL Push — 胸�
 3. ツイスト付きインクラインフライ
    horizontal_adduction / compound / dumbbell / bilateral
 4. ベントアームプルオーバー（大胸筋中下部）
-   vertical_pull / compound / dumbbell / bilateral
+   shoulder_extension / compound / dumbbell / bilateral
 5. インクラインショルダーレイズ
    shoulder_raise / compound / barbell / bilateral
 6. ライイングエクステンション

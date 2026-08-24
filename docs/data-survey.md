@@ -407,18 +407,18 @@ Middle Back Shrug / Scapular Pull-Up）。
 
 | パターン | 件数 | | パターン | 件数 |
 |---|---|---|---|---|
-| hinge | 76 | | trunk_antiextension | 23 |
-| horizontal_press | 50 | | trunk_rotation | 22 |
-| trunk_flexion | 46 | | carry | 19 |
-| vertical_press | 39 | | leg_isolation | 18 |
-| horizontal_pull | 39 | | horizontal_adduction | 16 |
-| squat | 39 | | **throw** | 15 |
-| **jump** | 36 | | incline_press | 12 |
-| elbow_flexion | 29 | | lunge | 12 |
-| shoulder_raise | 28 | | calf_raise | 10 |
-| vertical_pull | 28 | | other | 5 |
-| **wrist_flexion** | 28 | | | |
-| elbow_extension | 26 | | | |
+| hinge | 76 | | trunk_rotation | 20 |
+| horizontal_press | 51 | | horizontal_adduction | 20 |
+| trunk_flexion | 45 | | leg_isolation | 18 |
+| squat | 40 | | **wrist_flexion** | 17 |
+| vertical_press | 38 | | carry | 16 |
+| horizontal_pull | 38 | | trunk_antiextension | 15 |
+| **jump** | 36 | | **throw** | 15 |
+| elbow_extension | 36 | | lunge | 13 |
+| elbow_flexion | 35 | | incline_press | 11 |
+| shoulder_raise | 31 | | calf_raise | 9 |
+| vertical_pull | 22 | | shoulder_extension | 7 |
+| | | | other | 7 |
 
 ### §4.2 の暫定リストに 3 つ足した
 
@@ -428,8 +428,14 @@ Middle Back Shrug / Scapular Pull-Up）。
 - `jump` — プライオメトリクスとスプリントドリル
 - `throw` — メディシンボール系。跳躍と同じ枠にすると上半身と下半身が同一視される
 
-`other` の 5 件はローテーターカフと首で、**どれも主働筋が空でデータセットに載らない**
+`other` の 7 件はローテーターカフと首で、**どれも主働筋が空でデータセットに載らない**
 （`expandMuscles` の 12 件）。載るレコードに `other` は 1 件も無い。
+
+### `shoulder_extension` は誤判定を直す過程で足した
+
+プルオーバーとストレートアームプルダウン 7 件は肘を曲げない肩関節の伸展で、
+`vertical_pull` に入れると多様性項が実際のチンアップと 1 種類として数える（[#56](https://github.com/June3141/muscle-training-roulette/issues/56)）。
+`other` を減らすために足した上の 3 つとは動機が違う。
 
 ## データセットの組み立て（M2 の成果物）
 

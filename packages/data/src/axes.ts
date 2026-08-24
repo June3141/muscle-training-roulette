@@ -41,6 +41,11 @@ export const MOVEMENT_PATTERNS = [
   "vertical_press",
   "horizontal_pull",
   "vertical_pull",
+  /**
+   * 肘を曲げない肩関節の伸展。プルオーバーとストレートアームプルダウン（7 レコード）。
+   * 頭上から引く動作と同じ枠にすると、多様性項が両者を 1 種類として数える。
+   */
+  "shoulder_extension",
   /** フライ・ペックデック等の水平内転。プレスと区別しないと §7「胸のみ」ケースを判定できない。 */
   "horizontal_adduction",
   "shoulder_raise",

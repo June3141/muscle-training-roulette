@@ -201,6 +201,31 @@ describe("収縮様式と移動手段に動作を引きずられない", () => {
   });
 });
 
+/**
+ * 肩関節の伸展（#56）。プルオーバーとストレートアームプルダウンは肘を曲げない。
+ * **頭上から引く動作と同じ枠に入れると、多様性項が両者を 1 種類として数える。**
+ * 広背筋を指定した要求で、ほぼ同じ種目が 2 本並ぶ。
+ */
+describe("肘を曲げない引きを頭上からの引きと分ける", () => {
+  it("プルオーバーとストレートアームプルダウンを肩関節の伸展にする", () => {
+    expect(patternOf("bent arm pullover")).toBe("shoulder_extension");
+    expect(patternOf("straight arm pullover")).toBe("shoulder_extension");
+    expect(patternOf("front raise and pullover")).toBe("shoulder_extension");
+    expect(patternOf("straight arm pulldown")).toBe("shoulder_extension");
+    expect(patternOf("rope straight arm pulldown")).toBe("shoulder_extension");
+  });
+
+  it("肘を曲げる引きは頭上からの引きに残す", () => {
+    expect(patternOf("wide grip lat pulldown")).toBe("vertical_pull");
+    expect(patternOf("pull up")).toBe("vertical_pull");
+  });
+
+  /** 前挙上は肩関節の屈曲。`straight arm` を広く取ると奪われる。 */
+  it("ストレートアームの前挙上を肩関節の伸展にしない", () => {
+    expect(patternOf("standing straight arm front delt raise above head")).toBe("shoulder_raise");
+  });
+});
+
 describe("上流データ全件", () => {
   it("データセットに載るレコードで other が出ない", async () => {
     // other が増えると §5.2 の多様性制約が効かなくなる。
@@ -213,6 +238,20 @@ describe("上流データ全件", () => {
       .filter((record) => record.sourceIds.some((id) => kept.has(id)))
       .filter((record) => mapMovementPattern(record.baseName).pattern === "other");
     expect(others.map((record) => record.baseName)).toEqual([]);
+  });
+
+  /**
+   * ルールは今の綴りに合わせて絞ってある。
+   * **上流が名前を変えると、ルールから外れて黙って `vertical_pull` に戻る。**
+   * ここではルールと独立した網で数え、取りこぼしと件数の変化を検出する。
+   */
+  it("肘を曲げない引きを取りこぼさない", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory);
+    const straightPulls = mergeUpstream(all)
+      .filter((record) => /pull ?-? ?over|straight ?-? ?arm.*pull/.test(record.baseName))
+      .map((record) => [record.baseName, mapMovementPattern(record.baseName).pattern] as const);
+    expect(straightPulls.filter(([, pattern]) => pattern !== "shoulder_extension")).toEqual([]);
+    expect(straightPulls).toHaveLength(7);
   });
 
   it("同じ入力から同じ出力が出る", async () => {
