@@ -117,6 +117,15 @@ describe("上流データとの整合性", () => {
     expect(spinal?.primaryMuscles).toEqual(["lower back"]);
   });
 
+  it("ラックプルの primary が脊柱起立筋でなくなる", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory).map(applyPrimaryOverride);
+    const rackPulls = all.filter((ex) => /\brack pull/i.test(ex.name));
+
+    expect(rackPulls).toHaveLength(2);
+    const stillLowerBack = rackPulls.filter((ex) => ex.primaryMuscles.includes("lower back"));
+    expect(stillLowerBack.map((ex) => ex.name)).toEqual([]);
+  });
+
   it("クローズグリップ以外のベンチプレスの primary が chest になる", async () => {
     const all = (await loadUpstream()).map(applyPrimaryOverride);
     const notCloseGrip = all.filter(
