@@ -33,6 +33,7 @@ export const MOVEMENT_KEYWORDS = [
   "shrug",
   "crunch",
   "calf raise",
+  "good morning",
   "hyperextension",
   "sprint",
 ] as const;

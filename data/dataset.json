@@ -5401,9 +5401,9 @@
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
-      "erector_spinae": 0.8,
-      "hamstrings": 0.1,
-      "gluteus_maximus": 0.1
+      "hamstrings": 0.4,
+      "gluteus_maximus": 0.4,
+      "erector_spinae": 0.2
     }
   },
   {
@@ -5422,9 +5422,9 @@
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
-      "erector_spinae": 0.65,
-      "hamstrings": 0.175,
-      "gluteus_maximus": 0.175
+      "hamstrings": 0.325,
+      "gluteus_maximus": 0.325,
+      "erector_spinae": 0.35
     }
   },
   {
@@ -11854,9 +11854,9 @@
     "defaultLaterality": "bilateral",
     "selectable": true,
     "muscleWeights": {
-      "erector_spinae": 0.65,
-      "hamstrings": 0.175,
-      "gluteus_maximus": 0.175
+      "hamstrings": 0.325,
+      "gluteus_maximus": 0.325,
+      "erector_spinae": 0.35
     }
   },
   {

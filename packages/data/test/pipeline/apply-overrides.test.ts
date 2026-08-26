@@ -95,6 +95,28 @@ describe("上流データとの整合性", () => {
     expect(notLats.map((ex) => ex.name)).toEqual([]);
   });
 
+  it("背中を平らに保つヒンジの primary が脊柱起立筋でなくなる", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory).map(applyPrimaryOverride);
+    const flatBack = all.filter((ex) =>
+      [
+        "Hyperextensions_Back_Extensions",
+        "Hyperextensions_With_No_Hyperextension_Bench",
+        "Stiff_Leg_Barbell_Good_Morning",
+      ].includes(ex.id),
+    );
+
+    expect(flatBack).toHaveLength(3);
+    const stillLowerBack = flatBack.filter((ex) => ex.primaryMuscles.includes("lower back"));
+    expect(stillLowerBack.map((ex) => ex.name)).toEqual([]);
+  });
+
+  /** 脊柱が実際に動くものまで巻き込むと、動作の違いが消える。 */
+  it("脊柱が動くハイパーエクステンションは脊柱起立筋のまま残る", async () => {
+    const all = (await loadUpstream()).filter(isTargetCategory).map(applyPrimaryOverride);
+    const spinal = all.find((ex) => ex.id === "Weighted_Ball_Hyperextension");
+    expect(spinal?.primaryMuscles).toEqual(["lower back"]);
+  });
+
   it("クローズグリップ以外のベンチプレスの primary が chest になる", async () => {
     const all = (await loadUpstream()).map(applyPrimaryOverride);
     const notCloseGrip = all.filter(
