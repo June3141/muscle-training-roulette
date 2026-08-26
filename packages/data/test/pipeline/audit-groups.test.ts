@@ -28,6 +28,13 @@ describe("キーワードの照合", () => {
     expect(matchesKeyword("Cable Crunches", "crunch")).toBe(true);
   });
 
+  /** 上流はハイフンと空白を揃えずに `Pull-Up` `Pullup` `Pull Ups` を混在させる。 */
+  it("ハイフンと空白の揺れを吸収する", () => {
+    expect(matchesKeyword("Pullups", "pull-up")).toBe(true);
+    expect(matchesKeyword("V-Bar Pullup", "pull-up")).toBe(true);
+    expect(matchesKeyword("Weighted Pull Ups", "pull-up")).toBe(true);
+  });
+
   /**
    * 単語境界を外すと `Nar(row) Stance Leg Press` が引っかかる（`audit-groups.ts`）。
    * 複数形を許すのは末尾だけで、語中の一致は拾わない。
@@ -55,5 +62,13 @@ describe("上流のグループ化", () => {
     const sprint = groupByKeyword(upstream).find((group) => group.keyword === "sprint");
     const names = [...(sprint?.byPrimary.values() ?? [])].flat().map((exercise) => exercise.name);
     expect(names).toContain("Wind Sprints");
+  });
+
+  /** 区切りの無い複合語は語幹を緩めずキーワードとして持つ。 */
+  it("バックエクステンションとリバースハイパーが同じグループに入る", () => {
+    const group = groupByKeyword(upstream).find((entry) => entry.keyword === "hyperextension");
+    const names = [...(group?.byPrimary.values() ?? [])].flat().map((exercise) => exercise.name);
+    expect(names).toContain("Hyperextensions (Back Extensions)");
+    expect(names).toContain("Reverse Hyperextension");
   });
 });

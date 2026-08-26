@@ -23,6 +23,13 @@
  * - リアデルトフライ（shoulders）とダンベルフライ（chest）
  * - Board Press / Floor Press 系（triceps）— 可動域を制限して三頭を狙う意図の種目
  * - Kettlebell Turkish Get-Up (Squat style) — キーワードの誤マッチ
+ * - デッドリフトの quadriceps 6 件 — 荷重が体側にあり、バーが前にあるものとは動作が違う
+ * - Scapular Pull-Up（traps）— 肩甲骨を下制するだけで肘を曲げない
+ * - Dips - Chest Version（chest）— 上流が三頭版と意図的に分けている
+ * - Leg Press / Calf Press / Pallof Press / Press Sit-Up / Jerk Dip Squat — キーワードの誤マッチ
+ *
+ * **判定していない割れをここに書かない。** 書くと判定済みに見えて、次に読む人が素通りする。
+ * 未判定のものは Issue で追う。
  */
 
 export interface PrimaryMuscleOverride {
@@ -40,8 +47,8 @@ const DEADLIFT_REASON =
 
 const CHIN_UP_REASON =
   "チンアップの主働筋は広背筋。グリップと片手/両手は主働筋を入れ替えない。" +
-  "上流はチン・プルアップ 10 件のうち 8 件を lats にしており、" +
-  "この 2 件だけ middle back としている（`pnpm data:audit` の chin グループ）。" +
+  "`pnpm data:audit` の chin / chin-up / pull-up グループは 14 件で、" +
+  "うち 9 件が lats、middle back はこの 2 件だけ。" +
   "肩甲骨を下制するだけの Scapular Pull-Up は肘を曲げないので traps のままでよい。";
 
 const BENCH_PRESS_REASON =
