@@ -64,6 +64,12 @@ describe("上流のグループ化", () => {
     expect(names).toContain("Wind Sprints");
   });
 
+  /** グッドモーニングは 5 対 2 で割れているが、語が無いと監査に出ない。 */
+  it("グッドモーニングの割れが監査に出る", () => {
+    const group = groupByKeyword(upstream).find((entry) => entry.keyword === "good morning");
+    expect([...(group?.byPrimary.keys() ?? [])].toSorted()).toEqual(["hamstrings", "lower back"]);
+  });
+
   /** 区切りの無い複合語は語幹を緩めずキーワードとして持つ。 */
   it("バックエクステンションとリバースハイパーが同じグループに入る", () => {
     const group = groupByKeyword(upstream).find((entry) => entry.keyword === "hyperextension");
