@@ -27,6 +27,8 @@
  * - Scapular Pull-Up（traps）— 肩甲骨を下制するだけで肘を曲げない
  * - Dips - Chest Version（chest）— 上流が三頭版と意図的に分けている
  * - Leg Press / Calf Press / Pallof Press / Press Sit-Up / Jerk Dip Squat — キーワードの誤マッチ
+ * - Weighted Ball Hyperextension（lower back）— 腰椎を曲げて上体を起こす種目で脊柱が実際に動く
+ * - Seated Good Mornings（lower back）— 座位で膝が屈曲しハムが働きにくい。上流も補助筋に置いていない
  *
  * **判定していない割れをここに書かない。** 書くと判定済みに見えて、次に読む人が素通りする。
  * 未判定のものは Issue で追う。
@@ -50,6 +52,14 @@ const CHIN_UP_REASON =
   "`pnpm data:audit` の chin / chin-up / pull-up グループは 14 件で、" +
   "うち 9 件が lats、middle back はこの 2 件だけ。" +
   "肩甲骨を下制するだけの Scapular Pull-Up は肘を曲げないので traps のままでよい。";
+
+const FLAT_BACK_HINGE_REASON =
+  "解説文が「背中を平らに保つ」「まっすぐな背中を保つ」と明記していて脊柱は動かない。" +
+  "股関節の伸展で上体を起こす動作なので主働筋はハムストリングスと大臀筋。" +
+  "脊柱起立筋の等尺性の働きを主働筋にしないのはデッドリフト 6 件と同じ判断。" +
+  "グッドモーニングは同じ動作の 5 件を上流も hamstrings にしており、" +
+  "Stiff Leg は膝のことで脊柱のことではない。" +
+  "腰椎を曲げて上体を起こす Weighted Ball Hyperextension は対象外。";
 
 const BENCH_PRESS_REASON =
   "通常のベンチプレスであり、主働筋は大胸筋。チェーンやリバースバンドは" +
@@ -75,6 +85,19 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
   "One_Arm_Chin-Up": { primaryMuscles: ["lats"], reason: CHIN_UP_REASON },
 
   // --- スプリント系: abdominals → quadriceps ---
+  Hyperextensions_Back_Extensions: {
+    primaryMuscles: ["hamstrings", "glutes"],
+    reason: FLAT_BACK_HINGE_REASON,
+  },
+  Hyperextensions_With_No_Hyperextension_Bench: {
+    primaryMuscles: ["hamstrings", "glutes"],
+    reason: FLAT_BACK_HINGE_REASON,
+  },
+  Stiff_Leg_Barbell_Good_Morning: {
+    primaryMuscles: ["hamstrings", "glutes"],
+    reason: FLAT_BACK_HINGE_REASON,
+  },
+
   Wind_Sprints: {
     primaryMuscles: ["quadriceps"],
     reason:
