@@ -53,6 +53,11 @@ const CHIN_UP_REASON =
   "うち 9 件が lats、middle back はこの 2 件だけ。" +
   "肩甲骨を下制するだけの Scapular Pull-Up は肘を曲げないので traps のままでよい。";
 
+const RACK_PULL_REASON =
+  "ラックプルは可動域を切ったデッドリフトで、解説文も proper deadlifting position と書く。" +
+  "背中のアーチは等尺性の保持で、上体を起こすのは股関節と膝の伸展。" +
+  "上流も補助筋に glutes と hamstrings を置いている。";
+
 const FLAT_BACK_HINGE_REASON =
   "解説文が「背中を平らに保つ」「まっすぐな背中を保つ」と明記していて脊柱は動かない。" +
   "股関節の伸展で上体を起こす動作なので主働筋はハムストリングスと大臀筋。" +
@@ -80,11 +85,15 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
   Bench_Press_with_Chains: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
   Reverse_Band_Bench_Press: { primaryMuscles: ["chest"], reason: BENCH_PRESS_REASON },
 
+  // --- ラックプル系: lower back → hamstrings + glutes ---
+  Rack_Pulls: { primaryMuscles: ["hamstrings", "glutes"], reason: RACK_PULL_REASON },
+  Rack_Pull_with_Bands: { primaryMuscles: ["hamstrings", "glutes"], reason: RACK_PULL_REASON },
+
   // --- チンアップ系: middle back → lats ---
   Mixed_Grip_Chin: { primaryMuscles: ["lats"], reason: CHIN_UP_REASON },
   "One_Arm_Chin-Up": { primaryMuscles: ["lats"], reason: CHIN_UP_REASON },
 
-  // --- スプリント系: abdominals → quadriceps ---
+  // --- 背中を平らに保つヒンジ: lower back → hamstrings + glutes ---
   Hyperextensions_Back_Extensions: {
     primaryMuscles: ["hamstrings", "glutes"],
     reason: FLAT_BACK_HINGE_REASON,
@@ -98,6 +107,7 @@ export const PRIMARY_MUSCLE_OVERRIDES: Record<string, PrimaryMuscleOverride> = {
     reason: FLAT_BACK_HINGE_REASON,
   },
 
+  // --- スプリント系: abdominals → quadriceps ---
   Wind_Sprints: {
     primaryMuscles: ["quadriceps"],
     reason:
